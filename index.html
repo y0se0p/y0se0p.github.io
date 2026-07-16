@@ -1,4 +1,26 @@
-<html lang="en"><head><script>(function(firebaseConfig, initialAuthToken, appId) {
+<html lang="en"><head><script>
+/* Persistence guard (added): the backup below contains several data-injection
+   scripts that call localStorage.setItem on every page load, which would wipe
+   the user's edits. On the FIRST visit (empty storage) we let them seed the
+   data; on every later visit we block those seed writes so edits persist. */
+(function () {
+    try {
+        var SEED_KEYS = ['myUniversities', 'mySupplementalEssays', 'myPersonalNotes', 'myMotivationStatement', 'firstChoiceUniId', 'secondChoiceUniId'];
+        var firstVisit = localStorage.getItem('myUniversities') === null;
+        if (!firstVisit) {
+            var realSetItem = window.localStorage.setItem.bind(window.localStorage);
+            window.localStorage.setItem = function (key, value) {
+                if (SEED_KEYS.indexOf(key) !== -1) return; // ignore seed overwrites during injection
+                return realSetItem(key, value);
+            };
+            // Restore normal saving once the page is parsed, before the app runs its load logic.
+            document.addEventListener('DOMContentLoaded', function () {
+                window.localStorage.setItem = realSetItem;
+            }, { once: true });
+        }
+    } catch (e) { /* localStorage unavailable — nothing to guard */ }
+})();
+</script><script>(function(firebaseConfig, initialAuthToken, appId) {
         window.__firebase_config = firebaseConfig;
         window.__initial_auth_token = initialAuthToken;
         window.__app_id = appId;
@@ -629,13 +651,27 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         #essay-table-body td:nth-child(4) { min-width: 120px; } /* Status */
         #essay-table-body td:nth-child(5) { min-width: 100px; } /* Manage */
 
-        /* Color classes for Application Status for visual cues */
-        .status-accepted { background-color: #dcfce7; color: #166534; } /* green-100, text-green-800 */
-        .status-waitlist { background-color: #fef9c3; color: #a16207; } /* yellow-100, text-yellow-800 */
-        .status-rejected { background-color: #fee2e2; color: #991b1b; } /* red-100, text-red-800 */
-        .status-deferred { background-color: #ffedd5; color: #9a3412; } /* orange-100, text-orange-800 */
-        .status-applied { background-color: #dbeafe; color: #1e40af; } /* blue-100, text-blue-800 */
-        .status-not-applied { background-color: #f3f4f6; color: #4b5563; } /* gray-100, text-gray-800 */
+        /* Color classes for Application Status (progress workflow) for visual cues */
+        .status-prospective { background-color: #f3f4f6; color: #4b5563; } /* gray  - 조사 중 */
+        .status-in-progress { background-color: #fef9c3; color: #a16207; } /* yellow- 작성 중 */
+        .status-submitted   { background-color: #dbeafe; color: #1e40af; } /* blue  - 접수 완료 */
+        .status-pending     { background-color: #ede9fe; color: #6b21a8; } /* violet- 결과 대기 */
+        .status-accepted    { background-color: #dcfce7; color: #166534; } /* green - 합격 */
+        .status-waitlist    { background-color: #ffedd5; color: #9a3412; } /* orange- 대기자 */
+        .status-deferred    { background-color: #e0e7ff; color: #3730a3; } /* indigo- 유예 */
+        .status-rejected    { background-color: #fee2e2; color: #991b1b; } /* red   - 불합격 */
+        /* Legacy status classes kept for backward compatibility */
+        .status-applied { background-color: #dbeafe; color: #1e40af; }
+        .status-not-applied { background-color: #f3f4f6; color: #4b5563; }
+
+        /* Essay type tag chips */
+        .essay-tag-chip { display: inline-flex; align-items: center; gap: 4px; background-color: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 9999px; margin: 2px 3px 2px 0; white-space: nowrap; }
+        .essay-tag-chip button { background: none; border: none; color: #6366f1; cursor: pointer; font-weight: 700; line-height: 1; padding: 0; font-size: 0.85rem; }
+        .essay-tag-preset-btn { font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 9999px; border: 1px solid #c7d2fe; background-color: #f5f7ff; color: #4338ca; cursor: pointer; transition: background-color .15s; }
+        .essay-tag-preset-btn:hover { background-color: #e0e7ff; }
+        .essay-tag-filter-btn { font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 9999px; border: 1px solid #d1d5db; background-color: #fff; color: #374151; cursor: pointer; transition: all .15s; }
+        .essay-tag-filter-btn:hover { background-color: #f3f4f6; }
+        .essay-tag-filter-btn.active { background-color: #4f46e5; color: #fff; border-color: #4f46e5; }
 
         /* Color classes for Essay Status */
         .essay-status-not-started { background-color: #f3f4f6; color: #4b5563; } /* gray-100, text-gray-800 */
@@ -763,6 +799,138 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .cons-text {
             color: #ef4444; /* Red for cons */
         }
+
+        /* =======================================================================
+           Apple-style minimal dashboard (Home) + global polish
+           ======================================================================= */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+            background-color: #f5f5f7; /* Apple soft gray */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Minimal frosted top bar */
+        .dash-topbar {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .dash-topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 12px 24px;
+        }
+        .dash-brand { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; color: #1d1d1f; }
+        .dash-nav { display: flex; gap: 4px; flex-wrap: wrap; }
+        .dash-nav a {
+            font-size: 0.92rem; font-weight: 500; color: #1d1d1f;
+            padding: 7px 15px; border-radius: 9999px; text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .dash-nav a:hover { background: #ececee; }
+
+        /* Keep section anchors clear of the sticky top bar */
+        html { scroll-padding-top: 84px; }
+        main section.card { scroll-margin-top: 84px; }
+
+        /* Home becomes a transparent dashboard shell (overrides .card visuals) */
+        #home.dashboard-home { background: transparent; box-shadow: none; padding: 0; }
+        #home.dashboard-home:hover { transform: none; box-shadow: none; }
+
+        .dash-greeting { margin-bottom: 22px; }
+        .dash-greeting h2 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; color: #1d1d1f; }
+        .dash-greeting p { color: #86868b; font-size: 1rem; margin-top: 4px; }
+
+        /* Bento grid */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-auto-rows: minmax(150px, auto);
+            gap: 16px;
+        }
+        .bento {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05);
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), box-shadow 0.28s cubic-bezier(0.4,0,0.2,1);
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        a.bento { text-decoration: none; color: inherit; cursor: pointer; }
+        a.bento:hover { transform: translateY(-3px); box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 18px 44px rgba(0,0,0,0.10); }
+        a.bento:focus-visible { outline: 3px solid #0071e3; outline-offset: 2px; }
+        .span-2 { grid-column: span 2; }
+        .span-4 { grid-column: span 4; }
+        .row-2 { grid-row: span 2; }
+
+        .bento-label {
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.03em;
+            color: #86868b; text-transform: uppercase;
+            display: flex; align-items: center; gap: 6px; margin-bottom: 14px;
+        }
+        .bento-arrow { margin-left: auto; color: #c7c7cc; font-size: 1.1rem; transition: transform 0.2s, color 0.2s; }
+        a.bento:hover .bento-arrow { color: #0071e3; transform: translateX(3px); }
+
+        /* Commitment hero card */
+        .commit-textarea {
+            border: none; background: transparent; width: 100%; flex: 1;
+            font-size: 1.5rem; font-weight: 600; line-height: 1.45; color: #1d1d1f;
+            resize: none; outline: none; font-family: inherit; letter-spacing: -0.01em;
+        }
+        .commit-textarea::placeholder { color: #c7c7cc; font-weight: 500; }
+
+        /* D-Day hero */
+        .dday-uni { font-size: 1.1rem; font-weight: 600; color: #1d1d1f; margin-bottom: 2px; }
+        .dday-type { color: #6e6e73; font-size: 0.9rem; }
+        .dday-number {
+            font-size: clamp(3.4rem, 7vw, 5.5rem); font-weight: 700; letter-spacing: -0.04em;
+            line-height: 0.9; color: #1d1d1f; font-variant-numeric: tabular-nums; margin-top: auto;
+        }
+        .dday-date { color: #6e6e73; font-size: 0.95rem; margin-top: 10px; }
+        .dday-urgent .dday-number { color: #e0331a; }
+
+        /* Stat cards */
+        .stat-number { font-size: 2.8rem; font-weight: 700; letter-spacing: -0.03em; color: #1d1d1f; font-variant-numeric: tabular-nums; line-height: 1; margin-top: auto; }
+        .stat-sub { color: #6e6e73; font-size: 0.9rem; margin-top: 8px; }
+
+        /* Status breakdown rows */
+        .dash-row { display: flex; align-items: center; gap: 9px; font-size: 0.92rem; color: #1d1d1f; padding: 5px 0; }
+        .dash-row .count { margin-left: auto; font-weight: 600; color: #6e6e73; font-variant-numeric: tabular-nums; }
+        .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+        /* Deadline list (this week) */
+        .deadline-item { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 9px 0; border-top: 1px solid #f0f0f2; }
+        .deadline-item:first-of-type { border-top: none; }
+        .deadline-name { font-size: 0.92rem; color: #1d1d1f; font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dday-badge { font-weight: 700; font-variant-numeric: tabular-nums; font-size: 0.9rem; white-space: nowrap; }
+        .dday-badge.urgent { color: #e0331a; }
+        .dday-badge.normal { color: #0071e3; }
+
+        /* To-Do preview */
+        .todo-preview { color: #1d1d1f; font-size: 0.95rem; line-height: 1.65; white-space: pre-wrap; overflow: hidden; }
+
+        .dash-empty { color: #a1a1a6; font-size: 0.95rem; margin-top: auto; }
+
+        /* Responsive bento reflow */
+        @media (max-width: 960px) {
+            .dash-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .span-4 { grid-column: span 2; }
+        }
+        @media (max-width: 560px) {
+            .dash-grid { grid-template-columns: 1fr; }
+            .span-2, .span-4 { grid-column: span 1; }
+            .row-2 { grid-row: auto; }
+        }
     </style>
 <style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.relative{position:relative}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-auto{margin-left:auto}.mr-2{margin-right:0.5rem}.mt-1{margin-top:0.25rem}.mt-12{margin-top:3rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.mb-1{margin-bottom:0.25rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-3{height:0.75rem}.min-h-\[100px\]{min-height:100px}.min-h-screen{min-height:100vh}.w-3{width:0.75rem}.w-full{width:100%}.min-w-full{min-width:100%}.flex-shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}.appearance-none{-webkit-appearance:none;appearance:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-7{grid-template-columns:repeat(7, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-12 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(3rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(3rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-x-auto{overflow-x:auto}.text-wrap{text-wrap:wrap}.rounded{border-radius:0.25rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.rounded-b-xl{border-bottom-right-radius:0.75rem;border-bottom-left-radius:0.75rem}.rounded-t-xl{border-top-left-radius:0.75rem;border-top-right-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-blue-200{--tw-border-opacity:1;border-color:rgb(191 219 254 / var(--tw-border-opacity, 1))}.border-gray-100{--tw-border-opacity:1;border-color:rgb(243 244 246 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-green-200{--tw-border-opacity:1;border-color:rgb(187 247 208 / var(--tw-border-opacity, 1))}.border-purple-200{--tw-border-opacity:1;border-color:rgb(233 213 255 / var(--tw-border-opacity, 1))}.border-transparent{border-color:transparent}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246 / var(--tw-bg-opacity, 1))}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.bg-gray-400{--tw-bg-opacity:1;background-color:rgb(156 163 175 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-green-50{--tw-bg-opacity:1;background-color:rgb(240 253 244 / var(--tw-bg-opacity, 1))}.bg-purple-50{--tw-bg-opacity:1;background-color:rgb(250 245 255 / var(--tw-bg-opacity, 1))}.bg-purple-600{--tw-bg-opacity:1;background-color:rgb(147 51 234 / var(--tw-bg-opacity, 1))}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity, 1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8 / var(--tw-bg-opacity, 1))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-blue-600{--tw-gradient-from:#2563eb var(--tw-gradient-from-position);--tw-gradient-to:rgb(37 99 235 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-indigo-700{--tw-gradient-to:#4338ca var(--tw-gradient-to-position)}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.p-2{padding:0.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.shadow{--tw-shadow:0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-shadow{transition-property:box-shadow;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:bg-blue-600:hover{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.hover\:bg-blue-700:hover{--tw-bg-opacity:1;background-color:rgb(29 78 216 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-500:hover{--tw-bg-opacity:1;background-color:rgb(107 114 128 / var(--tw-bg-opacity, 1))}.hover\:bg-purple-700:hover{--tw-bg-opacity:1;background-color:rgb(126 34 206 / var(--tw-bg-opacity, 1))}.hover\:bg-red-700:hover{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-50:hover{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.hover\:bg-red-600:hover{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.hover\:bg-yellow-600:hover{--tw-bg-opacity:1;background-color:rgb(202 138 4 / var(--tw-bg-opacity, 1))}.hover\:text-blue-200:hover{--tw-text-opacity:1;color:rgb(191 219 254 / var(--tw-text-opacity, 1))}.hover\:text-blue-600:hover{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.hover\:shadow-xl:hover{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-blue-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(59 130 246 / var(--tw-ring-opacity, 1))}@media (min-width: 640px){.sm\:flex-row{flex-direction:row}}@media (min-width: 768px){.md\:col-span-2{grid-column:span 2 / span 2}.md\:mb-0{margin-bottom:0px}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:space-x-6 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1.5rem * var(--tw-space-x-reverse));margin-left:calc(1.5rem * calc(1 - var(--tw-space-x-reverse)))}.md\:text-4xl{font-size:2.25rem;line-height:2.5rem}}@media (min-width: 1024px){.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}}</style><script id="initial-data-injection-script">
                 // This script injects saved data into local storage when this downloaded HTML file is opened.
@@ -848,18 +1016,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 <body class="min-h-screen flex flex-col">
 
     <!-- Header Section with Navigation -->
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 shadow-lg rounded-b-xl">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
-            <h1 class="text-3xl md:text-4xl font-bold mb-4 md:mb-0">
-                My US University Explorer 🎓
-            </h1>
-            <nav>
-                <ul class="flex flex-wrap justify-center space-x-4 md:space-x-6 text-lg font-semibold">
-                    <li><a href="#home" class="hover:text-blue-200 transition duration-300" onclick="showSection('home')">Home</a></li>
-                    <li><a href="#university-list" class="hover:text-blue-200 transition duration-300" onclick="showSection('university-list')">University List</a></li>
-                    <li><a href="#my-essays" class="hover:text-blue-200 transition duration-300" onclick="showSection('my-essays')">My Essays</a></li>
-                    <li><a href="#my-notes" class="hover:text-blue-200 transition duration-300" onclick="showSection('my-notes')">To-Do List</a></li>
-                </ul>
+    <header class="dash-topbar">
+        <div class="container mx-auto dash-topbar-inner">
+            <h1 class="dash-brand">🎓 University Explorer</h1>
+            <nav class="dash-nav">
+                <a href="#home" onclick="showSection('home')">Home</a>
+                <a href="#university-list" onclick="showSection('university-list')">University List</a>
+                <a href="#my-essays" onclick="showSection('my-essays')">My Essays</a>
+                <a href="#my-notes" onclick="showSection('my-notes')">To-Do List</a>
             </nav>
         </div>
     </header>
@@ -868,31 +1032,47 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     <main class="flex-grow container mx-auto p-6 space-y-12">
 
         <!-- Home Section: User's motivation and website purpose -->
-        <section id="home" class="bg-white p-8 rounded-xl card transition-shadow duration-300 hover:shadow-xl">
-            <h2 class="text-3xl font-bold mb-6 section-title">Commitment</h2>
-            <textarea id="my-motivation-statement" class="w-full p-4 mb-8 border rounded-lg text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500" rows="8" placeholder="Write your study abroad commitment, goals, and motivation here. This content is automatically saved in your browser."></textarea>
+        <section id="home" class="card dashboard-home">
+            <div class="dash-greeting">
+                <h2 id="dash-greeting-title">오늘도 한 걸음 👋</h2>
+                <p id="dash-greeting-date"></p>
+            </div>
+            <div class="dash-grid">
+                <!-- Commitment hero (kept from original) -->
+                <div class="bento span-2 row-2">
+                    <div class="bento-label">🎯 나의 다짐 · Commitment</div>
+                    <textarea id="my-motivation-statement" class="commit-textarea" placeholder="이곳에 목표와 다짐을 적어보세요. 자동으로 저장됩니다."></textarea>
+                </div>
 
-            <h2 class="text-3xl font-bold mb-6 section-title">Why was this website created?</h2>
-            <p class="text-lg leading-relaxed mb-6">
-                I built this website to efficiently manage complex US university information by my own criteria and quickly find necessary details.
-                It's based on data from the <strong class="text-blue-600">most reliable sources like U.S. News, College Board, and NCES</strong>, and all content is personally updated and managed by me. This is a <strong class="text-blue-600">personalized information hub</strong> for my study abroad journey.
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-blue-50 p-6 rounded-lg text-center flex flex-col items-center justify-center border border-blue-200">
-                    <img src="https://placehold.co/80x80/dbeafe/1e40af?text=💡" alt="Personalized icon" class="mb-4 rounded-full">
-                    <h3 class="text-xl font-semibold mb-2">Personalized</h3>
-                    <p class="text-gray-700">Information organized just for me.</p>
-                </div>
-                <div class="bg-green-50 p-6 rounded-lg text-center flex flex-col items-center justify-center border border-green-200">
-                    <img src="https://placehold.co/80x80/dcfce7/14532d?text=✅" alt="Reliable data icon" class="mb-4 rounded-full">
-                    <h3 class="text-xl font-semibold mb-2">Reliable Data</h3>
-                    <p class="text-gray-700">Includes data from verified institutions only.</p>
-                </div>
-                <div class="bg-purple-50 p-6 rounded-lg text-center flex flex-col items-center justify-center border border-purple-200">
-                    <img src="https://placehold.co/80x80/ede9fe/4c1d95?text=📝" alt="Easy updates icon" class="mb-4 rounded-full">
-                    <h3 class="text-xl font-semibold mb-2">Easy Updates</h3>
-                    <p class="text-gray-700">Easy to edit and manage myself.</p>
-                </div>
+                <!-- 1st choice D-Day hero -->
+                <a class="bento span-2 row-2" id="dash-dday-card" href="#university-list" onclick="showSection('university-list')">
+                    <div class="bento-label">⏳ 1지망 D-DAY <span class="bento-arrow">→</span></div>
+                    <div id="dash-dday-body" style="display:flex; flex-direction:column; flex:1;"></div>
+                </a>
+
+                <!-- Essays in progress -->
+                <a class="bento" href="#my-essays" onclick="showSection('my-essays')">
+                    <div class="bento-label">✍️ 에세이 <span class="bento-arrow">→</span></div>
+                    <div id="dash-essay-body" style="display:flex; flex-direction:column; flex:1;"></div>
+                </a>
+
+                <!-- University status breakdown -->
+                <a class="bento" href="#university-list" onclick="showSection('university-list')">
+                    <div class="bento-label">🏫 대학 현황 <span class="bento-arrow">→</span></div>
+                    <div id="dash-uni-body" style="display:flex; flex-direction:column; flex:1;"></div>
+                </a>
+
+                <!-- This week's deadlines -->
+                <a class="bento span-2" href="#university-list" onclick="showSection('university-list')">
+                    <div class="bento-label">🔥 이번 주 마감 임박 <span class="bento-arrow">→</span></div>
+                    <div id="dash-week-body" style="display:flex; flex-direction:column; flex:1;"></div>
+                </a>
+
+                <!-- To-Do & notes preview -->
+                <a class="bento span-4" href="#my-notes" onclick="showSection('my-notes')">
+                    <div class="bento-label">📝 To-Do & Notes <span class="bento-arrow">→</span></div>
+                    <div id="dash-todo-body" class="todo-preview"></div>
+                </a>
             </div>
         </section>
 
@@ -961,12 +1141,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <label for="status-filter" class="block text-gray-700 text-sm font-bold mb-2">Application Status Filter:</label>
                     <select id="status-filter" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         <option value="">All</option>
-                        <option value="Not Applied">Not Applied</option>
-                        <option value="Applied">Applied</option>
-                        <option value="Accepted">Accepted</option>
-                        <option value="Waitlist">Waitlist</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Deferred">Deferred</option>
+                        <option value="Prospective">🔍 조사 중 (Prospective)</option>
+                        <option value="In Progress">✍️ 작성 중 (In Progress)</option>
+                        <option value="Submitted">📮 접수 완료 (Submitted)</option>
+                        <option value="Pending">⏳ 결과 대기 (Pending)</option>
+                        <option value="Accepted">🎉 합격 (Accepted)</option>
+                        <option value="Waitlist">📋 대기자 (Waitlist)</option>
+                        <option value="Deferred">↩️ 유예 (Deferred)</option>
+                        <option value="Rejected">❌ 불합격 (Rejected)</option>
                     </select>
                 </div>
                 <div>
@@ -2313,6 +2495,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 </button>
             </div>
 
+            <!-- Essay type tag filter bar -->
+            <div id="essay-tag-filter-wrapper" class="mb-4 hidden">
+                <span class="text-sm font-bold text-gray-700 mr-2">유형별 보기:</span>
+                <div id="essay-tag-filter" class="inline-flex flex-wrap gap-2 mt-1 align-middle"></div>
+            </div>
+
             <!-- Essay Data Table -->
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -2320,6 +2508,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <tr class="bg-gray-100 text-gray-700 text-left">
                             <th class="py-3 px-4 border-b border-gray-200">University Name</th>
                             <th class="py-3 px-4 border-b border-gray-200">Essay Prompt Summary</th>
+                            <th class="py-3 px-4 border-b border-gray-200">Type Tags</th>
                             <th class="py-3 px-4 border-b border-gray-200">Google Doc Link</th>
                             <th class="py-3 px-4 border-b border-gray-200">Status</th>
                             <th class="py-3 px-4 border-b border-gray-200">Manage</th>
@@ -2538,12 +2727,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <div>
                     <label for="uni-application-status" class="block text-gray-700 text-sm font-bold mb-2">Application Status:</label>
                     <select id="uni-application-status" class="shadow border rounded w-full py-2 px-3 text-gray-700">
-                        <option value="Not Applied">Not Applied</option>
-                        <option value="Applied">Applied</option>
-                        <option value="Accepted">Accepted</option>
-                        <option value="Waitlist">Waitlist</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Deferred">Deferred</option>
+                        <option value="Prospective">🔍 조사 중 (Prospective)</option>
+                        <option value="In Progress">✍️ 작성 중 (In Progress)</option>
+                        <option value="Submitted">📮 접수 완료 (Submitted)</option>
+                        <option value="Pending">⏳ 결과 대기 (Pending)</option>
+                        <option value="Accepted">🎉 합격 (Accepted)</option>
+                        <option value="Waitlist">📋 대기자 (Waitlist)</option>
+                        <option value="Deferred">↩️ 유예 (Deferred)</option>
+                        <option value="Rejected">❌ 불합격 (Rejected)</option>
                     </select>
                 </div>
                 <div>
@@ -2621,6 +2812,16 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <label for="essay-google-doc-link" class="block text-gray-700 text-sm font-bold mb-2">Google Doc Link:</label>
                     <input type="url" id="essay-google-doc-link" class="shadow border rounded w-full py-2 px-3 text-gray-700" placeholder="https://docs.google.com/document/d/... (Optional)">
                 </div>
+                <div class="md:col-span-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">유형 태그 (Type Tags):</label>
+                    <p class="text-xs text-gray-500 mb-2">비슷한 유형끼리 모아 재활용하기 좋아요. 아래 버튼을 누르거나 직접 입력해서 추가하세요.</p>
+                    <div id="essay-tag-presets" class="flex flex-wrap gap-2 mb-2"></div>
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" id="essay-tag-input" class="shadow border rounded flex-1 py-2 px-3 text-gray-700 text-sm" placeholder="직접 태그 입력 후 Enter 또는 추가">
+                        <button type="button" id="essay-tag-add-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg text-sm">추가</button>
+                    </div>
+                    <div id="essay-tag-selected" class="flex flex-wrap items-center min-h-[28px]"></div>
+                </div>
                 <div class="md:col-span-2 flex justify-end gap-4 mt-6">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
                         Save
@@ -2656,6 +2857,47 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const USD_TO_KRW_RATE = 1350;
 
         // =======================================================================
+        // Application Status configuration (progress workflow)
+        // Central source of truth so dropdowns, filters and colors stay in sync.
+        // =======================================================================
+        const UNI_STATUS_OPTIONS = [
+            { value: 'Prospective', label: '🔍 조사 중 (Prospective)', cls: 'status-prospective' },
+            { value: 'In Progress', label: '✍️ 작성 중 (In Progress)', cls: 'status-in-progress' },
+            { value: 'Submitted',   label: '📮 접수 완료 (Submitted)', cls: 'status-submitted' },
+            { value: 'Pending',     label: '⏳ 결과 대기 (Pending)',   cls: 'status-pending' },
+            { value: 'Accepted',    label: '🎉 합격 (Accepted)',       cls: 'status-accepted' },
+            { value: 'Waitlist',    label: '📋 대기자 (Waitlist)',     cls: 'status-waitlist' },
+            { value: 'Deferred',    label: '↩️ 유예 (Deferred)',       cls: 'status-deferred' },
+            { value: 'Rejected',    label: '❌ 불합격 (Rejected)',     cls: 'status-rejected' }
+        ];
+        // Map legacy status values (from earlier data) to the new workflow values.
+        const LEGACY_STATUS_MAP = { 'Not Applied': 'Prospective', 'Applied': 'Submitted' };
+
+        function normalizeUniStatus(value) {
+            if (!value) return 'Prospective';
+            if (LEGACY_STATUS_MAP[value]) return LEGACY_STATUS_MAP[value];
+            return UNI_STATUS_OPTIONS.some(o => o.value === value) ? value : 'Prospective';
+        }
+        function getUniStatusClass(value) {
+            const v = normalizeUniStatus(value);
+            const o = UNI_STATUS_OPTIONS.find(x => x.value === v);
+            return o ? o.cls : 'status-prospective';
+        }
+        function uniStatusOptionsHtml(selected) {
+            const sel = normalizeUniStatus(selected);
+            return UNI_STATUS_OPTIONS
+                .map(o => `<option value="${o.value}" ${o.value === sel ? 'selected' : ''}>${o.label}</option>`)
+                .join('');
+        }
+
+        // Preset essay type tags for quick tagging (users can also type custom ones).
+        const ESSAY_TAG_PRESETS = ['Why Major', 'Why School', 'Community', 'Activity', 'Academic', 'Diversity', 'Challenge/Growth'];
+        // Filter state for the essay tag filter bar (null = show all).
+        let essayTagFilter = null;
+        // Working set of tags for the currently open essay modal.
+        let currentEssayTags = [];
+
+        // =======================================================================
         // Local Storage Data Management Functions
         // All data is persistently stored in the browser's local storage.
         // =======================================================================
@@ -2667,6 +2909,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const storedData = localStorage.getItem('myUniversities');
             if (storedData) {
                 universities = JSON.parse(storedData);
+                // Migrate any legacy application status values to the new workflow values.
+                universities.forEach(u => { u.applicationStatus = normalizeUniStatus(u.applicationStatus); });
+                saveUniversities();
             } else {
                 // Initial dummy data for demonstration if local storage is empty
                 universities = [
@@ -2678,7 +2923,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         acceptanceRate: '3.2%', avgSat: '1530-1580', avgGpa: '3.9-4.0', avgAct: '34-36', // Added avgGpa
                         engProficiency: 'TOEFL 100+', commonApp: 'Yes', deadline: 'EA: 11/1',
                         supplementaryEssays: '2 essays', recommendations: '2 teachers, 1 counselor', category: 'Reach',
-                        applicationStatus: 'Not Applied', applicationStrategy: 'EA',
+                        applicationStatus: 'Prospective', applicationStrategy: 'EA',
                         myNotes: 'A prestigious university in the Eastern US. High ranking and excellent educational environment. (Updated June 16, 2025)',
                         missionStatement: 'To advance knowledge and educate future leaders', 
                         prosCons: 'Pros: World-class faculty, excellent research opportunities, strong alumni network. Cons: Extremely competitive, high cost of living, intense academic pressure.', // Added prosCons
@@ -2692,7 +2937,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         acceptanceRate: '3.7%', avgSat: '1510-1590', avgGpa: '3.9-4.0', avgAct: '33-35', // Added avgGpa
                         engProficiency: 'TOEFL 100+', commonApp: 'Yes', deadline: 'REA: 11/1, RD: 1/5',
                         supplementaryEssays: '3 essays', recommendations: '2 teachers', category: 'Reach',
-                        applicationStatus: 'Not Applied', applicationStrategy: 'EA', // REA treated as EA for simplicity here
+                        applicationStatus: 'Prospective', applicationStrategy: 'EA', // REA treated as EA for simplicity here
                         myNotes: 'Strong in IT due to proximity to Silicon Valley. Good weather and beautiful campus.',
                         missionStatement: 'To create and disseminate innovative knowledge for the future', 
                         prosCons: 'Pros: Silicon Valley location, innovative culture, strong entrepreneurship. Cons: Very expensive, high pressure, large class sizes in some areas.', // Added prosCons
@@ -2706,7 +2951,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         acceptanceRate: '4.7%', avgSat: '1500-1570', avgGpa: '3.8-3.9', avgAct: '34-35', // Added avgGpa
                         engProficiency: 'TOEFL 100+', commonApp: 'Yes', deadline: 'ED1: 11/1, ED2: 1/1, RD: 1/2',
                         supplementaryEssays: '2 unique essays', recommendations: '2 teachers, 1 counselor', category: 'Reach',
-                        applicationStatus: 'Not Applied', applicationStrategy: 'ED',
+                        applicationStatus: 'Prospective', applicationStrategy: 'ED',
                         myNotes: 'Strong academic environment and discussion-based education. Vibrant city environment of Chicago.',
                         missionStatement: 'To understand and improve the world, and to extend human knowledge', 
                         prosCons: 'Pros: Strong intellectual environment, unique core curriculum, vibrant urban location. Cons: Academically intense, cold winters, less focus on social scene.', // Added prosCons
@@ -2720,7 +2965,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         acceptanceRate: '12.3%', avgSat: '1370-1500', avgGpa: '3.7-3.9', avgAct: '31-34', // Added avgGpa
                         engProficiency: 'TOEFL 100+', commonApp: 'Yes', deadline: 'ED1: 11/15, ED2: 1/15, RD: 1/15',
                         supplementaryEssays: '1 essay', recommendations: '2 teachers, 1 counselor', category: 'Match',
-                        applicationStatus: 'Not Applied', applicationStrategy: 'ED',
+                        applicationStatus: 'Prospective', applicationStrategy: 'ED',
                         myNotes: 'Small and beautiful liberal arts college. Strong community sense and undergraduate-focused education.',
                         missionStatement: 'To foster reflective inquiry and responsible citizenship', 
                         prosCons: 'Pros: Strong liberal arts education, beautiful campus, tight-knit community. Cons: Rural location, limited course selection compared to larger universities, cold weather.', // Added prosCons
@@ -2918,16 +3163,7 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 row.setAttribute('data-id', uni.id); // Store university ID on the row element
 
                 // Determine CSS class for application status for visual cues
-                let statusClass = '';
-                switch (uni.applicationStatus) {
-                    case 'Accepted': statusClass = 'status-accepted'; break;
-                    case 'Waitlist': statusClass = 'status-waitlist'; break;
-                    case 'Rejected': statusClass = 'status-rejected'; break;
-                    case 'Deferred': statusClass = 'status-deferred'; break;
-                    case 'Applied': statusClass = 'status-applied'; break;
-                    case 'Not Applied': statusClass = 'status-not-applied'; break;
-                    default: statusClass = 'status-not-applied'; break; // Default in case status is undefined
-                }
+                const statusClass = getUniStatusClass(uni.applicationStatus);
 
                 // Determine CSS class for application strategy for visual cues
                 let strategyClass = '';
@@ -2995,12 +3231,7 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                     <td class="py-3 px-4 border-b border-gray-200 text-wrap">
                         <div class="status-cell-wrapper ${statusClass}">
                             <select onchange="updateApplicationStatus(this, '${uni.id}')" class="status-select">
-                                <option value="Not Applied" ${uni.applicationStatus === 'Not Applied' ? 'selected' : ''}>Not Applied</option>
-                                <option value="Applied" ${uni.applicationStatus === 'Applied' ? 'selected' : ''}>Applied</option>
-                                <option value="Accepted" ${uni.applicationStatus === 'Accepted' ? 'selected' : ''}>Accepted</option>
-                                <option value="Waitlist" ${uni.applicationStatus === 'Waitlist' ? 'selected' : ''}>Waitlist</option>
-                                <option value="Rejected" ${uni.applicationStatus === 'Rejected' ? 'selected' : ''}>Rejected</option>
-                                <option value="Deferred" ${uni.applicationStatus === 'Deferred' ? 'selected' : ''}>Deferred</option>
+                                ${uniStatusOptionsHtml(uni.applicationStatus)}
                             </select>
                         </div>
                     </td>
@@ -3102,7 +3333,7 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
         function openUniversityModal(uniId = null) {
             universityForm.reset(); // Clear all form fields
             document.getElementById('uni-id').value = ''; // Clear hidden ID field
-            document.getElementById('uni-application-status').value = 'Not Applied'; // Set default status
+            document.getElementById('uni-application-status').value = 'Prospective'; // Set default status
             document.getElementById('uni-application-strategy').value = ''; // Set default strategy
 
             if (uniId) {
@@ -3129,7 +3360,7 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                     document.getElementById('uni-supplementary-essays-modal').value = uni.supplementaryEssays || '';
                     document.getElementById('uni-recommendations').value = uni.recommendations || '';
                     document.getElementById('uni-category').value = uni.category || '';
-                    document.getElementById('uni-application-status').value = uni.applicationStatus || 'Not Applied';
+                    document.getElementById('uni-application-status').value = normalizeUniStatus(uni.applicationStatus);
                     document.getElementById('uni-application-strategy').value = uni.applicationStrategy || '';
                     document.getElementById('uni-pros-cons').value = uni.prosCons || ''; // New field
                     document.getElementById('uni-mission-statement').value = uni.missionStatement || '';
@@ -3381,12 +3612,24 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             const tableBody = document.getElementById('essay-table-body');
             tableBody.innerHTML = ''; // Clear existing rows
 
-            if (dataToRender.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">No essays registered yet.</td></tr>`;
+            // Build the tag filter bar from the complete essay set (not the filtered view).
+            renderEssayTagFilter();
+
+            // Apply the active tag filter, if any.
+            let rows = dataToRender;
+            if (essayTagFilter) {
+                rows = dataToRender.filter(e => Array.isArray(e.tags) && e.tags.includes(essayTagFilter));
+            }
+
+            if (rows.length === 0) {
+                const msg = essayTagFilter
+                    ? `'${essayTagFilter}' 유형의 에세이가 없습니다.`
+                    : 'No essays registered yet.';
+                tableBody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-gray-500">${msg}</td></tr>`;
                 return;
             }
 
-            dataToRender.forEach(essay => {
+            rows.forEach(essay => {
                 const uni = universities.find(u => u.id === essay.universityId); // Find the linked university
                 const uniNameEn = uni?.nameEn || 'Unknown University'; // Display English name, fallback
                 const uniNameKo = uni?.nameKo ? `(${uni.nameKo})` : ''; // Display Korean name if exists
@@ -3413,6 +3656,11 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                         <span class="text-xs text-gray-400 block mt-1">(View full prompt when editing)</span>
                     </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-wrap">
+                        ${(Array.isArray(essay.tags) && essay.tags.length)
+                            ? essay.tags.map(t => `<span class="essay-tag-chip">#${t}</span>`).join('')
+                            : '<span class="text-gray-400 text-sm">-</span>'}
+                    </td>
+                    <td class="py-3 px-4 border-b border-gray-200 text-wrap">
                         ${essay.googleDocLink ? `<a href="${essay.googleDocLink}" target="_blank" class="text-blue-600 hover:underline text-sm block">Go to Google Doc</a>` : '<span class="text-gray-500 text-sm">No Link</span>'}
                     </td>
                     <td class="py-3 px-4 border-b border-gray-200 text-wrap">
@@ -3431,6 +3679,74 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 `;
                 tableBody.appendChild(row);
             });
+        }
+
+        // ===== Essay type tag helpers =====
+
+        /** Toggles the essay tag filter and re-renders the essay list. */
+        function setEssayTagFilter(tag) {
+            essayTagFilter = (essayTagFilter === tag) ? null : tag;
+            renderSupplementalEssays();
+        }
+
+        /** Builds the tag filter bar above the essay table from all tags in use. */
+        function renderEssayTagFilter() {
+            const wrapper = document.getElementById('essay-tag-filter-wrapper');
+            const container = document.getElementById('essay-tag-filter');
+            if (!wrapper || !container) return;
+            const allTags = [];
+            supplementalEssays.forEach(e => {
+                if (Array.isArray(e.tags)) e.tags.forEach(t => { if (!allTags.includes(t)) allTags.push(t); });
+            });
+            if (allTags.length === 0) {
+                wrapper.classList.add('hidden');
+                container.innerHTML = '';
+                essayTagFilter = null;
+                return;
+            }
+            wrapper.classList.remove('hidden');
+            allTags.sort();
+            let html = `<button type="button" class="essay-tag-filter-btn ${!essayTagFilter ? 'active' : ''}" onclick="setEssayTagFilter(null)">All</button>`;
+            html += allTags.map(t =>
+                `<button type="button" class="essay-tag-filter-btn ${essayTagFilter === t ? 'active' : ''}" onclick="setEssayTagFilter('${t.replace(/'/g, "\\'")}')">#${t}</button>`
+            ).join('');
+            container.innerHTML = html;
+        }
+
+        // ===== Essay modal tag management =====
+
+        /** Renders preset quick-add buttons and the currently selected tag chips inside the modal. */
+        function renderEssayModalTags() {
+            const presetContainer = document.getElementById('essay-tag-presets');
+            if (presetContainer) {
+                presetContainer.innerHTML = ESSAY_TAG_PRESETS.map(t =>
+                    `<button type="button" class="essay-tag-preset-btn" onclick="addEssayTag('${t.replace(/'/g, "\\'")}')">+ ${t}</button>`
+                ).join('');
+            }
+            const selectedContainer = document.getElementById('essay-tag-selected');
+            if (selectedContainer) {
+                selectedContainer.innerHTML = currentEssayTags.length
+                    ? currentEssayTags.map((t, i) =>
+                        `<span class="essay-tag-chip">#${t}<button type="button" onclick="removeEssayTag(${i})" title="삭제">×</button></span>`
+                      ).join('')
+                    : '<span class="text-gray-400 text-sm">아직 태그가 없습니다.</span>';
+            }
+        }
+
+        /** Adds a tag to the modal working set (deduplicated, case-insensitive). */
+        function addEssayTag(tag) {
+            const clean = (tag || '').trim().replace(/^#/, '');
+            if (!clean) return;
+            if (!currentEssayTags.some(t => t.toLowerCase() === clean.toLowerCase())) {
+                currentEssayTags.push(clean);
+                renderEssayModalTags();
+            }
+        }
+
+        /** Removes a tag from the modal working set by index. */
+        function removeEssayTag(index) {
+            currentEssayTags.splice(index, 1);
+            renderEssayModalTags();
         }
 
         /**
@@ -3472,6 +3788,8 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 essayUniSelect.appendChild(option);
             });
 
+            currentEssayTags = []; // Reset modal tag working set
+
             if (essayId) {
                 essayModalTitle.innerText = 'Edit Essay';
                 const essay = supplementalEssays.find(e => e.id === essayId);
@@ -3482,10 +3800,13 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                     document.getElementById('essay-prompt').value = essay.prompt || '';
                     document.getElementById('essay-google-doc-link').value = essay.googleDocLink || '';
                     document.getElementById('essay-status').value = essay.status || 'Not Started';
+                    currentEssayTags = Array.isArray(essay.tags) ? [...essay.tags] : [];
                 }
             } else {
                 essayModalTitle.innerText = 'Add New Essay';
             }
+            document.getElementById('essay-tag-input').value = '';
+            renderEssayModalTags(); // Render preset buttons and selected tag chips
             essayModal.classList.remove('hidden'); // Show the modal
         }
 
@@ -3506,7 +3827,8 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 universityId: essayUniSelect.value,
                 prompt: document.getElementById('essay-prompt').value.trim(),
                 googleDocLink: document.getElementById('essay-google-doc-link').value.trim(),
-                status: document.getElementById('essay-status').value
+                status: document.getElementById('essay-status').value,
+                tags: [...currentEssayTags]
             };
 
             // Basic validation: ensure a university is selected
@@ -3706,6 +4028,120 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 }
             });
             return deadlines;
+        }
+
+        // =======================================================================
+        // Home Dashboard (Apple-style bento overview)
+        // =======================================================================
+        const STATUS_DOT_COLORS = {
+            'Prospective': '#9ca3af', 'In Progress': '#f59e0b', 'Submitted': '#2563eb', 'Pending': '#7c3aed',
+            'Accepted': '#16a34a', 'Waitlist': '#ea580c', 'Deferred': '#4f46e5', 'Rejected': '#dc2626'
+        };
+
+        /** Number of days from today (start of day) until the given date. */
+        function daysUntil(date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        }
+
+        /** Collects every parsed deadline across all universities, sorted chronologically. */
+        function collectSortedDeadlines() {
+            const year = new Date().getFullYear();
+            const all = [];
+            universities.forEach(uni => {
+                parseDeadlineString(uni.deadline, year, uni.applicationStrategy).forEach(dl => {
+                    all.push({ uniId: uni.id, uniName: uni.nameEn, uniNameKo: uni.nameKo, type: dl.type, date: dl.date, strategy: dl.strategy });
+                });
+            });
+            all.sort((a, b) => a.date - b.date);
+            return all;
+        }
+
+        /** Renders the home dashboard bento cards from live data. */
+        function renderDashboard() {
+            // Greeting date
+            const dateEl = document.getElementById('dash-greeting-date');
+            if (dateEl) {
+                dateEl.textContent = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+            }
+
+            // 1st choice D-Day
+            const ddayBody = document.getElementById('dash-dday-body');
+            const ddayCard = document.getElementById('dash-dday-card');
+            if (ddayBody && ddayCard) {
+                ddayCard.classList.remove('dday-urgent');
+                const fc = universities.find(u => u.id === firstChoiceUniId);
+                if (!fc) {
+                    ddayBody.innerHTML = `<div class="dash-empty">아직 1지망 대학이 없어요.<br>University List에서 🌟 1지망을 정해보세요.</div>`;
+                } else {
+                    const uniLabel = fc.nameKo ? `${fc.nameEn} (${fc.nameKo})` : fc.nameEn;
+                    const dls = collectSortedDeadlines().filter(d => d.uniId === fc.id && daysUntil(d.date) >= 0);
+                    if (dls.length === 0) {
+                        ddayBody.innerHTML = `<div class="dday-uni">${uniLabel}</div><div class="dash-empty">등록된 예정 마감일이 없어요.</div>`;
+                    } else {
+                        const next = dls[0];
+                        const d = daysUntil(next.date);
+                        if (d <= 7) ddayCard.classList.add('dday-urgent');
+                        const dtxt = d === 0 ? 'D-DAY' : `D-${d}`;
+                        ddayBody.innerHTML = `
+                            <div class="dday-uni">${uniLabel}</div>
+                            <div class="dday-type">${next.strategy ? next.strategy + ' · ' : ''}${next.type} 마감</div>
+                            <div class="dday-number">${dtxt}</div>
+                            <div class="dday-date">${next.date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}</div>`;
+                    }
+                }
+            }
+
+            // Essays in progress
+            const essayBody = document.getElementById('dash-essay-body');
+            if (essayBody) {
+                const inProg = supplementalEssays.filter(e => e.status === 'In Progress').length;
+                const total = supplementalEssays.length;
+                essayBody.innerHTML = `<div class="stat-number">${inProg}</div><div class="stat-sub">작성 중 · 전체 ${total}개</div>`;
+            }
+
+            // University status breakdown
+            const uniBody = document.getElementById('dash-uni-body');
+            if (uniBody) {
+                const total = universities.length;
+                const counts = {};
+                universities.forEach(u => { const s = normalizeUniStatus(u.applicationStatus); counts[s] = (counts[s] || 0) + 1; });
+                const rows = UNI_STATUS_OPTIONS.filter(o => counts[o.value]).map(o => {
+                    const shortLabel = o.label.replace(/\s*\(.*\)/, '');
+                    return `<div class="dash-row"><span class="dot" style="background:${STATUS_DOT_COLORS[o.value]}"></span>${shortLabel}<span class="count">${counts[o.value]}</span></div>`;
+                }).join('');
+                uniBody.innerHTML = `<div class="stat-number" style="margin-top:0;">${total}<span style="font-size:1rem;color:#6e6e73;font-weight:600;"> 개 대학</span></div>
+                    <div style="margin-top:12px;">${rows || '<div class="dash-empty">등록된 대학이 없어요.</div>'}</div>`;
+            }
+
+            // This week's deadlines (0–7 days away)
+            const weekBody = document.getElementById('dash-week-body');
+            if (weekBody) {
+                const soon = collectSortedDeadlines().filter(d => { const n = daysUntil(d.date); return n >= 0 && n <= 7; });
+                if (soon.length === 0) {
+                    weekBody.innerHTML = `<div class="dash-empty">이번 주 마감 예정이 없어요 ✓</div>`;
+                } else {
+                    weekBody.innerHTML = soon.slice(0, 5).map(d => {
+                        const n = daysUntil(d.date);
+                        const badge = n === 0 ? 'D-DAY' : `D-${n}`;
+                        const name = d.uniNameKo ? `${d.uniName} (${d.uniNameKo})` : d.uniName;
+                        return `<div class="deadline-item"><span class="deadline-name">${name} · ${d.type}</span><span class="dday-badge ${n <= 3 ? 'urgent' : 'normal'}">${badge}</span></div>`;
+                    }).join('');
+                }
+            }
+
+            // To-Do & notes preview
+            const todoBody = document.getElementById('dash-todo-body');
+            if (todoBody) {
+                const notes = (localStorage.getItem('myPersonalNotes') || '').trim();
+                if (!notes) {
+                    todoBody.innerHTML = `<span class="dash-empty">To-Do List에 할 일과 메모를 적어보세요.</span>`;
+                } else {
+                    const lines = notes.split('\n').map(l => l.replace(/\*\*/g, '').trim()).filter(l => l).slice(0, 6);
+                    todoBody.textContent = lines.join('\n');
+                }
+            }
         }
 
         /**
@@ -4048,7 +4484,9 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             document.getElementById(sectionId).classList.add('active-section');
 
             // Perform specific rendering/initialization tasks for each section when it becomes active
-            if (sectionId === 'my-essays') {
+            if (sectionId === 'home') {
+                renderDashboard();
+            } else if (sectionId === 'my-essays') {
                 renderSupplementalEssays();
             } else if (sectionId === 'university-list') {
                 applyFiltersAndSort(); // Render university list and apply filter/sort
@@ -4064,6 +4502,9 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
 
             // Update the URL hash, allowing direct linking to sections and browser history navigation
             history.pushState(null, '', `#${sectionId}`);
+
+            // Reset scroll to the top so the section starts below the sticky top bar
+            window.scrollTo(0, 0);
         }
 
         /**
@@ -4135,7 +4576,10 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             loadFavoriteUniversities();
 
             // Determine which section to show initially based on the URL hash, or default to 'home'
+            if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
             const initialSection = window.location.hash ? window.location.hash.substring(1) : 'home';
+            // Strip the hash so the browser doesn't jump-scroll the section under the sticky bar
+            history.replaceState(null, '', window.location.pathname + window.location.search);
             showSection(initialSection); // Activates the correct section and triggers its rendering functions
             
             // Perform initial rendering of all dynamic components
@@ -4147,6 +4591,33 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             // Render the calendar and upcoming deadlines list for the current month
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
             renderUpcomingDeadlines();
+            renderDashboard(); // Build the home dashboard from live data
+
+            // Keep the top of the active section clear of the sticky bar on first load
+            // (a URL hash makes the browser jump-scroll after load; undo that jump).
+            window.scrollTo(0, 0);
+            window.addEventListener('load', () => window.scrollTo(0, 0));
+            setTimeout(() => window.scrollTo(0, 0), 60);
+
+            // Wire up the essay custom-tag input (Enter key and the 추가 button).
+            const essayTagInput = document.getElementById('essay-tag-input');
+            const essayTagAddBtn = document.getElementById('essay-tag-add-btn');
+            if (essayTagAddBtn) {
+                essayTagAddBtn.addEventListener('click', () => {
+                    addEssayTag(essayTagInput.value);
+                    essayTagInput.value = '';
+                    essayTagInput.focus();
+                });
+            }
+            if (essayTagInput) {
+                essayTagInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault(); // Don't submit the form
+                        addEssayTag(essayTagInput.value);
+                        essayTagInput.value = '';
+                    }
+                });
+            }
         });
     </script>
 
