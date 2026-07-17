@@ -1038,6 +1038,24 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .rp-dim { color: #86868b; }
         .report-progress { height: 8px; background: #f0f0f2; border-radius: 9999px; overflow: hidden; margin-bottom: 6px; }
         .report-progress-fill { height: 100%; background: #34c759; border-radius: 9999px; }
+        .rp-dday { font-size: 0.72rem; font-weight: 700; color: #0071e3; font-variant-numeric: tabular-nums; }
+        .rp-dday.soon { color: #e0331a; }
+
+        /* Teacher-view admin checklist board (per category) */
+        .radm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+        .radm-cat { border: 1px solid #ececee; border-radius: 12px; padding: 14px; }
+        .radm-cat-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+        .radm-cat-name { font-size: 0.9rem; font-weight: 700; color: #1d1d1f; }
+        .radm-cat-count { font-size: 0.78rem; font-weight: 700; color: #6e6e73; font-variant-numeric: tabular-nums; }
+        .radm-cat-count.ok { color: #047857; }
+        .radm-bar { height: 6px; background: #f0f0f2; border-radius: 9999px; overflow: hidden; margin-bottom: 10px; }
+        .radm-bar-fill { height: 100%; background: #f59e0b; border-radius: 9999px; transition: width 0.3s; }
+        .radm-bar-fill.full { background: #34c759; }
+        .radm-items { display: flex; flex-direction: column; gap: 5px; }
+        .radm-item { display: flex; align-items: flex-start; gap: 7px; font-size: 0.85rem; color: #1d1d1f; line-height: 1.4; }
+        .radm-check { color: #d1d1d6; font-weight: 800; flex-shrink: 0; }
+        .radm-item.done { color: #a1a1a6; text-decoration: line-through; }
+        .radm-item.done .radm-check { color: #34c759; }
 
         /* Data / backup modal */
         .data-actions { display: flex; flex-direction: column; gap: 10px; }
@@ -2158,7 +2176,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         let universities = [];
         let supplementalEssays = [];
         // State variables for university list sorting
-        let currentUniSortColumn = '';
+        let currentUniSortColumn = 'deadline'; // default: nearest deadline (D-Day) first
         let currentUniSortDirection = 'asc';
         // State variables for essay list sorting (currently not implemented, but ready for future expansion)
         let currentEssaySortColumn = '';
@@ -4610,7 +4628,13 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             const essayStageLabel = v => { const o = ESSAY_STATUS_OPTIONS.find(x => x.value === normalizeEssayStatus(v)); return o ? o.label : (v || '-'); };
             const adminTotal = admin.reduce((s, c) => s + (c.items ? c.items.length : 0), 0);
             const adminDone = admin.reduce((s, c) => s + (c.items ? c.items.filter(i => i.done).length : 0), 0);
-            const uniRows = unis.map(u => `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''}</td><td>${esc(u.category || '-')}</td><td>${esc(uniStatusLabel(u.applicationStatus))}</td><td class="rp-dim">${esc(u.deadline || '-')}</td></tr>`).join('');
+            // Sort universities by nearest upcoming deadline (D-Day order); no deadline goes last
+            const sortedUnis = [...unis].sort((a, b) => uniNearestDeadlineTime(a) - uniNearestDeadlineTime(b));
+            const uniRows = sortedUnis.map(u => {
+                const nd = uniNearestDeadline(u);
+                const ddayBadge = nd ? `<span class="rp-dday ${daysUntil(nd.date) <= 30 ? 'soon' : ''}">D-${daysUntil(nd.date)}</span>` : '';
+                return `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''}</td><td>${esc(u.category || '-')}</td><td>${esc(uniStatusLabel(u.applicationStatus))}</td><td class="rp-dim">${esc(u.deadline || '-')} ${ddayBadge}</td></tr>`;
+            }).join('');
             const essayFeedback = data.essayFeedback || {};
             const verLabel = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} 버전`; };
             const essayCards = essays.map(e => {
@@ -4646,9 +4670,18 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 <div class="report-section"><h4>✍️ 에세이 (${essays.length}) · 문항별 피드백</h4>
                     ${essays.length ? `<div class="ecard-list">${essayCards}</div>` : '<p class="rp-dim">등록된 에세이 없음</p>'}
                 </div>
-                <div class="report-section"><h4>✅ 행정 체크리스트</h4>
-                    <div class="report-progress"><div class="report-progress-fill" style="width:${adminTotal ? Math.round(adminDone / adminTotal * 100) : 0}%"></div></div>
-                    <span class="rp-dim">${adminDone}/${adminTotal} 완료</span>
+                <div class="report-section"><h4>✅ 행정 체크리스트 · ${adminDone}/${adminTotal} 완료</h4>
+                    ${admin.length ? `<div class="radm-grid">${admin.map(cat => {
+                        const total = cat.items ? cat.items.length : 0;
+                        const done = cat.items ? cat.items.filter(i => i.done).length : 0;
+                        const pct = total ? Math.round(done / total * 100) : 0;
+                        const items = (cat.items || []).map(i => `<div class="radm-item ${i.done ? 'done' : ''}"><span class="radm-check">${i.done ? '✓' : '○'}</span>${esc(i.text)}</div>`).join('');
+                        return `<div class="radm-cat">
+                            <div class="radm-cat-head"><span class="radm-cat-name">${esc(cat.icon || '📌')} ${esc(cat.name)}</span><span class="radm-cat-count ${done === total && total > 0 ? 'ok' : ''}">${done}/${total}</span></div>
+                            <div class="radm-bar"><div class="radm-bar-fill ${done === total && total > 0 ? 'full' : ''}" style="width:${pct}%"></div></div>
+                            <div class="radm-items">${items || '<span class="rp-dim">항목 없음</span>'}</div>
+                        </div>`;
+                    }).join('')}</div>` : '<p class="rp-dim">행정 항목 없음</p>'}
                 </div>`;
         }
 
@@ -4813,6 +4846,9 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
             renderUpcomingDeadlines();
             renderDashboard(); // Build the home dashboard from live data
+            // Reflect the default "nearest deadline" sort in the dropdown
+            const uniSortSel = document.getElementById('uni-sort-select');
+            if (uniSortSel) uniSortSel.value = 'deadline-asc';
 
             // Keep the top of the active section clear of the sticky bar on first load
             // (a URL hash makes the browser jump-scroll after load; undo that jump).
