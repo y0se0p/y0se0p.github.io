@@ -1646,8 +1646,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
         /* feedback read-receipt */
         .sfb-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
-        .sfb-del{ flex:0 0 auto; background:none; border:none; cursor:pointer; font-size:0.85rem; padding:2px 5px; border-radius:7px; opacity:0.5; transition:opacity .15s, background .15s; }
-        .sfb-del:hover{ opacity:1; background:var(--surface-3); }
+        .sfb-del{ flex:0 0 auto; background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); cursor:pointer; font-size:0.76rem; font-weight:700; padding:4px 10px; border-radius:8px; white-space:nowrap; transition:all .15s; }
+        .sfb-del:hover{ background:#ff3b30; border-color:#ff3b30; color:#fff; }
         .sfb-ack-row{ margin-top:8px; }
         .sfb-ack-btn{ background:var(--accent); color:#fff; border:none; border-radius:9px; padding:5px 12px; font-size:0.8rem; font-weight:700; cursor:pointer; transition:filter .15s; }
         .sfb-ack-btn:hover{ filter:brightness(1.08); }
@@ -1748,7 +1748,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <button class="onb-google" onclick="onbSignIn()"><span>🔑</span> Google로 시작하기</button>
             <p class="onb-err" id="onb-login-err"></p>
             <p class="onb-note">로그인하면 내 데이터가 안전하게 클라우드에 저장되고, 어느 기기에서나 이어서 작업할 수 있어요.</p>
-            <p class="onb-note" style="margin-top:8px; opacity:0.6;">버전 2026.07.17-C</p>
+            <p class="onb-note" style="margin-top:8px; opacity:0.6;">버전 2026.07.17-D</p>
         </div>
 
         <!-- Step 2: profile form -->
@@ -5098,7 +5098,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const ackRow = f.id ? (f.ackAt
                     ? `<div class="sfb-ack-row"><span class="sfb-acked">✓ 확인함</span></div>`
                     : `<div class="sfb-ack-row"><button class="sfb-ack-btn" onclick="markFeedbackRead('${f.id}','${f._kind}','${f._eid || ''}')">확인했어요 ✓</button></div>`) : '';
-                const delBtn = `<button class="sfb-del" title="피드백 삭제" onclick="deleteStudentFeedback('${f.id || ''}','${f._kind}','${f._eid || ''}',${f.at || 0})">🗑️</button>`;
+                const delBtn = `<button class="sfb-del" title="피드백 삭제" onclick="deleteStudentFeedback('${f.id || ''}','${f._kind}','${f._eid || ''}',${f.at || 0})">🗑️ 삭제</button>`;
                 return `<div class="sfb-item"><div class="sfb-top"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div>${delBtn}</div><div class="sfb-text">${esc(f.text)}</div>${ackRow}</div>`;
             }).join('');
             el.innerHTML = `<div class="sfb-card"><div class="sfb-head">💬 선생님 피드백 (${all.length})</div>${items}</div>`;
