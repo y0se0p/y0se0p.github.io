@@ -4555,6 +4555,13 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (en && !en.value && user.displayName) en.value = user.displayName;
             onbSelectRole('student');
         }
+        // Reject after `ms` so a stalled Firestore call can't hang the UI forever
+        function withTimeout(promise, ms) {
+            let t;
+            const timeout = new Promise((_, reject) => { t = setTimeout(() => reject(new Error('TIMEOUT')), ms); });
+            return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
+        }
+
         async function onbSubmitProfile() {
             const err = document.getElementById('onb-profile-err');
             err.textContent = '';
@@ -4571,26 +4578,48 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const btn = document.getElementById('onb-submit-btn');
             btn.disabled = true; btn.textContent = '저장 중…';
             const displayName = nameKo || nameEn || currentUser.displayName || currentUser.email;
+
+            // Save locally first so the user is never blocked by cloud problems
+            currentRole = onbRole;
             try {
-                await fbDb.collection('users').doc(currentUser.uid).set({
+                localStorage.setItem('userProfile', JSON.stringify({ role: onbRole, ...profile, name: displayName }));
+                localStorage.setItem('onboardedRole', onbRole);
+            } catch (e) {}
+
+            let cloudOk = true, cloudErr = null;
+            try {
+                await withTimeout(fbDb.collection('users').doc(currentUser.uid).set({
                     email: currentUser.email, name: displayName, role: onbRole,
                     onboarded: true, profile, createdAt: Date.now()
-                }, { merge: true });
-                try { localStorage.setItem('userProfile', JSON.stringify({ role: onbRole, ...profile, name: displayName })); } catch (e) {}
-                currentRole = onbRole;
+                }, { merge: true }), 12000);
                 if (onbRole === 'student') {
-                    await fbDb.collection('students').doc(currentUser.uid).set(
-                        { email: currentUser.email, name: displayName, updatedAt: Date.now() }, { merge: true });
-                    await pullStudentData(currentUser.uid);
+                    await withTimeout(fbDb.collection('students').doc(currentUser.uid).set(
+                        { email: currentUser.email, name: displayName, updatedAt: Date.now() }, { merge: true }), 12000);
+                    await withTimeout(pullStudentData(currentUser.uid), 12000).catch(() => {});
                     bindCloudAutoPush();
                 }
-                hideOnboarding();
-                applyRoleView();
-                updateAuthUI();
-                toast(`환영합니다, ${displayName}님! 🎉`, 'success');
             } catch (e) {
-                err.textContent = '저장 실패: ' + (e && e.message ? e.message : e);
-                btn.disabled = false; btn.textContent = '시작하기 →';
+                cloudOk = false; cloudErr = e;
+                console.error('cloud profile save failed:', e);
+                if (onbRole === 'student') bindCloudAutoPush();
+            }
+
+            // Enter the app either way
+            hideOnboarding();
+            applyRoleView();
+            updateAuthUI();
+            btn.disabled = false; btn.textContent = '시작하기 →';
+
+            if (cloudOk) {
+                toast(`환영합니다, ${displayName}님! 🎉`, 'success');
+            } else {
+                const isTimeout = cloudErr && cloudErr.message === 'TIMEOUT';
+                showAlert('클라우드 저장이 지연됐어요 ☁️',
+                    '프로필은 이 기기에 저장돼 바로 시작할 수 있어요. 다만 클라우드 저장이 ' + (isTimeout ? '응답하지 않았어요' : '실패했어요') + '.\n\n' +
+                    '선생님 공유·기기 간 동기화를 쓰려면 Firebase 설정을 확인해주세요:\n' +
+                    '1) Firestore Database가 만들어져 있는지 (Native 모드)\n' +
+                    '2) 보안 규칙에서 users·students 쓰기가 허용됐는지 (테스트 모드 만료 포함)\n\n' +
+                    '설정을 고친 뒤 새로고침하면 자동으로 동기화돼요.', '⚠️');
             }
         }
 
@@ -4635,28 +4664,48 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 showOnboarding('login');
                 return;
             }
-            // Signed in → look up profile; onboard first-timers
+            // Signed in → look up profile (guarded so a stalled Firestore can't freeze the loader)
             let profileDoc = null;
             try {
-                const uref = fbDb.collection('users').doc(user.uid);
-                const usnap = await uref.get();
+                const usnap = await withTimeout(fbDb.collection('users').doc(user.uid).get(), 10000);
                 if (usnap.exists) profileDoc = usnap.data();
-            } catch (e) { console.warn('profile load failed', e); }
+            } catch (e) { console.warn('profile load failed/timeout', e); }
 
-            if (!profileDoc || !profileDoc.onboarded || !profileDoc.role) {
-                // First login (or incomplete) → show onboarding profile step
-                prefillOnboarding(user);
-                showOnboarding('profile');
+            const enterApp = async (role) => {
+                currentRole = role;
+                if (role === 'student') {
+                    await withTimeout(pullStudentData(user.uid), 10000).catch(() => {});
+                    bindCloudAutoPush();
+                }
+                hideOnboarding();
+                applyRoleView();
                 updateAuthUI();
+            };
+
+            // Cloud has a complete profile → use it
+            if (profileDoc && profileDoc.onboarded && profileDoc.role) {
+                await enterApp(profileDoc.role);
                 return;
             }
-            currentRole = profileDoc.role;
-            if (currentRole === 'student') {
-                await pullStudentData(user.uid);
-                bindCloudAutoPush();
+
+            // Cloud missing/unreachable but this browser already onboarded → honor local, don't re-onboard
+            const localRole = localStorage.getItem('onboardedRole');
+            if (localRole) {
+                await enterApp(localRole);
+                // best-effort: re-sync profile to cloud in the background
+                try {
+                    const lp = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                    fbDb.collection('users').doc(user.uid).set({
+                        email: user.email, name: lp.name || user.displayName || user.email,
+                        role: localRole, onboarded: true, profile: lp
+                    }, { merge: true }).catch(() => {});
+                } catch (e) {}
+                return;
             }
-            hideOnboarding();
-            applyRoleView();
+
+            // Truly first-time → onboarding
+            prefillOnboarding(user);
+            showOnboarding('profile');
             updateAuthUI();
         }
 
