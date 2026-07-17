@@ -483,6 +483,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     <title>My US University Explorer</title>
     <!-- PWA: installable app -->
     <meta name="theme-color" content="#0071e3">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="University Explorer">
@@ -1703,59 +1704,70 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         html[data-theme="dark"] .admit-sel.admit-Match{ background:rgba(30,64,175,0.4); color:#93c5fd; }
         html[data-theme="dark"] .admit-sel.admit-Safe{ background:rgba(22,101,52,0.4); color:#86efac; }
 
-        /* Report overlay (screen) */
-        .report-overlay{ position:fixed; inset:0; z-index:5600; background:#e9e9ec; display:flex; flex-direction:column; }
+        /* ===== Report overlay (dark edit chrome + white A4 document) ===== */
+        .report-overlay{ position:fixed; inset:0; z-index:5600; background:#3a3a3e; display:flex; flex-direction:column; color-scheme:light; }
         .report-overlay.hidden{ display:none; }
-        .report-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; padding:14px 22px; background:var(--surface); border-bottom:1px solid var(--border); }
-        .rt-left{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-        .rt-title{ font-weight:800; color:var(--text); }
-        .rt-left label{ display:flex; align-items:center; gap:6px; font-size:0.88rem; font-weight:600; color:var(--text-muted); cursor:pointer; }
-        .rt-left input{ width:16px; height:16px; accent-color:var(--accent); }
-        .rt-right{ display:flex; gap:10px; }
-        .report-comment-bar{ padding:10px 22px; background:var(--surface); border-bottom:1px solid var(--border); }
-        .report-comment-bar input{ width:100%; padding:9px 13px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.9rem; outline:none; }
-        .report-scroll{ flex:1; overflow-y:auto; padding:28px 16px 60px; display:flex; justify-content:center; }
-        /* The report document itself is always a clean monotone page */
-        .report-page{ width:210mm; max-width:100%; min-height:297mm; background:#ffffff; color:#1d1d1f; border-radius:14px; box-shadow:0 12px 40px rgba(0,0,0,0.18); padding:26mm 20mm; box-sizing:border-box; font-size:11pt; }
-        .rep-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding-bottom:16px; border-bottom:2px solid #1d1d1f; margin-bottom:22px; }
-        .rep-name{ font-size:24pt; font-weight:850; letter-spacing:-0.01em; }
-        .rep-sub{ color:#6e6e73; font-size:11pt; margin-top:4px; }
-        .rep-brand{ text-align:right; font-size:10pt; font-weight:800; color:#1d1d1f; line-height:1.5; }
+        .report-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; padding:13px 22px; background:#1d1d1f; }
+        .rt-left{ display:flex; align-items:center; gap:6px 15px; flex-wrap:wrap; }
+        .rt-title{ font-weight:800; color:#fff; margin-right:6px; font-size:0.95rem; }
+        .rt-left label{ display:flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:600; color:#c7c7cc; cursor:pointer; }
+        .rt-left input{ width:15px; height:15px; accent-color:#0a84ff; }
+        .rt-right{ display:flex; gap:9px; }
+        .rt-btn{ padding:9px 17px; border-radius:11px; font-size:0.9rem; font-weight:700; cursor:pointer; border:1px solid #48484a; background:#2c2c2e; color:#fff; transition:filter .15s; }
+        .rt-btn.primary{ background:#0a84ff; border-color:#0a84ff; }
+        .rt-btn:hover{ filter:brightness(1.18); }
+        .report-comment-bar{ padding:11px 22px; background:#2c2c2e; }
+        .report-comment-bar input{ width:100%; padding:9px 14px; border-radius:10px; border:1px solid #48484a; background:#1d1d1f; color:#fff; font-size:0.9rem; outline:none; }
+        .report-comment-bar input::placeholder{ color:#8e8e93; }
+        .report-scroll{ flex:1; overflow-y:auto; padding:30px 16px 60px; }
+        .report-pages{ display:flex; flex-direction:column; align-items:center; gap:22px; }
+        /* Each sheet is a real A4 page — always a clean light monotone document, independent of app theme */
+        .report-page{ width:210mm; height:297mm; overflow:hidden; background:#ffffff; color:#1d1d1f; border-radius:5px; box-shadow:0 10px 44px rgba(0,0,0,0.4); padding:19mm 18mm; box-sizing:border-box; font-size:10.5pt; position:relative; }
+        .report-page *{ box-sizing:border-box; }
+        .rep-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding-bottom:15px; border-bottom:2.5px solid #1d1d1f; margin-bottom:22px; }
+        .rep-name{ font-size:23pt; font-weight:850; letter-spacing:-0.02em; color:#1d1d1f; }
+        .rep-sub{ color:#6e6e73; font-size:11pt; margin-top:5px; font-weight:500; }
+        .rep-brand{ text-align:right; font-size:10pt; font-weight:800; color:#1d1d1f; line-height:1.55; white-space:nowrap; }
         .rep-brand span{ font-weight:500; color:#86868b; font-size:8.5pt; }
-        .rep-sec{ margin-bottom:20px; break-inside:avoid; }
-        .rep-h{ font-size:10pt; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#86868b; border-bottom:1px solid #e5e5ea; padding-bottom:5px; margin-bottom:10px; }
-        .rep-kvrow{ display:flex; gap:12px; margin-bottom:8px; }
-        .rep-kv{ flex:1; background:#f5f5f7; border-radius:9px; padding:8px 12px; }
-        .rep-kv span{ display:block; font-size:8pt; color:#86868b; font-weight:700; }
-        .rep-kv b{ font-size:14pt; font-weight:800; }
-        .rep-line{ font-size:10.5pt; margin:5px 0; line-height:1.5; }
+        .rep-sec{ margin-bottom:18px; break-inside:avoid; }
+        .rep-h{ font-size:9.5pt; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:#86868b; border-bottom:1px solid #e5e5ea; padding-bottom:6px; margin-bottom:11px; }
+        .rep-kvrow{ display:flex; gap:10px; margin-bottom:9px; }
+        .rep-kv{ flex:1; background:#f5f5f7; border-radius:10px; padding:9px 13px; }
+        .rep-kv span{ display:block; font-size:7.5pt; color:#86868b; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; }
+        .rep-kv b{ font-size:15pt; font-weight:850; color:#1d1d1f; }
+        .rep-line{ font-size:10pt; margin:5px 0; line-height:1.5; color:#1d1d1f; }
         .rep-line span{ font-weight:800; color:#6e6e73; margin-right:6px; }
-        .rep-act{ display:flex; gap:9px; margin-bottom:8px; }
-        .rep-act-n{ flex:0 0 auto; width:19px; height:19px; border-radius:6px; background:#1d1d1f; color:#fff; font-size:8pt; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px; }
-        .rep-act-t{ font-size:8pt; font-weight:700; color:#6e6e73; }
-        .rep-act-d{ font-size:9.5pt; color:#6e6e73; margin-top:2px; line-height:1.45; }
-        .rep-table{ width:100%; border-collapse:collapse; font-size:10pt; }
-        .rep-table th{ text-align:left; font-size:8.5pt; color:#86868b; font-weight:700; border-bottom:1.5px solid #1d1d1f; padding:6px 8px; }
-        .rep-table td{ padding:7px 8px; border-bottom:1px solid #e5e5ea; }
-        .rep-u-name{ font-weight:700; }
-        .rep-al{ font-size:8.5pt; font-weight:800; padding:2px 9px; border-radius:999px; }
+        .rep-act{ display:flex; gap:9px; margin-bottom:9px; }
+        .rep-act-n{ flex:0 0 auto; width:18px; height:18px; border-radius:6px; background:#1d1d1f; color:#fff; font-size:8pt; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+        .rep-act b{ color:#1d1d1f; }
+        .rep-act-t{ font-size:7.5pt; font-weight:700; color:#86868b; text-transform:uppercase; letter-spacing:0.03em; }
+        .rep-act-d{ font-size:9pt; color:#6e6e73; margin-top:2px; line-height:1.45; }
+        .rep-table{ width:100%; border-collapse:collapse; font-size:9.5pt; }
+        .rep-table th{ text-align:left; font-size:8pt; color:#86868b; font-weight:800; text-transform:uppercase; letter-spacing:0.03em; border-bottom:1.5px solid #1d1d1f; padding:6px 8px; }
+        .rep-table td{ padding:7px 8px; border-bottom:1px solid #ececee; color:#1d1d1f; }
+        .rep-table tr:last-child td{ border-bottom:none; }
+        .rep-u-name{ font-weight:700; color:#1d1d1f; }
+        .rep-al{ font-size:8pt; font-weight:800; padding:2px 9px; border-radius:999px; }
         .al-reach{ background:#fee2e2; color:#b91c1c; }
         .al-match{ background:#dbeafe; color:#1e40af; }
         .al-safe{ background:#dcfce7; color:#166534; }
-        .rep-cost-big{ font-size:22pt; font-weight:850; }
-        .rep-cost-big span{ font-size:13pt; color:#86868b; font-weight:600; }
-        .rep-cost-note{ font-size:8.5pt; color:#86868b; margin-top:4px; }
-        .rep-comment{ font-size:10.5pt; line-height:1.6; white-space:pre-line; background:#f5f5f7; border-radius:10px; padding:12px 14px; }
-        .rep-dimx{ color:#a1a1a6; font-size:9pt; }
+        .rep-req th, .rep-req td{ text-align:center; padding:6px 4px; }
+        .rep-req td.rep-u-name, .rep-req th:first-child{ text-align:left; }
+        .rep-chk{ color:#16a34a; font-weight:800; }
+        .rep-comment{ font-size:10pt; line-height:1.6; white-space:pre-line; background:#f5f5f7; border-radius:10px; padding:12px 14px; color:#1d1d1f; }
+        .rep-dimx{ color:#c7c7cc; font-size:9pt; }
+        .rep-pagenum{ position:absolute; bottom:11mm; left:0; right:0; text-align:center; font-size:8pt; color:#c7c7cc; }
         @media print {
             @page { size: A4; margin: 0; }
-            html, body { background:#fff !important; }
+            html, body { background:#fff !important; height:auto !important; overflow:visible !important; }
             body > *:not(#report-overlay){ display:none !important; }
-            #report-overlay{ position:static !important; background:#fff !important; display:block !important; }
+            #report-overlay{ position:static !important; inset:auto !important; display:block !important; height:auto !important; overflow:visible !important; background:#fff !important; }
             #report-overlay.hidden{ display:none !important; }
             .report-toolbar, .report-comment-bar{ display:none !important; }
-            .report-scroll{ overflow:visible !important; padding:0 !important; display:block !important; }
-            .report-page{ box-shadow:none !important; border-radius:0 !important; width:100% !important; min-height:auto !important; padding:16mm 18mm !important; }
+            .report-scroll{ position:static !important; overflow:visible !important; height:auto !important; padding:0 !important; display:block !important; }
+            .report-pages{ display:block !important; gap:0 !important; }
+            .report-page{ box-shadow:none !important; border-radius:0 !important; margin:0 !important; break-after:page; page-break-after:always; }
+            .report-page:last-child{ break-after:auto; page-break-after:auto; }
         }
         .acad-field{ display:flex; flex-direction:column; }
         .acad-field.acad-span2{ grid-column:span 2; }
@@ -1928,7 +1940,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <label><input type="checkbox" checked onchange="toggleReportSection('honors',this.checked)"> 수상</label>
                 <label><input type="checkbox" checked onchange="toggleReportSection('universities',this.checked)"> 대학</label>
                 <label><input type="checkbox" checked onchange="toggleReportSection('finaid',this.checked)"> 재정보조</label>
-                <label><input type="checkbox" checked onchange="toggleReportSection('cost',this.checked)"> 예상 비용</label>
+                <label><input type="checkbox" checked onchange="toggleReportSection('requirements',this.checked)"> 요구사항</label>
                 <label><input type="checkbox" onchange="toggleReportSection('essays',this.checked)"> 에세이</label>
                 <label><input type="checkbox" onchange="toggleReportSection('recommenders',this.checked)"> 추천서</label>
                 <label><input type="checkbox" onchange="toggleReportSection('admin',this.checked)"> 행정</label>
@@ -1936,14 +1948,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <label><input type="checkbox" onchange="toggleReportSection('comment',this.checked)"> 코멘트</label>
             </div>
             <div class="rt-right">
-                <button class="data-btn" onclick="closeReport()">닫기</button>
-                <button class="data-btn primary" onclick="window.print()">📄 PDF로 내보내기</button>
+                <button class="rt-btn" onclick="closeReport()">닫기</button>
+                <button class="rt-btn primary" onclick="printReport()">📄 PDF로 내보내기</button>
             </div>
         </div>
         <div class="report-comment-bar" id="report-comment-bar" style="display:none;">
-            <input type="text" placeholder="상담 코멘트 — 리포트 하단에 표시됩니다" oninput="updateReportComment(this.value)">
+            <input type="text" placeholder="상담 코멘트 — 리포트 마지막에 표시됩니다" oninput="updateReportComment(this.value)">
         </div>
-        <div class="report-scroll"><div class="report-page" id="report-page"></div></div>
+        <div class="report-scroll"><div class="report-pages" id="report-pages"></div></div>
     </div>
 
     <!-- First-login / onboarding overlay -->
@@ -3139,6 +3151,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 adminTasks = defaultAdminTasks();
                 saveAdminTasks();
             }
+            // Normalize: every category must have an items array (guards against corrupted/partial data)
+            if (!Array.isArray(adminTasks)) adminTasks = [];
+            adminTasks = adminTasks.filter(c => c && typeof c === 'object').map(c => ({ ...c, items: Array.isArray(c.items) ? c.items.filter(Boolean) : [] }));
             renderAdminBoard();
         }
 
@@ -4581,7 +4596,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             // Admin checklist progress + pending items
             const todoBody = document.getElementById('dash-todo-body');
             if (todoBody) {
-                const allItems = (adminTasks || []).flatMap(c => c.items);
+                const allItems = (adminTasks || []).flatMap(c => (Array.isArray(c && c.items) ? c.items : [])).filter(Boolean);
                 const total = allItems.length;
                 const done = allItems.filter(i => i.done).length;
                 const pending = allItems.filter(i => !i.done).slice(0, 4);
@@ -5986,7 +6001,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
 
         // ===== Student Report Generator (PDF) =====
-        let reportSections = { header: true, academics: true, activities: true, honors: true, universities: true, finaid: true, cost: true, essays: false, recommenders: false, admin: false, motivation: false, comment: false };
+        let reportSections = { header: true, academics: true, activities: true, honors: true, universities: true, finaid: true, requirements: true, essays: false, recommenders: false, admin: false, motivation: false, comment: false };
         let reportComment = '';
         function openReport() {
             if (!currentStudentData) { toast('학생을 먼저 선택해주세요.', 'error'); return; }
@@ -6004,6 +6019,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             renderReport();
         }
         function updateReportComment(v) { reportComment = v; renderReport(); }
+        function printReport() { renderReport(); setTimeout(() => window.print(), 60); }
+        function html2node(html) { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstElementChild; }
         function renderReport() {
             const data = currentStudentData; if (!data) return;
             const ad = data.appData || {};
@@ -6014,19 +6031,25 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const essays = safeParse(ad.mySupplementalEssays, []) || [];
             const recs = safeParse(ad.myRecommenders, []) || [];
             const admin = safeParse(ad.myAdminTasks, []) || [];
+            const reqData = safeParse(ad.myRequirements, {}) || {};
             const motivation = ad.myMotivationStatement || '';
             const p = data.profile || {};
             const sub = [p.grade ? p.grade + '학년' : '', p.major || ''].filter(Boolean).join(' · ');
             const admitClass = { Reach: 'al-reach', Match: 'al-match', Safe: 'al-safe' };
             const uniName = u => esc(u.nameEn || u.nameKo || '');
-            let sections = '';
+            const blocks = [];
+
+            const header = reportSections.header ? `<div class="rep-head">
+                <div><div class="rep-name">${esc(currentStudentName)}</div><div class="rep-sub">${esc(sub || currentStudentEmail)}</div></div>
+                <div class="rep-brand">🎓 University Explorer<br><span>Student Report · ${new Date().toLocaleDateString('ko-KR')}</span></div>
+            </div>` : '';
 
             if (reportSections.academics) {
                 const sem = acad.gpaSem || {};
                 const semStr = GPA_SEMESTERS.filter(s => sem[s.k]).map(s => `${s.k} ${esc(sem[s.k])}`).join('  ·  ') || '–';
                 const apStr = (Array.isArray(acad.aps) ? acad.aps : []).filter(a => a.name).map(a => `${esc(a.name)}${a.score ? ' ' + esc(a.score) : ''}`).join(', ') || '–';
                 const testStr = (Array.isArray(acad.tests) ? acad.tests : []).filter(a => a.name).map(a => `${esc(a.name)}${a.score ? ' ' + esc(a.score) : ''}`).join(', ') || '';
-                sections += `<div class="rep-sec"><div class="rep-h">Academics</div>
+                blocks.push(`<div class="rep-sec"><div class="rep-h">Academics</div>
                     <div class="rep-kvrow">
                         <div class="rep-kv"><span>GPA 기준</span><b>${esc(acad.gpaScale || '–')}</b></div>
                         <div class="rep-kv"><span>SAT</span><b>${esc(acad.sat || '–')}</b></div>
@@ -6035,31 +6058,29 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div class="rep-line"><span>학기별 GPA</span> ${semStr}</div>
                     <div class="rep-line"><span>AP</span> ${apStr}</div>
                     ${testStr ? `<div class="rep-line"><span>공인 성적</span> ${testStr}</div>` : ''}
-                </div>`;
+                </div>`);
             }
             if (reportSections.activities && acts.length) {
-                const items = acts.slice(0, 8).map((a, i) => `<div class="rep-act"><span class="rep-act-n">${i + 1}</span><div><b>${esc([a.position, a.org].filter(Boolean).join(' · ') || '(활동)')}</b>${a.type ? ` <span class="rep-act-t">${esc(a.type)}</span>` : ''}${a.description ? `<div class="rep-act-d">${esc(a.description)}</div>` : ''}</div></div>`).join('');
-                sections += `<div class="rep-sec"><div class="rep-h">Key Activities</div>${items}</div>`;
+                const items = acts.slice(0, 10).map((a, i) => `<div class="rep-act"><span class="rep-act-n">${i + 1}</span><div><b>${esc([a.position, a.org].filter(Boolean).join(' · ') || '(활동)')}</b>${a.type ? ` <span class="rep-act-t">${esc(a.type)}</span>` : ''}${a.description ? `<div class="rep-act-d">${esc(a.description)}</div>` : ''}</div></div>`).join('');
+                blocks.push(`<div class="rep-sec"><div class="rep-h">Key Activities</div>${items}</div>`);
             }
             if (reportSections.honors && hons.length) {
                 const hrows = hons.map(hh => `<tr><td class="rep-u-name">${esc(hh.title || '')}</td><td>${esc(hh.level || 'School')}</td><td>${esc(hh.year || '–')}</td></tr>`).join('');
-                sections += `<div class="rep-sec"><div class="rep-h">Honors (${hons.length})</div>
-                    <table class="rep-table"><thead><tr><th>수상명</th><th>수준</th><th>연도</th></tr></thead><tbody>${hrows}</tbody></table></div>`;
+                blocks.push(`<div class="rep-sec"><div class="rep-h">Honors (${hons.length})</div>
+                    <table class="rep-table"><thead><tr><th>수상명</th><th>수준</th><th>연도</th></tr></thead><tbody>${hrows}</tbody></table></div>`);
             }
             if (reportSections.universities && unis.length) {
                 const rows = unis.map(u => {
                     const lvl = getAdmitLevel(currentStudentUid, u.id);
-                    const cost = parseTuition(u.tuition);
                     return `<tr>
-                        <td class="rep-u-name">${esc(u.nameEn || u.nameKo || '')}</td>
+                        <td class="rep-u-name">${uniName(u)}</td>
                         <td>${esc(u.ranking || '–')}</td>
                         <td>${lvl ? `<span class="rep-al ${admitClass[lvl]}">${lvl}</span>` : '–'}</td>
-                        <td>${cost ? '$' + cost.toLocaleString() : '–'}</td>
+                        <td>${esc(u.applicationStrategy || u.category || '–')}</td>
                     </tr>`;
                 }).join('');
-                sections += `<div class="rep-sec"><div class="rep-h">지원 대학 (${unis.length})</div>
-                    <table class="rep-table"><thead><tr><th>대학</th><th>랭킹</th><th>합격 레벨</th><th>연간 비용</th></tr></thead><tbody>${rows}</tbody></table>
-                </div>`;
+                blocks.push(`<div class="rep-sec"><div class="rep-h">지원 대학 (${unis.length})</div>
+                    <table class="rep-table"><thead><tr><th>대학</th><th>랭킹</th><th>합격 레벨</th><th>전략</th></tr></thead><tbody>${rows}</tbody></table></div>`);
             }
             if (reportSections.finaid && unis.length) {
                 const frows = unis.map(u => {
@@ -6067,21 +6088,23 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     let forms = '';
                     if (fa.css) forms += '<span class="rep-al al-match">CSS Profile</span> ';
                     if (fa.inst) forms += '<span class="rep-al al-safe">Institutional</span>';
-                    if (!forms) forms = '<span class="rep-dimx">재정 보조 미신청</span>';
+                    if (!forms) forms = '<span class="rep-dimx">미신청</span>';
                     return `<tr><td class="rep-u-name">${uniName(u)}</td><td>${forms}</td></tr>`;
                 }).join('');
                 const finCount = unis.filter(u => u.finAid && (u.finAid.css || u.finAid.inst)).length;
-                sections += `<div class="rep-sec"><div class="rep-h">재정 보조 (Financial Aid) · ${finCount}/${unis.length}곳 신청</div>
-                    <table class="rep-table"><thead><tr><th>대학</th><th>신청 서류</th></tr></thead><tbody>${frows}</tbody></table>
-                    <div class="rep-cost-note">CSS Profile · Institutional Form 신청 여부. 국제학생은 마감 전 반드시 확인이 필요해요.</div></div>`;
+                blocks.push(`<div class="rep-sec"><div class="rep-h">재정 보조 (Financial Aid) · ${finCount}/${unis.length}곳 신청</div>
+                    <table class="rep-table"><thead><tr><th>대학</th><th>신청 서류</th></tr></thead><tbody>${frows}</tbody></table></div>`);
             }
-            if (reportSections.cost) {
-                let total = 0; unis.forEach(u => { const t = parseTuition(u.tuition); if (t) total += t; });
-                const krw = total ? Math.round(total * USD_TO_KRW_RATE) : 0;
-                sections += `<div class="rep-sec rep-cost"><div class="rep-h">예상 총비용 (연간 합산)</div>
-                    <div class="rep-cost-big">$${total.toLocaleString()}<span> · ₩${krw.toLocaleString()}</span></div>
-                    <div class="rep-cost-note">등록된 대학 ${unis.length}곳의 연간 학비 합계 (실제 비용은 재정 보조에 따라 달라질 수 있어요)</div>
-                </div>`;
+            if (reportSections.requirements && unis.length) {
+                const head = REQ_COLS.map(c => `<th>${c.label}</th>`).join('');
+                const rows = unis.map(u => {
+                    const r = reqData[u.id] || {};
+                    const cells = REQ_COLS.map(c => `<td>${r[c.key] ? '<span class="rep-chk">✓</span>' : '<span class="rep-dimx">·</span>'}</td>`).join('');
+                    const done = REQ_COLS.filter(c => r[c.key]).length;
+                    return `<tr><td class="rep-u-name">${uniName(u)}</td>${cells}<td><b>${Math.round(done / REQ_COLS.length * 100)}%</b></td></tr>`;
+                }).join('');
+                blocks.push(`<div class="rep-sec"><div class="rep-h">학교별 요구사항 체크리스트</div>
+                    <table class="rep-table rep-req"><thead><tr><th>대학</th>${head}<th>완료</th></tr></thead><tbody>${rows}</tbody></table></div>`);
             }
             if (reportSections.essays && essays.length) {
                 const erows = essays.map(e => {
@@ -6089,34 +6112,46 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     const st = ESSAY_STATUS_OPTIONS.find(x => x.value === normalizeEssayStatus(e.status));
                     return `<tr><td class="rep-u-name">${esc((uni && (uni.nameEn || uni.nameKo)) || e.uniName || '–')}</td><td>${esc(e.type || '–')}</td><td>${esc(st ? st.label.replace(/\s*\(.*\)/, '') : (e.status || '–'))}</td></tr>`;
                 }).join('');
-                sections += `<div class="rep-sec"><div class="rep-h">에세이 진행 (${essays.length})</div>
-                    <table class="rep-table"><thead><tr><th>대학</th><th>유형</th><th>단계</th></tr></thead><tbody>${erows}</tbody></table></div>`;
+                blocks.push(`<div class="rep-sec"><div class="rep-h">에세이 진행 (${essays.length})</div>
+                    <table class="rep-table"><thead><tr><th>대학</th><th>유형</th><th>단계</th></tr></thead><tbody>${erows}</tbody></table></div>`);
             }
             if (reportSections.recommenders && recs.length) {
                 const rrows = recs.map(r => `<tr><td class="rep-u-name">${esc(r.name || '')}</td><td>${esc(r.role || '')}</td><td>${esc(r.status || '요청 전')}</td></tr>`).join('');
-                sections += `<div class="rep-sec"><div class="rep-h">추천서 (${recs.length})</div>
-                    <table class="rep-table"><thead><tr><th>추천인</th><th>역할</th><th>상태</th></tr></thead><tbody>${rrows}</tbody></table></div>`;
+                blocks.push(`<div class="rep-sec"><div class="rep-h">추천서 (${recs.length})</div>
+                    <table class="rep-table"><thead><tr><th>추천인</th><th>역할</th><th>상태</th></tr></thead><tbody>${rrows}</tbody></table></div>`);
             }
             if (reportSections.admin) {
                 const at = admin.reduce((s, c) => s + (c.items ? c.items.length : 0), 0);
                 const ad2 = admin.reduce((s, c) => s + (c.items ? c.items.filter(i => i.done).length : 0), 0);
                 const pct = at ? Math.round(ad2 / at * 100) : 0;
                 const cats = admin.map(c => { const t = (c.items || []).length, d = (c.items || []).filter(i => i.done).length; return `<div class="rep-line"><span>${esc((c.icon || '') + ' ' + (c.name || ''))}</span> ${d}/${t}</div>`; }).join('');
-                sections += `<div class="rep-sec"><div class="rep-h">행정 체크리스트 · ${pct}% (${ad2}/${at})</div>${cats || '<div class="rep-cost-note">항목 없음</div>'}</div>`;
+                blocks.push(`<div class="rep-sec"><div class="rep-h">행정 체크리스트 · ${pct}% (${ad2}/${at})</div>${cats || '<div class="rep-dimx">항목 없음</div>'}</div>`);
             }
             if (reportSections.motivation && motivation.trim()) {
-                sections += `<div class="rep-sec"><div class="rep-h">학생의 다짐</div><div class="rep-comment">${esc(motivation)}</div></div>`;
+                blocks.push(`<div class="rep-sec"><div class="rep-h">학생의 다짐</div><div class="rep-comment">${esc(motivation)}</div></div>`);
             }
             if (reportSections.comment && reportComment.trim()) {
-                sections += `<div class="rep-sec"><div class="rep-h">상담 코멘트</div><div class="rep-comment">${esc(reportComment)}</div></div>`;
+                blocks.push(`<div class="rep-sec"><div class="rep-h">상담 코멘트</div><div class="rep-comment">${esc(reportComment)}</div></div>`);
             }
 
-            const header = reportSections.header ? `<div class="rep-head">
-                <div><div class="rep-name">${esc(currentStudentName)}</div><div class="rep-sub">${esc(sub || currentStudentEmail)}</div></div>
-                <div class="rep-brand">🎓 University Explorer<br><span>Student Report · ${new Date().toLocaleDateString('ko-KR')}</span></div>
-            </div>` : '';
-
-            document.getElementById('report-page').innerHTML = header + sections;
+            // Paginate section blocks into real A4 sheets
+            const container = document.getElementById('report-pages');
+            container.innerHTML = '';
+            const makeSheet = () => { const s = document.createElement('div'); s.className = 'report-page'; container.appendChild(s); return s; };
+            let sheet = makeSheet();
+            if (header) sheet.appendChild(html2node(header));
+            blocks.forEach(bh => {
+                const node = html2node(bh); if (!node) return;
+                sheet.appendChild(node);
+                if (sheet.scrollHeight > sheet.clientHeight && sheet.childElementCount > 1) {
+                    sheet.removeChild(node);
+                    sheet = makeSheet();
+                    sheet.appendChild(node);
+                }
+            });
+            // page numbers
+            const sheets = container.querySelectorAll('.report-page');
+            sheets.forEach((s, i) => { const n = document.createElement('div'); n.className = 'rep-pagenum'; n.textContent = `${i + 1} / ${sheets.length}`; s.appendChild(n); });
         }
 
         // Read-only Common App profile view for the teacher
