@@ -746,7 +746,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         /* Calendar specific styles for layout and appearance */
         #calendar-days div {
             padding: 0.75rem 0.5rem;
-            border: 1px solid #e5e7eb; /* Light gray border */
+            border: 1px solid var(--border); /* theme-aware border */
             border-radius: 0.375rem; /* Rounded corners */
             display: flex;
             flex-direction: column;
@@ -754,18 +754,24 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             justify-content: center;
             min-height: 80px; /* Minimum height for each day cell */
             position: relative;
-            background-color: var(--surface); /* White background for days */
+            background-color: var(--surface); /* card surface */
         }
         /* Style for days belonging to other months (faded out) */
         #calendar-days div.other-month {
-            background-color: #f9fafb; /* Lighter gray background */
-            color: #d1d5db; /* Faded gray text */
+            background-color: var(--surface-2); /* subtle surface */
+            color: var(--text-faint); /* Faded text */
         }
         /* Highlight for the current day on the calendar */
         #calendar-days div.current-day {
             background-color: #bfdbfe; /* Light blue background */
             border-color: #2563eb; /* Darker blue border */
             font-weight: bold;
+            color: #1d1d1f;
+        }
+        html[data-theme="dark"] #calendar-days div.current-day {
+            background-color: rgba(10,132,255,0.28);
+            border-color: var(--accent);
+            color: var(--text);
         }
         /* Marker for deadlines on the calendar */
         .deadline-marker {
@@ -1575,6 +1581,119 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .onb-hide{ display:none !important; }
         .onb-spinner{ width:34px; height:34px; margin:18px auto 4px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:onbSpin .8s linear infinite; }
         @keyframes onbSpin{ to{ transform:rotate(360deg); } }
+
+        /* ===== Application Manager (지원 관리) ===== */
+        .am-block{ margin-bottom:34px; }
+        .am-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:4px; }
+        .am-head h3{ font-size:1.4rem; font-weight:800; color:var(--text); letter-spacing:-0.01em; }
+        .am-add{ background:var(--accent); color:#fff; border:none; border-radius:12px; padding:8px 16px; font-size:0.9rem; font-weight:700; cursor:pointer; transition:filter .15s; white-space:nowrap; }
+        .am-add:hover{ filter:brightness(1.06); }
+        .am-sub{ color:var(--text-muted); font-size:0.92rem; margin-bottom:14px; line-height:1.5; }
+        .am-empty{ color:var(--text-faint); font-size:0.95rem; padding:22px; text-align:center; background:var(--surface-2); border:1px dashed var(--border); border-radius:14px; }
+
+        /* recommendation cards */
+        .rec-card{ display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:14px; margin-bottom:10px; }
+        .rec-main{ flex:1; min-width:0; }
+        .rec-name{ font-weight:700; color:var(--text); font-size:1rem; }
+        .rec-meta{ color:var(--text-muted); font-size:0.85rem; margin-top:2px; }
+        .rec-status{ font-size:0.8rem; font-weight:700; padding:5px 12px; border-radius:999px; white-space:nowrap; }
+        .rst-req0{ background:#f3f4f6; color:#6b7280; } /* 요청 전 */
+        .rst-req1{ background:#fef9c3; color:#a16207; } /* 요청함 */
+        .rst-wip{ background:#dbeafe; color:#1e40af; }  /* 작성 중 */
+        .rst-done{ background:#dcfce7; color:#166534; } /* 제출 완료 */
+        html[data-theme="dark"] .rst-req0{ background:rgba(120,120,128,0.24); color:#c7c7cc; }
+        html[data-theme="dark"] .rst-req1{ background:rgba(161,98,7,0.28); color:#fbbf24; }
+        html[data-theme="dark"] .rst-wip{ background:rgba(30,64,175,0.35); color:#93c5fd; }
+        html[data-theme="dark"] .rst-done{ background:rgba(22,101,52,0.35); color:#86efac; }
+        .rec-actions, .act-actions{ display:flex; gap:6px; }
+        .am-icon-btn{ background:none; border:none; cursor:pointer; font-size:0.95rem; padding:4px 6px; border-radius:8px; color:var(--text-faint); }
+        .am-icon-btn:hover{ background:var(--surface-3); color:var(--text); }
+
+        /* activity cards */
+        .act-card{ padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:14px; margin-bottom:10px; }
+        .act-top{ display:flex; align-items:center; gap:8px; }
+        .act-kind{ font-size:0.72rem; font-weight:800; padding:3px 9px; border-radius:999px; }
+        .act-kind.활동{ background:#e0e7ff; color:#4338ca; }
+        .act-kind.수상{ background:#fef3c7; color:#b45309; }
+        html[data-theme="dark"] .act-kind.활동{ background:rgba(67,56,202,0.35); color:#c7d2fe; }
+        html[data-theme="dark"] .act-kind.수상{ background:rgba(180,83,9,0.32); color:#fcd34d; }
+        .act-name{ font-weight:700; color:var(--text); flex:1; min-width:0; }
+        .act-role{ color:var(--text-muted); font-size:0.85rem; }
+        .act-desc{ color:var(--text-muted); font-size:0.9rem; margin-top:6px; line-height:1.5; }
+        .act-grades-tag{ color:var(--text-faint); font-size:0.78rem; margin-top:6px; }
+
+        /* requirements table */
+        .req-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:14px; }
+        table.req-table{ width:100%; border-collapse:collapse; font-size:0.85rem; min-width:640px; }
+        .req-table th, .req-table td{ padding:10px 8px; text-align:center; border-bottom:1px solid var(--border); }
+        .req-table th{ background:var(--surface-2); color:var(--text-muted); font-weight:700; font-size:0.78rem; }
+        .req-table td.req-uni{ text-align:left; font-weight:700; color:var(--text); white-space:nowrap; }
+        .req-table tr:last-child td{ border-bottom:none; }
+        .req-check{ width:20px; height:20px; cursor:pointer; accent-color:var(--accent); }
+        .req-progress{ font-weight:800; font-variant-numeric:tabular-nums; }
+
+        /* app-manager modal form fields */
+        .am-form .am-field{ margin-bottom:14px; }
+        .am-form .am-field label{ display:block; font-size:0.85rem; font-weight:700; color:var(--text-muted); margin-bottom:6px; }
+        .am-form input, .am-form select, .am-form textarea{ width:100%; padding:11px 13px; border-radius:11px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.98rem; outline:none; }
+        .am-form input:focus, .am-form select:focus, .am-form textarea:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,113,227,0.15); }
+        .am-row{ display:flex; gap:12px; }
+        .am-row .am-field{ flex:1; }
+        .am-grades{ display:flex; gap:16px; }
+        .am-grades label{ display:flex; align-items:center; gap:5px; font-weight:600; color:var(--text); font-size:0.95rem; cursor:pointer; }
+
+        /* feedback read-receipt */
+        .sfb-ack-row{ margin-top:8px; }
+        .sfb-ack-btn{ background:var(--accent); color:#fff; border:none; border-radius:9px; padding:5px 12px; font-size:0.8rem; font-weight:700; cursor:pointer; transition:filter .15s; }
+        .sfb-ack-btn:hover{ filter:brightness(1.08); }
+        .sfb-acked{ display:inline-block; color:#16a34a; font-weight:700; font-size:0.82rem; }
+        html[data-theme="dark"] .sfb-acked{ color:#4ade80; }
+        .fb-acked{ color:#16a34a; font-weight:700; font-size:0.78rem; }
+        html[data-theme="dark"] .fb-acked{ color:#4ade80; }
+        .fb-unacked{ color:var(--text-faint); font-weight:600; font-size:0.78rem; }
+
+        /* teacher dashboard v2: toolbar, trend, class, card actions, templates */
+        .teacher-toolbar2{ display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 14px; }
+        .tf-search{ flex:1; min-width:180px; padding:10px 14px; border-radius:11px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.92rem; outline:none; }
+        .tf-search:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,113,227,0.15); }
+        .tf-sel{ padding:10px 12px; border-radius:11px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.9rem; cursor:pointer; outline:none; }
+        .cohort-trend{ display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:12px 16px; background:var(--surface-2); border:1px solid var(--border); border-radius:14px; margin-bottom:16px; font-size:0.9rem; color:var(--text); }
+        .ct-title{ font-weight:800; }
+        .ct-item{ color:var(--text-muted); }
+        .ct-date{ color:var(--text-faint); font-size:0.8rem; margin-left:auto; }
+        .tr-up{ color:#16a34a; font-weight:800; }
+        .tr-down{ color:#dc2626; font-weight:800; }
+        .tr-flat{ color:var(--text-faint); font-weight:700; }
+        html[data-theme="dark"] .tr-up{ color:#4ade80; }
+        html[data-theme="dark"] .tr-down{ color:#f87171; }
+        .tsc-class{ font-size:0.72rem; font-weight:700; padding:3px 9px; border-radius:999px; background:rgba(0,113,227,0.12); color:var(--accent); }
+        .tsc-actions{ display:flex; gap:8px; margin-top:12px; }
+        .tsc-actions button{ flex:1; padding:8px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.82rem; font-weight:700; cursor:pointer; transition:background .15s; }
+        .tsc-actions button:hover{ background:var(--surface-3); }
+        .tsc-actions .tsc-cls-btn{ flex:0 0 auto; }
+        .fb-tpl-row{ display:flex; flex-wrap:wrap; gap:7px; margin-bottom:10px; }
+        .fb-tpl{ padding:6px 11px; border-radius:999px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-muted); font-size:0.8rem; cursor:pointer; transition:all .15s; }
+        .fb-tpl:hover{ border-color:var(--accent); color:var(--accent); }
+
+        /* ===== 2-step feedback double-check modal (forceful) ===== */
+        .fbc-overlay{ position:fixed; inset:0; z-index:5800; background:rgba(0,0,0,0.55); backdrop-filter:saturate(140%) blur(7px); -webkit-backdrop-filter:saturate(140%) blur(7px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; transition:opacity .22s ease; }
+        html[data-theme="dark"] .fbc-overlay{ background:rgba(0,0,0,0.72); }
+        .fbc-overlay.show{ opacity:1; }
+        .fbc-modal{ width:min(94vw,480px); max-height:88vh; overflow-y:auto; background:var(--surface); color:var(--text); border-radius:24px; padding:28px 26px 24px; box-shadow:0 24px 70px rgba(0,0,0,0.34); border:1px solid var(--border); transform:translateY(12px) scale(0.97); transition:transform .24s cubic-bezier(.2,.8,.2,1); }
+        .fbc-overlay.show .fbc-modal{ transform:none; }
+        .fbc-badge{ display:inline-block; background:#ff3b30; color:#fff; font-size:0.78rem; font-weight:800; letter-spacing:0.02em; padding:5px 12px; border-radius:999px; margin-bottom:14px; }
+        .fbc-title{ font-size:1.4rem; font-weight:850; letter-spacing:-0.02em; margin:0 0 6px; }
+        .fbc-sub{ color:var(--text-muted); font-size:0.92rem; line-height:1.55; margin:0 0 18px; }
+        .fbc-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+        .fbc-item{ background:var(--surface-2); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:13px; padding:12px 14px; }
+        .fbc-item-meta{ color:var(--text-faint); font-size:0.8rem; margin-bottom:5px; }
+        .fbc-item-text{ color:var(--text); font-size:0.96rem; line-height:1.55; white-space:pre-line; }
+        .fbc-check{ display:flex; align-items:flex-start; gap:10px; padding:13px 14px; background:rgba(255,59,48,0.06); border:1px solid rgba(255,59,48,0.25); border-radius:13px; cursor:pointer; margin-bottom:16px; }
+        .fbc-check input{ width:20px; height:20px; margin-top:1px; accent-color:var(--accent); cursor:pointer; flex:0 0 auto; }
+        .fbc-check span{ font-weight:700; color:var(--text); font-size:0.95rem; line-height:1.45; }
+        .fbc-done{ width:100%; padding:14px; border-radius:14px; background:var(--accent); color:#fff; font-size:1.05rem; font-weight:800; border:none; cursor:pointer; transition:filter .15s, opacity .15s; }
+        .fbc-done:hover:not(:disabled){ filter:brightness(1.06); }
+        .fbc-done:disabled{ opacity:0.45; cursor:not-allowed; }
     </style>
     <script>
         (function(){
@@ -1694,6 +1813,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <a href="#home" onclick="showSection('home')">Home</a>
                 <a href="#university-list" onclick="showSection('university-list')">University List</a>
                 <a href="#my-essays" onclick="showSection('my-essays')">My Essays</a>
+                <a href="#app-manager" onclick="showSection('app-manager')">지원 관리</a>
                 <a href="#my-notes" onclick="showSection('my-notes')">To-Do List</a>
                 <button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="다크모드 전환" aria-label="다크모드 전환">🌙</button>
                 <button type="button" class="dash-data-btn" onclick="openDataModal()" title="데이터 백업·캘린더">⚙️</button>
@@ -1995,6 +2115,41 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             </div>
         </section>
 
+        <!-- Application Manager: recommendation letters, activities/honors, per-school requirements -->
+        <section id="app-manager" class="bg-white p-8 rounded-xl card transition-shadow duration-300 hover:shadow-xl">
+            <h2 class="text-3xl font-bold mb-2 section-title">📋 지원 관리</h2>
+            <p class="text-lg leading-relaxed mb-8">추천서, 활동·수상, 학교별 요구사항까지 — 원서에서 가장 자주 놓치는 것들을 한 곳에서 챙기세요.</p>
+
+            <!-- Recommendation letters -->
+            <div class="am-block">
+                <div class="am-head">
+                    <h3>📮 추천서 트래커</h3>
+                    <button type="button" class="am-add" onclick="openRecModal()">+ 추천서 추가</button>
+                </div>
+                <p class="am-sub">추천서를 써주실 분과 진행 상태를 추적하세요. 마감 직전 펑크를 막는 가장 중요한 체크예요.</p>
+                <div id="rec-list"></div>
+            </div>
+
+            <!-- Activities & honors -->
+            <div class="am-block">
+                <div class="am-head">
+                    <h3>🏆 활동 · 수상 목록</h3>
+                    <button type="button" class="am-add" onclick="openActivityModal()">+ 활동/수상 추가</button>
+                </div>
+                <p class="am-sub">Common App 활동 10개 · 수상 5개를 미리 정리·압축하세요. 설명은 150자 이내로 다듬는 연습을 해두면 원서 시즌이 편해요.</p>
+                <div id="activity-list"></div>
+            </div>
+
+            <!-- Per-school requirements -->
+            <div class="am-block">
+                <div class="am-head">
+                    <h3>✅ 학교별 요구사항 체크리스트</h3>
+                </div>
+                <p class="am-sub">학교마다 요구가 달라요. 원서 시스템·추천서·성적표·시험점수·서플·인터뷰를 학교별로 체크하세요.</p>
+                <div id="requirements-table"></div>
+            </div>
+        </section>
+
         <!-- Teacher-only dashboard (shown instead of the student app when role = teacher) -->
         <section id="teacher-dashboard" class="card">
             <div class="dash-greeting">
@@ -2013,8 +2168,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     <!-- Footer Section with copyright and last updated info -->
     <footer class="app-footer text-center p-6 mt-12">
         <div class="container mx-auto text-center text-sm">
-            <p>© 2025 My US University Explorer. All information is for reference and personal use only.</p>
-            <p class="mt-2">Last Updated: June 16, 2025</p>
+            <p>© 2026 University Explorer. 나만의 미국 대학 지원 관리 · 개인 참고용.</p>
+            <p class="mt-2" id="footer-version">버전 2026.07.17</p>
         </div>
     </footer>
 
@@ -2071,6 +2226,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div><div class="data-title">📅 캘린더로 내보내기 (.ics)</div><div class="data-desc">원서 마일스톤을 구글·애플 캘린더에 넣어 실제 알림 받기</div></div>
                     <button type="button" class="data-btn" onclick="exportICS()">.ics 저장</button>
                 </div>
+                <div class="data-row">
+                    <div><div class="data-title">↩️ 자동 백업에서 복원</div><div class="data-desc" id="autobackup-desc">5분마다 자동 저장된 최신 스냅샷으로 되돌립니다 (실수로 지웠을 때).</div></div>
+                    <button type="button" class="data-btn" onclick="restoreAutoBackup()">복원</button>
+                </div>
                 <div class="data-row" style="border-top:1px solid var(--border); margin-top:6px; padding-top:16px;">
                     <div><div class="data-title" style="color:#ff3b30;">🗑️ 내 계정 완전 초기화</div><div class="data-desc">이 계정의 <b>모든 데이터(대학·에세이·다짐·프로필)를 클라우드와 이 기기에서 영구 삭제</b>하고 처음부터 새로 시작합니다. 되돌릴 수 없어요.</div></div>
                     <button type="button" class="data-btn" style="background:#ff3b30; color:#fff;" onclick="resetMyAccount()">완전 초기화</button>
@@ -2089,6 +2248,70 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <div class="flex justify-end gap-3 mt-6">
                 <button type="button" onclick="resetMatchWeights()" class="match-reset-btn">초기화</button>
                 <button type="button" onclick="saveMatchAndClose()" class="match-apply-btn">적용</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendation letter add/edit modal -->
+    <div id="rec-modal" class="modal hidden">
+        <div class="modal-content" style="max-width:520px;">
+            <span class="close-button" onclick="closeRecModal()">×</span>
+            <h2 class="text-2xl font-bold mb-6">📮 추천서</h2>
+            <input type="hidden" id="rec-id">
+            <div class="am-form">
+                <div class="am-field"><label>추천인 이름</label><input type="text" id="rec-name" placeholder="예: 김선생님 / Mr. Smith"></div>
+                <div class="am-row">
+                    <div class="am-field"><label>역할</label>
+                        <select id="rec-role"><option>담임/교과 교사</option><option>카운슬러</option><option>동아리/멘토</option><option>기타</option></select>
+                    </div>
+                    <div class="am-field"><label>상태</label>
+                        <select id="rec-status"><option value="요청 전">요청 전</option><option value="요청함">요청함</option><option value="작성 중">작성 중</option><option value="제출 완료">제출 완료</option></select>
+                    </div>
+                </div>
+                <div class="am-row">
+                    <div class="am-field"><label>이메일 (선택)</label><input type="email" id="rec-email" placeholder="teacher@school.edu"></div>
+                    <div class="am-field"><label>요청한 날짜 (선택)</label><input type="date" id="rec-date"></div>
+                </div>
+                <div class="am-field"><label>메모 (어느 학교에 쓸지 등)</label><input type="text" id="rec-note" placeholder="예: 모든 학교 공통 / Stanford 전용"></div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="data-btn" onclick="closeRecModal()">취소</button>
+                <button type="button" class="data-btn primary" onclick="saveRec()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity / honor add/edit modal -->
+    <div id="activity-modal" class="modal hidden">
+        <div class="modal-content" style="max-width:560px;">
+            <span class="close-button" onclick="closeActivityModal()">×</span>
+            <h2 class="text-2xl font-bold mb-6">🏆 활동 · 수상</h2>
+            <input type="hidden" id="act-id">
+            <div class="am-form">
+                <div class="am-row">
+                    <div class="am-field"><label>구분</label>
+                        <select id="act-kind"><option value="활동">활동 (Activity)</option><option value="수상">수상 (Honor/Award)</option></select>
+                    </div>
+                    <div class="am-field"><label>분야 (선택)</label><input type="text" id="act-category" placeholder="예: 학술, 봉사, 스포츠, 예술"></div>
+                </div>
+                <div class="am-field"><label>이름 / 조직</label><input type="text" id="act-name" placeholder="예: 로봇공학 동아리 / 전국 수학경시대회"></div>
+                <div class="am-field"><label>역할 / 직책 (선택)</label><input type="text" id="act-role" placeholder="예: 회장, 팀장, 금상"></div>
+                <div class="am-field">
+                    <label>설명 <span id="act-desc-count" style="font-weight:400; color:var(--text-faint);">(0/150)</span></label>
+                    <textarea id="act-desc" rows="3" maxlength="150" placeholder="한 일과 성과를 임팩트 있게 (150자 이내)" oninput="updateActDescCount()"></textarea>
+                </div>
+                <div class="am-field"><label>참여 학년 (선택)</label>
+                    <div class="am-grades">
+                        <label><input type="checkbox" class="act-grade" value="9"> 9</label>
+                        <label><input type="checkbox" class="act-grade" value="10"> 10</label>
+                        <label><input type="checkbox" class="act-grade" value="11"> 11</label>
+                        <label><input type="checkbox" class="act-grade" value="12"> 12</label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="data-btn" onclick="closeActivityModal()">취소</button>
+                <button type="button" class="data-btn primary" onclick="saveActivity()">저장</button>
             </div>
         </div>
     </div>
@@ -4358,6 +4581,40 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         function openDataModal() { document.getElementById('data-modal').classList.remove('hidden'); }
         function closeDataModal() { document.getElementById('data-modal').classList.add('hidden'); }
 
+        // Accessibility: close any open .modal with Escape or a backdrop click
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const open = [...document.querySelectorAll('.modal:not(.hidden)')];
+                if (open.length) open[open.length - 1].classList.add('hidden');
+            }
+        });
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList && e.target.classList.contains('modal') && !e.target.classList.contains('hidden')) {
+                e.target.classList.add('hidden');
+            }
+        });
+
+        // Auto-backup: keep a rolling local snapshot so accidental loss is recoverable
+        function saveAutoBackup() {
+            try {
+                const data = {};
+                BACKUP_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) data[k] = v; });
+                localStorage.setItem('autoBackup', JSON.stringify({ at: Date.now(), data }));
+            } catch (e) {}
+        }
+        setInterval(saveAutoBackup, 5 * 60 * 1000); // every 5 minutes
+        window.addEventListener('beforeunload', saveAutoBackup);
+        async function restoreAutoBackup() {
+            const raw = localStorage.getItem('autoBackup');
+            const bak = raw ? safeParse(raw, null) : null;
+            if (!bak || !bak.data) { toast('복원할 자동 백업이 아직 없어요.', 'error'); return; }
+            const when = new Date(bak.at).toLocaleString('ko-KR');
+            if (!(await showConfirm('자동 백업 복원', `${when}에 저장된 스냅샷으로 되돌립니다. 현재 데이터를 덮어써요. 계속할까요?`, { confirmText: '복원', icon: '↩️' }))) return;
+            Object.keys(bak.data).forEach(k => localStorage.setItem(k, bak.data[k]));
+            toast('복원 완료! 새로고침합니다.', 'success');
+            setTimeout(() => location.reload(), 800);
+        }
+
         // Permanently wipe THIS account's cloud + local data, then restart fresh
         async function resetMyAccount() {
             const ok = await showConfirm('내 계정 완전 초기화', '이 계정의 모든 데이터(대학·에세이·다짐·행정·프로필)를 클라우드와 이 기기에서 영구 삭제하고 처음부터 새로 시작합니다.\n\n되돌릴 수 없어요. 계속할까요?', { danger: true, confirmText: '영구 삭제', icon: '🗑️' });
@@ -4387,7 +4644,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             setTimeout(() => location.reload(), 900);
         }
 
-        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights'];
+        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements'];
 
         function triggerDownload(filename, content, mime) {
             const blob = new Blob([content], { type: mime });
@@ -4459,6 +4716,29 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         let fbAuth = null, fbDb = null;
         let currentUser = null, currentRole = null;
         let cloudPushTimer = null, cloudSyncBound = false;
+        let lastPushedAt = 0, studentDocUnsub = null, conflictWarned = false;
+
+        // Warn (non-destructively) if this account is edited from another device while open
+        function watchOwnStudentDoc(uid) {
+            if (studentDocUnsub || !fbDb) return;
+            let first = true;
+            try {
+                studentDocUnsub = fbDb.collection('students').doc(uid).onSnapshot(snap => {
+                    if (first) { first = false; return; }
+                    if (snap.metadata && snap.metadata.hasPendingWrites) return; // our own local write
+                    const d = snap.data();
+                    if (!d) return;
+                    // Teacher left new feedback → update the home panel and pop the double-check modal in real time
+                    renderStudentFeedback(d);
+                    maybeShowFeedbackConfirm(d);
+                    // Data changed from another device → warn (non-destructive)
+                    if (d.lastDevice && d.lastDevice !== getDeviceId() && !conflictWarned) {
+                        conflictWarned = true;
+                        toast('⚠️ 다른 기기에서 이 계정 데이터가 변경됐어요. 최신 상태를 보려면 새로고침하세요.', 'error');
+                    }
+                }, () => {});
+            } catch (e) {}
+        }
 
         // ============================================================
         // Premium toast + dialog system (replaces browser alert/prompt)
@@ -4716,6 +4996,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 if (role === 'student') {
                     await withTimeout(pullStudentData(user.uid), 10000).catch(() => {});
                     bindCloudAutoPush();
+                    watchOwnStudentDoc(user.uid);
                 }
                 hideOnboarding();
                 applyRoleView();
@@ -4787,7 +5068,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 if (!hasCloudData) {
                     await pushStudentData(); // brand-new account → seed cloud with the fresh (empty) state
                 }
-                if (d) renderStudentFeedback(d);
+                if (d) { renderStudentFeedback(d); maybeShowFeedbackConfirm(d); }
             } catch (e) { console.warn('pull failed', e); }
         }
 
@@ -4795,7 +5076,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         function renderStudentFeedback(d) {
             const el = document.getElementById('student-feedback');
             if (!el) return;
-            const general = Array.isArray(d && d.feedback) ? d.feedback.map(f => ({ ...f, ctx: '종합' })) : [];
+            const general = Array.isArray(d && d.feedback) ? d.feedback.map(f => ({ ...f, ctx: '종합', _kind: 'general' })) : [];
             const essays = safeParse((d && d.appData && d.appData.mySupplementalEssays) || '[]', []);
             const unis = safeParse((d && d.appData && d.appData.myUniversities) || '[]', []);
             const ef = (d && d.essayFeedback) || {};
@@ -4804,13 +5085,129 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const essay = essays.find(e => e.id === eid);
                 const uni = essay ? unis.find(u => u.id === essay.universityId) : null;
                 const ctx = uni ? `${uni.nameEn} 에세이` : '에세이';
-                (ef[eid] || []).forEach(f => perEssay.push({ ...f, ctx }));
+                (ef[eid] || []).forEach(f => perEssay.push({ ...f, ctx, _kind: 'essay', _eid: eid }));
             });
             const all = general.concat(perEssay).sort((a, b) => b.at - a.at);
             if (!all.length) { el.innerHTML = ''; return; }
-            const items = all.slice(0, 6).map(f =>
-                `<div class="sfb-item"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div><div class="sfb-text">${esc(f.text)}</div></div>`).join('');
+            const items = all.slice(0, 6).map(f => {
+                const ackRow = f.id ? (f.ackAt
+                    ? `<div class="sfb-ack-row"><span class="sfb-acked">✓ 확인함</span></div>`
+                    : `<div class="sfb-ack-row"><button class="sfb-ack-btn" onclick="markFeedbackRead('${f.id}','${f._kind}','${f._eid || ''}')">확인했어요 ✓</button></div>`) : '';
+                return `<div class="sfb-item"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div><div class="sfb-text">${esc(f.text)}</div>${ackRow}</div>`;
+            }).join('');
             el.innerHTML = `<div class="sfb-card"><div class="sfb-head">💬 선생님 피드백 (${all.length})</div>${items}</div>`;
+        }
+
+        // Student marks a piece of feedback as read → the acknowledgement syncs back to the teacher
+        async function markFeedbackRead(id, kind, eid) {
+            if (!currentUser || !fbDb) return;
+            try {
+                const ref = fbDb.collection('students').doc(currentUser.uid);
+                const snap = await ref.get();
+                if (!snap.exists) return;
+                const d = snap.data();
+                if (kind === 'essay' && eid) {
+                    const arr = (d.essayFeedback && d.essayFeedback[eid]) ? d.essayFeedback[eid].slice() : [];
+                    const idx = arr.findIndex(f => f.id === id);
+                    if (idx < 0) return;
+                    arr[idx] = { ...arr[idx], ackAt: Date.now() };
+                    await ref.update({ ['essayFeedback.' + eid]: arr });
+                } else {
+                    const arr = Array.isArray(d.feedback) ? d.feedback.slice() : [];
+                    const idx = arr.findIndex(f => f.id === id);
+                    if (idx < 0) return;
+                    arr[idx] = { ...arr[idx], ackAt: Date.now() };
+                    await ref.update({ feedback: arr });
+                }
+                toast('확인 완료! 선생님께 전달됐어요 ✓', 'success');
+                const fresh = await ref.get();
+                if (fresh.exists) renderStudentFeedback(fresh.data());
+            } catch (e) { toast('확인 처리 실패: ' + e.message, 'error'); }
+        }
+
+        // ===== 2-step feedback confirmation (double-check) modal =====
+        let feedbackConfirmOpen = false;
+        let pendingFeedbackItems = [];
+        function collectUnackedFeedback(d) {
+            const items = [];
+            (Array.isArray(d && d.feedback) ? d.feedback : []).forEach(f => { if (f.id && !f.ackAt) items.push({ ...f, _kind: 'general', _eid: '', ctx: '종합 피드백' }); });
+            const ef = (d && d.essayFeedback) || {};
+            const essays = safeParse((d && d.appData && d.appData.mySupplementalEssays) || '[]', []);
+            const unis = safeParse((d && d.appData && d.appData.myUniversities) || '[]', []);
+            Object.keys(ef).forEach(eid => {
+                const essay = essays.find(e => e.id === eid);
+                const uni = essay ? unis.find(u => u.id === essay.universityId) : null;
+                const ctx = uni ? `${uni.nameEn} 에세이` : '에세이 피드백';
+                (ef[eid] || []).forEach(f => { if (f.id && !f.ackAt) items.push({ ...f, _kind: 'essay', _eid: eid, ctx }); });
+            });
+            return items.sort((a, b) => b.at - a.at);
+        }
+        function maybeShowFeedbackConfirm(d) {
+            if (feedbackConfirmOpen || currentRole !== 'student') return;
+            const items = collectUnackedFeedback(d);
+            if (!items.length) return;
+            showFeedbackConfirmModal(items);
+        }
+        function showFeedbackConfirmModal(items) {
+            feedbackConfirmOpen = true;
+            pendingFeedbackItems = items;
+            const list = items.map(f => `
+                <div class="fbc-item">
+                    <div class="fbc-item-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div>
+                    <div class="fbc-item-text">${esc(f.text)}</div>
+                </div>`).join('');
+            const overlay = document.createElement('div');
+            overlay.className = 'fbc-overlay';
+            overlay.innerHTML = `
+                <div class="fbc-modal" role="dialog" aria-modal="true" aria-labelledby="fbc-title">
+                    <div class="fbc-badge">⚠️ 확인 필요 · ${items.length}건</div>
+                    <h3 class="fbc-title" id="fbc-title">선생님 피드백이 도착했어요</h3>
+                    <p class="fbc-sub">아래 내용을 꼼꼼히 확인한 뒤, 반영을 약속하고 완료 버튼을 눌러주세요. 확인 전에는 닫히지 않아요.</p>
+                    <div class="fbc-list">${list}</div>
+                    <label class="fbc-check"><input type="checkbox" id="fbc-agree" onchange="document.getElementById('fbc-done').disabled = !this.checked"><span>내용을 확인했으며, 수정에 반영하겠습니다.</span></label>
+                    <button class="fbc-done" id="fbc-done" disabled onclick="confirmFeedbackRead()">확인 완료 ✓</button>
+                </div>`;
+            document.body.appendChild(overlay);
+            document.body.style.overflow = 'hidden';
+            requestAnimationFrame(() => overlay.classList.add('show'));
+        }
+        function closeFeedbackConfirmModal() {
+            document.querySelectorAll('.fbc-overlay').forEach(o => { o.classList.remove('show'); setTimeout(() => o.remove(), 220); });
+            document.body.style.overflow = '';
+            feedbackConfirmOpen = false;
+            pendingFeedbackItems = [];
+        }
+        async function confirmFeedbackRead() {
+            if (!document.getElementById('fbc-agree') || !document.getElementById('fbc-agree').checked) return;
+            const items = pendingFeedbackItems;
+            const btn = document.getElementById('fbc-done');
+            if (btn) { btn.disabled = true; btn.textContent = '처리 중…'; }
+            try {
+                const ref = fbDb.collection('students').doc(currentUser.uid);
+                const snap = await ref.get();
+                const d = snap.exists ? snap.data() : {};
+                const now = Date.now();
+                const ackIds = new Set(items.map(i => i.id));
+                const update = {};
+                if (Array.isArray(d.feedback) && d.feedback.some(f => ackIds.has(f.id) && !f.ackAt)) {
+                    update.feedback = d.feedback.map(f => (ackIds.has(f.id) && !f.ackAt) ? { ...f, ackAt: now } : f);
+                }
+                const ef = d.essayFeedback || {};
+                Object.keys(ef).forEach(eid => {
+                    const arr = ef[eid] || [];
+                    if (arr.some(f => ackIds.has(f.id) && !f.ackAt)) {
+                        update['essayFeedback.' + eid] = arr.map(f => (ackIds.has(f.id) && !f.ackAt) ? { ...f, ackAt: now } : f);
+                    }
+                });
+                if (Object.keys(update).length) await ref.update(update);
+                closeFeedbackConfirmModal();
+                toast('확인 완료! 선생님께 전달됐어요 ✓', 'success');
+                const fresh = await ref.get();
+                if (fresh.exists) renderStudentFeedback(fresh.data());
+            } catch (e) {
+                toast('처리 실패: ' + (e.message || e), 'error');
+                if (btn) { btn.disabled = false; btn.textContent = '확인 완료 ✓'; }
+            }
         }
 
         let syncErrorAlerted = false;
@@ -4821,16 +5218,25 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (state) dot.classList.add(state);
             dot.title = title || '';
         }
+        function getDeviceId() {
+            let id = localStorage.getItem('deviceId');
+            if (!id) { id = 'dev-' + Date.now().toString(36) + '-' + (performance.now() | 0).toString(36); localStorage.setItem('deviceId', id); }
+            return id;
+        }
         async function pushStudentData() {
             if (!currentUser || currentRole !== 'student' || !fbDb) return;
             const appData = {};
             BACKUP_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) appData[k] = v; });
+            const profile = safeParse(localStorage.getItem('userProfile'), {}) || {};
+            const displayName = (profile.nameKo || profile.nameEn || profile.name) || currentUser.displayName || currentUser.email;
             setSyncState('syncing', '저장 중…');
             try {
                 await fbDb.collection('students').doc(currentUser.uid).set({
-                    email: currentUser.email, name: currentUser.displayName || currentUser.email,
-                    updatedAt: Date.now(), appData
+                    email: currentUser.email, name: displayName, profile,
+                    updatedAt: Date.now(), lastDevice: getDeviceId(), lastLocalWrite: Date.now()
+                    , appData
                 }, { merge: true });
+                lastPushedAt = Date.now();
                 setSyncState('synced', '클라우드에 저장됨 ✓');
             } catch (e) {
                 console.error('Cloud sync failed:', e);
@@ -4862,6 +5268,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             renderProsConsCards(); renderAdminBoard(); renderDashboard();
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
             renderUpcomingDeadlines();
+            loadAppManager();
         }
 
         function updateAuthUI() {
@@ -4914,7 +5321,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const at = admin.reduce((s, c) => s + (c.items ? c.items.length : 0), 0);
             const ad2 = admin.reduce((s, c) => s + (c.items ? c.items.filter(i => i.done).length : 0), 0);
             const einp = essays.filter(e => normalizeEssayStatus(e.status) !== 'Done').length;
-            return { uniCount: unis.length, essayTotal: essays.length, essayInProg: einp, adminPct: at ? Math.round(ad2 / at * 100) : 0 };
+            let nearest = Infinity;
+            unis.forEach(u => { const nd = uniNearestDeadline(u); if (nd && nd.date) { const t = nd.date.getTime(); if (t >= Date.now() - 86400000 && t < nearest) nearest = t; } });
+            return { uniCount: unis.length, essayTotal: essays.length, essayInProg: einp, adminPct: at ? Math.round(ad2 / at * 100) : 0, nearestDeadlineTime: nearest };
         }
 
         // Stagnation / bottleneck risk detector for a student
@@ -4999,39 +5408,172 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             </div>`;
         }
 
+        // ===== Teacher dashboard state =====
+        let teacherStudents = [];
+        let teacherState = { studentClasses: {}, feedbackTemplates: [], statsHistory: [] };
+        let teacherFilter = { q: '', sort: 'risk', risk: 'all', cls: 'all' };
+        const DEFAULT_FB_TEMPLATES = [
+            '이번 주도 꾸준히 진행하고 있네요. 아주 좋아요! 👏',
+            '에세이 초안 방향이 좋아요. 구체적인 경험 사례를 조금 더 넣어볼까요?',
+            '마감이 가까워요. 이번 주 안에 초안을 완성해봅시다.',
+            '요즘 업데이트가 없어요. 어려운 점이 있으면 편하게 이야기해요.',
+            '추천서·성적표 발송 상태를 다시 한번 확인해주세요.'
+        ];
+
+        async function saveTeacherState() {
+            if (!currentUser || !fbDb) return;
+            try {
+                await fbDb.collection('users').doc(currentUser.uid).set({
+                    studentClasses: teacherState.studentClasses,
+                    feedbackTemplates: teacherState.feedbackTemplates,
+                    statsHistory: teacherState.statsHistory
+                }, { merge: true });
+            } catch (e) { console.warn('teacher state save failed', e); }
+        }
+
+        function recordCohortSnapshot(students) {
+            const today = new Date().toISOString().slice(0, 10);
+            const hist = teacherState.statsHistory || [];
+            if (hist.length && hist[hist.length - 1].date === today) return; // once per day
+            const red = students.filter(s => s.risk.level === 'red').length;
+            const yellow = students.filter(s => s.risk.level === 'yellow').length;
+            const green = students.filter(s => s.risk.level === 'green').length;
+            const avgAdmin = students.length ? Math.round(students.reduce((a, s) => a + s.stats.adminPct, 0) / students.length) : 0;
+            hist.push({ date: today, red, yellow, green, avgAdmin, total: students.length });
+            teacherState.statsHistory = hist.slice(-60); // keep last 60 snapshots
+            saveTeacherState();
+        }
+        function buildCohortTrend() {
+            const hist = teacherState.statsHistory || [];
+            if (hist.length < 2) return '';
+            const cur = hist[hist.length - 1], prev = hist[hist.length - 2];
+            const delta = (a, b, invert) => {
+                const d = a - b; if (d === 0) return '<span class="tr-flat">±0</span>';
+                const good = invert ? d < 0 : d > 0;
+                return `<span class="${good ? 'tr-up' : 'tr-down'}">${d > 0 ? '▲' : '▼'}${Math.abs(d)}</span>`;
+            };
+            return `<div class="cohort-trend"><span class="ct-title">📈 지난 기록 대비</span>
+                <span class="ct-item">🔴 위험 ${delta(cur.red, prev.red, true)}</span>
+                <span class="ct-item">🟡 주의 ${delta(cur.yellow, prev.yellow, true)}</span>
+                <span class="ct-item">🟢 양호 ${delta(cur.green, prev.green, false)}</span>
+                <span class="ct-item">✅ 평균 행정 ${delta(cur.avgAdmin, prev.avgAdmin, false)}%p</span>
+                <span class="ct-date">(${prev.date} → ${cur.date})</span></div>`;
+        }
+
         async function loadTeacherStudents() {
             const list = document.getElementById('teacher-view-list');
             showTeacherList();
             list.innerHTML = '<p class="rp-dim">불러오는 중…</p>';
             try {
                 const email = (currentUser.email || '').toLowerCase();
+                try {
+                    const tsnap = await withTimeout(fbDb.collection('users').doc(currentUser.uid).get(), 10000);
+                    const td = tsnap.exists ? tsnap.data() : {};
+                    teacherState = {
+                        studentClasses: td.studentClasses || {},
+                        feedbackTemplates: (td.feedbackTemplates && td.feedbackTemplates.length) ? td.feedbackTemplates : DEFAULT_FB_TEMPLATES.slice(),
+                        statsHistory: td.statsHistory || []
+                    };
+                } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [] }; }
+
                 const snap = await fbDb.collection('students').where('sharedWith', 'array-contains', email).get();
                 if (snap.empty) {
                     list.innerHTML = `<div class="teacher-empty">아직 공유한 학생이 없어요.<br>학생이 로그인 후 <b>👩‍🏫 선생님께 공유</b>에서 <b>${esc(email)}</b> 를 입력하면 여기 나타나요.</div>`;
                     return;
                 }
-                const students = [];
-                snap.forEach(doc => { const d = doc.data(); students.push({ id: doc.id, d, risk: computeStudentRisk(d), stats: studentStats(d) }); });
-                const order = { red: 0, yellow: 1, green: 2 };
-                students.sort((a, b) => (order[a.risk.level] - order[b.risk.level]) || (b.risk.daysStale - a.risk.daysStale));
-
-                const risky = students.filter(s => s.risk.level !== 'green');
-                let html = buildTeacherStats(students);
-                if (risky.length) {
-                    html += `<div class="care-alert"><div class="care-alert-head">⚠️ 케어가 필요한 학생 (${risky.length}명)</div><div class="care-list">`
-                        + risky.map(s => `<button class="care-item" onclick="openStudentDetail('${s.id}')">${riskBadge(s.risk.level)}<span class="care-name">${esc(s.d.name || s.d.email)}</span><span class="care-reason">${esc(s.risk.reasons.join(' · '))}</span><span class="care-go">→</span></button>`).join('')
-                        + `</div></div>`;
-                } else {
-                    html += `<div class="care-ok">✅ 모든 학생이 순조롭게 진행 중이에요!</div>`;
-                }
-                html += `<div class="tstudent-grid">` + students.map(s => `<button class="tstudent-card" onclick="openStudentDetail('${s.id}')">
-                        <div class="tsc-top">${riskBadge(s.risk.level)}</div>
-                        <div class="tsc-name">${esc(s.d.name || s.d.email)}</div>
-                        <div class="tsc-email">${esc(s.d.email || '')}</div>
-                        <div class="tsc-stats"><span>🏫 ${s.stats.uniCount}개</span><span>✍️ ${s.stats.essayInProg}/${s.stats.essayTotal}</span><span>✅ ${s.stats.adminPct}%</span></div>
-                    </button>`).join('') + `</div>`;
-                list.innerHTML = html;
+                teacherStudents = [];
+                snap.forEach(doc => { const d = doc.data(); teacherStudents.push({ id: doc.id, d, risk: computeStudentRisk(d), stats: studentStats(d) }); });
+                recordCohortSnapshot(teacherStudents);
+                renderTeacherDashboard();
             } catch (e) { list.innerHTML = `<div class="teacher-error">불러오기 실패: ${esc(e.message)}</div>`; }
+        }
+
+        function renderTeacherDashboard() {
+            const list = document.getElementById('teacher-view-list');
+            if (!list) return;
+            const students = teacherStudents;
+            const risky = students.filter(s => s.risk.level !== 'green');
+            let html = buildTeacherStats(students);
+            html += buildCohortTrend();
+            if (risky.length) {
+                const order = { red: 0, yellow: 1, green: 2 };
+                const sortedRisky = risky.slice().sort((a, b) => (order[a.risk.level] - order[b.risk.level]) || (b.risk.daysStale - a.risk.daysStale));
+                html += `<div class="care-alert"><div class="care-alert-head">⚠️ 케어가 필요한 학생 (${risky.length}명)</div><div class="care-list">`
+                    + sortedRisky.map(s => `<button class="care-item" onclick="openStudentDetail('${s.id}')">${riskBadge(s.risk.level)}<span class="care-name">${esc(s.d.name || s.d.email)}</span><span class="care-reason">${esc(s.risk.reasons.join(' · '))}</span><span class="care-go">→</span></button>`).join('')
+                    + `</div></div>`;
+            } else {
+                html += `<div class="care-ok">✅ 모든 학생이 순조롭게 진행 중이에요!</div>`;
+            }
+            html += buildTeacherToolbar();
+            html += `<div id="tstudent-grid-wrap"></div>`;
+            list.innerHTML = html;
+            renderStudentGrid();
+        }
+
+        function buildTeacherToolbar() {
+            const classes = [...new Set(Object.values(teacherState.studentClasses).filter(Boolean))].sort();
+            const clsOpts = ['all', ...classes, '미지정'].map(c => `<option value="${esc(c)}" ${teacherFilter.cls === c ? 'selected' : ''}>${c === 'all' ? '전체 반' : esc(c)}</option>`).join('');
+            return `<div class="teacher-toolbar2">
+                <input type="text" id="tfilter-q" class="tf-search" placeholder="🔍 이름·이메일 검색" value="${esc(teacherFilter.q)}" oninput="onTeacherFilter('q', this.value)">
+                <select class="tf-sel" onchange="onTeacherFilter('sort', this.value)">
+                    <option value="risk" ${teacherFilter.sort === 'risk' ? 'selected' : ''}>위험도순</option>
+                    <option value="stale" ${teacherFilter.sort === 'stale' ? 'selected' : ''}>미응답 오래된순</option>
+                    <option value="deadline" ${teacherFilter.sort === 'deadline' ? 'selected' : ''}>마감 임박순</option>
+                    <option value="name" ${teacherFilter.sort === 'name' ? 'selected' : ''}>이름순</option>
+                </select>
+                <select class="tf-sel" onchange="onTeacherFilter('risk', this.value)">
+                    <option value="all" ${teacherFilter.risk === 'all' ? 'selected' : ''}>전체 위험도</option>
+                    <option value="red" ${teacherFilter.risk === 'red' ? 'selected' : ''}>🔴 위험</option>
+                    <option value="yellow" ${teacherFilter.risk === 'yellow' ? 'selected' : ''}>🟡 주의</option>
+                    <option value="green" ${teacherFilter.risk === 'green' ? 'selected' : ''}>🟢 양호</option>
+                </select>
+                <select class="tf-sel" onchange="onTeacherFilter('cls', this.value)">${clsOpts}</select>
+            </div>`;
+        }
+        function onTeacherFilter(key, val) { teacherFilter[key] = val; renderStudentGrid(); }
+
+        function renderStudentGrid() {
+            const wrap = document.getElementById('tstudent-grid-wrap');
+            if (!wrap) return;
+            const order = { red: 0, yellow: 1, green: 2 };
+            let view = teacherStudents.slice();
+            const q = teacherFilter.q.trim().toLowerCase();
+            if (q) view = view.filter(s => (s.d.name || '').toLowerCase().includes(q) || (s.d.email || '').toLowerCase().includes(q));
+            if (teacherFilter.risk !== 'all') view = view.filter(s => s.risk.level === teacherFilter.risk);
+            if (teacherFilter.cls !== 'all') view = view.filter(s => (teacherState.studentClasses[s.id] || '미지정') === teacherFilter.cls);
+            if (teacherFilter.sort === 'risk') view.sort((a, b) => (order[a.risk.level] - order[b.risk.level]) || (b.risk.daysStale - a.risk.daysStale));
+            else if (teacherFilter.sort === 'stale') view.sort((a, b) => b.risk.daysStale - a.risk.daysStale);
+            else if (teacherFilter.sort === 'deadline') view.sort((a, b) => (a.stats.nearestDeadlineTime || Infinity) - (b.stats.nearestDeadlineTime || Infinity));
+            else if (teacherFilter.sort === 'name') view.sort((a, b) => (a.d.name || a.d.email || '').localeCompare(b.d.name || b.d.email || ''));
+            if (!view.length) { wrap.innerHTML = '<p class="rp-dim" style="padding:16px 4px;">조건에 맞는 학생이 없어요.</p>'; return; }
+            wrap.innerHTML = `<div class="tstudent-grid">` + view.map(s => teacherStudentCard(s)).join('') + `</div>`;
+        }
+
+        function teacherStudentCard(s) {
+            const p = s.d.profile || {};
+            const cls = teacherState.studentClasses[s.id] || '';
+            const sub = [p.grade ? p.grade + '학년' : '', p.major || ''].filter(Boolean).join(' · ') || (s.d.email || '');
+            return `<div class="tstudent-card">
+                <div class="tsc-top">${riskBadge(s.risk.level)}${cls ? `<span class="tsc-class">${esc(cls)}</span>` : ''}</div>
+                <div class="tsc-name">${esc(s.d.name || s.d.email)}</div>
+                <div class="tsc-email">${esc(sub)}</div>
+                <div class="tsc-stats"><span>🏫 ${s.stats.uniCount}개</span><span>✍️ ${s.stats.essayInProg}/${s.stats.essayTotal}</span><span>✅ ${s.stats.adminPct}%</span></div>
+                <div class="tsc-actions">
+                    <button onclick="openStudentDetail('${s.id}')">상세 보기</button>
+                    <button class="tsc-cls-btn" onclick="assignClass('${s.id}')">🏷️ 반</button>
+                </div>
+            </div>`;
+        }
+
+        async function assignClass(uid) {
+            const cur = teacherState.studentClasses[uid] || '';
+            const name = await showPrompt('반 지정', { message: '이 학생의 반/그룹 이름을 입력하세요. (비우면 지정 해제)', placeholder: '예: 3학년 A반, 조기전형팀', defaultValue: cur, confirmText: '저장', icon: '🏷️' });
+            if (name === null) return;
+            if (name.trim()) teacherState.studentClasses[uid] = name.trim();
+            else delete teacherState.studentClasses[uid];
+            await saveTeacherState();
+            renderTeacherDashboard();
+            toast('반 정보 저장됨 ✓', 'success');
         }
 
         function showTeacherList() {
@@ -5041,7 +5583,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (list) list.style.display = 'block';
         }
 
-        let currentStudentUid = null;
+        let currentStudentUid = null, currentStudentEmail = '', currentStudentName = '', currentStudentRisk = 'green';
         async function openStudentDetail(uid) {
             currentStudentUid = uid;
             const detail = document.getElementById('teacher-view-detail');
@@ -5052,27 +5594,86 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const snap = await fbDb.collection('students').doc(uid).get();
                 if (!snap.exists) { detail.innerHTML = '<p>데이터가 없어요.</p>'; return; }
                 const data = snap.data();
+                currentStudentEmail = data.email || '';
+                currentStudentName = (data.profile && (data.profile.nameKo || data.profile.nameEn)) || data.name || data.email || '학생';
+                currentStudentRisk = computeStudentRisk(data).level;
                 detail.innerHTML = `<button class="teacher-back" onclick="showTeacherList()">← 학생 목록</button>${buildStudentReport(data)}${buildFeedbackPanel(data)}`;
             } catch (e) { detail.innerHTML = `<div class="teacher-error">${esc(e.message)}</div>`; }
         }
 
         function buildFeedbackPanel(data) {
             const fb = Array.isArray(data.feedback) ? data.feedback : [];
-            const items = fb.slice().reverse().map(f =>
-                `<div class="fb-item"><div class="fb-meta">${esc(f.teacherName || f.teacherEmail || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</div><div class="fb-text">${esc(f.text)}</div></div>`).join('') || '<p class="rp-dim">아직 남긴 피드백이 없어요.</p>';
+            const items = fb.slice().reverse().map(f => {
+                const ack = f.ackAt
+                    ? `<span class="fb-acked">✓ 학생 확인함 · ${new Date(f.ackAt).toLocaleDateString('ko-KR')}</span>`
+                    : (f.id ? `<span class="fb-unacked">아직 확인 안 함</span>` : '');
+                return `<div class="fb-item"><div class="fb-meta">${esc(f.teacherName || f.teacherEmail || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')} ${ack}</div><div class="fb-text">${esc(f.text)}</div></div>`;
+            }).join('') || '<p class="rp-dim">아직 남긴 피드백이 없어요.</p>';
+            const tpls = (teacherState.feedbackTemplates || []).map((t, i) =>
+                `<button type="button" class="fb-tpl" onclick="insertFbTemplate(${i})" title="${esc(t)}">${esc(t.length > 22 ? t.slice(0, 22) + '…' : t)}</button>`).join('');
             return `<div class="report-section fb-section"><h4>💬 피드백 남기기</h4>
-                <textarea id="fb-input" class="fb-textarea" rows="3" placeholder="학생에게 남길 피드백을 입력하세요 (학생이 로그인하면 홈에서 볼 수 있어요)"></textarea>
+                ${tpls ? `<div class="fb-tpl-row">${tpls}</div>` : ''}
+                <textarea id="fb-input" class="fb-textarea" rows="3" placeholder="학생에게 남길 피드백을 입력하세요 (학생이 로그인하면 홈에서 볼 수 있어요). 위 템플릿을 눌러 빠르게 시작할 수 있어요."></textarea>
                 <div><button class="fb-submit" onclick="submitFeedback()">피드백 저장</button></div>
                 <div class="fb-list">${items}</div></div>`;
         }
+        function insertFbTemplate(i) {
+            const t = (teacherState.feedbackTemplates || [])[i];
+            const ta = document.getElementById('fb-input');
+            if (!t || !ta) return;
+            ta.value = ta.value ? (ta.value.replace(/\s*$/, '') + ' ' + t) : t;
+            ta.focus();
+        }
 
+        // ===== EmailJS: premium feedback-notification email (optional; fill EMAILJS_CONFIG to enable) =====
+        const EMAILJS_CONFIG = { publicKey: '', serviceId: '', templateId: '' };
+        let emailjsReady = null;
+        function ensureEmailJs() {
+            if (!EMAILJS_CONFIG.publicKey || !EMAILJS_CONFIG.serviceId || !EMAILJS_CONFIG.templateId) return Promise.reject(new Error('not-configured'));
+            if (emailjsReady) return emailjsReady;
+            emailjsReady = new Promise((resolve, reject) => {
+                if (window.emailjs) { try { window.emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey }); } catch (e) {} return resolve(window.emailjs); }
+                const s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+                s.onload = () => { try { window.emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey }); resolve(window.emailjs); } catch (e) { reject(e); } };
+                s.onerror = () => reject(new Error('emailjs-load-failed'));
+                document.head.appendChild(s);
+            });
+            return emailjsReady;
+        }
+        async function sendFeedbackEmail(kind) {
+            if (!currentStudentEmail) return;
+            const urgencyMap = { red: '🔴 긴급 · 즉시 확인', yellow: '🟡 중요 · 확인 요망', green: '🔵 신규 피드백' };
+            const params = {
+                to_email: currentStudentEmail,
+                student_name: currentStudentName || '학생',
+                teacher_name: currentUser.displayName || currentUser.email || '선생님',
+                feedback_text: lastFeedbackText || '',
+                feedback_context: kind === 'essay' ? '에세이 피드백' : '종합 피드백',
+                urgency_label: urgencyMap[currentStudentRisk] || urgencyMap.green,
+                date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }),
+                app_url: 'https://y0se0p.github.io'
+            };
+            try {
+                const ej = await ensureEmailJs();
+                await ej.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, params);
+                toast('알림 이메일이 발송됐어요 📧', 'success');
+            } catch (e) {
+                if (e && e.message === 'not-configured') return; // silently skip until the teacher sets up EmailJS
+                console.warn('email send failed', e);
+            }
+        }
+
+        let lastFeedbackText = '';
         async function submitFeedback() {
             const ta = document.getElementById('fb-input');
             const text = (ta.value || '').trim();
             if (!text || !currentStudentUid) return;
-            const entry = { text, teacherEmail: currentUser.email, teacherName: currentUser.displayName || currentUser.email, at: Date.now() };
+            lastFeedbackText = text;
+            const entry = { id: generateUniqueId('fb-'), text, teacherEmail: currentUser.email, teacherName: currentUser.displayName || currentUser.email, at: Date.now() };
             try {
                 await fbDb.collection('students').doc(currentStudentUid).update({ feedback: firebase.firestore.FieldValue.arrayUnion(entry) });
+                sendFeedbackEmail('general');
                 openStudentDetail(currentStudentUid);
             } catch (e) { toast('피드백 저장 실패: ' + e.message, 'error'); }
         }
@@ -5090,10 +5691,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const input = document.getElementById('efb-input-' + eid);
             const text = (input.value || '').trim();
             if (!text || !currentStudentUid) return;
-            const entry = { text, teacherEmail: currentUser.email, teacherName: currentUser.displayName || currentUser.email, at: Date.now() };
+            lastFeedbackText = text;
+            const entry = { id: generateUniqueId('efb-'), text, teacherEmail: currentUser.email, teacherName: currentUser.displayName || currentUser.email, at: Date.now() };
             openEssayFbIds.add(eid); // keep this panel open after refresh
             try {
                 await fbDb.collection('students').doc(currentStudentUid).update({ ['essayFeedback.' + eid]: firebase.firestore.FieldValue.arrayUnion(entry) });
+                sendFeedbackEmail('essay');
                 openStudentDetail(currentStudentUid);
             } catch (e) { toast('피드백 저장 실패: ' + e.message, 'error'); }
         }
@@ -5208,6 +5811,162 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
          * Simulates page switching by showing/hiding sections.
          * @param {string} sectionId - The ID of the section to display.
          */
+        // ================= Application Manager (지원 관리) =================
+        let recommenders = [];
+        let activities = [];
+        let requirements = {}; // { uniId: {app,rec,transcript,test,supp,interview} }
+        const REQ_COLS = [
+            { key: 'app', label: '원서 제출' },
+            { key: 'rec', label: '추천서' },
+            { key: 'transcript', label: '성적표' },
+            { key: 'test', label: '시험점수' },
+            { key: 'supp', label: '서플 에세이' },
+            { key: 'interview', label: '인터뷰' }
+        ];
+        const REC_STATUS_CLASS = { '요청 전': 'rst-req0', '요청함': 'rst-req1', '작성 중': 'rst-wip', '제출 완료': 'rst-done' };
+
+        function loadAppManager() {
+            recommenders = safeParse(localStorage.getItem('myRecommenders'), []) || [];
+            activities = safeParse(localStorage.getItem('myActivities'), []) || [];
+            requirements = safeParse(localStorage.getItem('myRequirements'), {}) || {};
+            renderRecommenders(); renderActivities(); renderRequirements();
+        }
+        function saveRecommenders() { localStorage.setItem('myRecommenders', JSON.stringify(recommenders)); }
+        function saveActivities() { localStorage.setItem('myActivities', JSON.stringify(activities)); }
+        function saveRequirements() { localStorage.setItem('myRequirements', JSON.stringify(requirements)); }
+
+        function renderRecommenders() {
+            const el = document.getElementById('rec-list'); if (!el) return;
+            if (!recommenders.length) { el.innerHTML = '<div class="am-empty">아직 추천서가 없어요. "+ 추천서 추가"로 시작하세요.</div>'; return; }
+            el.innerHTML = recommenders.map(r => `
+                <div class="rec-card">
+                    <div class="rec-main">
+                        <div class="rec-name">${esc(r.name || '(이름 없음)')}</div>
+                        <div class="rec-meta">${esc(r.role || '')}${r.note ? ' · ' + esc(r.note) : ''}${r.date ? ' · 요청 ' + esc(r.date) : ''}</div>
+                    </div>
+                    <span class="rec-status ${REC_STATUS_CLASS[r.status] || 'rst-req0'}">${esc(r.status || '요청 전')}</span>
+                    <div class="rec-actions">
+                        <button class="am-icon-btn" onclick="openRecModal('${r.id}')" title="수정">✏️</button>
+                        <button class="am-icon-btn" onclick="deleteRec('${r.id}')" title="삭제">🗑️</button>
+                    </div>
+                </div>`).join('');
+        }
+        function openRecModal(id) {
+            const r = id ? recommenders.find(x => x.id === id) : null;
+            document.getElementById('rec-id').value = r ? r.id : '';
+            document.getElementById('rec-name').value = r ? (r.name || '') : '';
+            document.getElementById('rec-role').value = r ? (r.role || '담임/교과 교사') : '담임/교과 교사';
+            document.getElementById('rec-status').value = r ? (r.status || '요청 전') : '요청 전';
+            document.getElementById('rec-email').value = r ? (r.email || '') : '';
+            document.getElementById('rec-date').value = r ? (r.date || '') : '';
+            document.getElementById('rec-note').value = r ? (r.note || '') : '';
+            document.getElementById('rec-modal').classList.remove('hidden');
+        }
+        function closeRecModal() { document.getElementById('rec-modal').classList.add('hidden'); }
+        function saveRec() {
+            const id = document.getElementById('rec-id').value;
+            const name = document.getElementById('rec-name').value.trim();
+            if (!name) { toast('추천인 이름을 입력해주세요.', 'error'); return; }
+            const data = {
+                name,
+                role: document.getElementById('rec-role').value,
+                status: document.getElementById('rec-status').value,
+                email: document.getElementById('rec-email').value.trim(),
+                date: document.getElementById('rec-date').value,
+                note: document.getElementById('rec-note').value.trim()
+            };
+            if (id) { const r = recommenders.find(x => x.id === id); if (r) Object.assign(r, data); }
+            else { recommenders.push({ id: generateUniqueId('rec-'), ...data }); }
+            saveRecommenders(); renderRecommenders(); closeRecModal(); toast('추천서 저장됨 ✓', 'success');
+        }
+        async function deleteRec(id) {
+            if (!(await showConfirm('추천서 삭제', '이 추천서 항목을 삭제할까요?', { danger: true, confirmText: '삭제', icon: '🗑️' }))) return;
+            recommenders = recommenders.filter(x => x.id !== id); saveRecommenders(); renderRecommenders();
+        }
+
+        function renderActivities() {
+            const el = document.getElementById('activity-list'); if (!el) return;
+            if (!activities.length) { el.innerHTML = '<div class="am-empty">아직 활동·수상이 없어요. "+ 활동/수상 추가"로 시작하세요.</div>'; return; }
+            el.innerHTML = activities.map(a => `
+                <div class="act-card">
+                    <div class="act-top">
+                        <span class="act-kind ${a.kind || '활동'}">${a.kind || '활동'}</span>
+                        <span class="act-name">${esc(a.name || '')}</span>
+                        ${a.role ? `<span class="act-role">${esc(a.role)}</span>` : ''}
+                        <div class="act-actions">
+                            <button class="am-icon-btn" onclick="openActivityModal('${a.id}')" title="수정">✏️</button>
+                            <button class="am-icon-btn" onclick="deleteActivity('${a.id}')" title="삭제">🗑️</button>
+                        </div>
+                    </div>
+                    ${a.description ? `<div class="act-desc">${esc(a.description)}</div>` : ''}
+                    ${(a.category || (a.grades && a.grades.length)) ? `<div class="act-grades-tag">${a.category ? esc(a.category) : ''}${a.category && a.grades && a.grades.length ? ' · ' : ''}${a.grades && a.grades.length ? ('학년 ' + a.grades.join(', ')) : ''}</div>` : ''}
+                </div>`).join('');
+        }
+        function updateActDescCount() {
+            const t = document.getElementById('act-desc'), c = document.getElementById('act-desc-count');
+            if (t && c) c.textContent = `(${t.value.length}/150)`;
+        }
+        function openActivityModal(id) {
+            const a = id ? activities.find(x => x.id === id) : null;
+            document.getElementById('act-id').value = a ? a.id : '';
+            document.getElementById('act-kind').value = a ? (a.kind || '활동') : '활동';
+            document.getElementById('act-category').value = a ? (a.category || '') : '';
+            document.getElementById('act-name').value = a ? (a.name || '') : '';
+            document.getElementById('act-role').value = a ? (a.role || '') : '';
+            document.getElementById('act-desc').value = a ? (a.description || '') : '';
+            document.querySelectorAll('.act-grade').forEach(cb => { cb.checked = !!(a && a.grades && a.grades.includes(Number(cb.value))); });
+            updateActDescCount();
+            document.getElementById('activity-modal').classList.remove('hidden');
+        }
+        function closeActivityModal() { document.getElementById('activity-modal').classList.add('hidden'); }
+        function saveActivity() {
+            const id = document.getElementById('act-id').value;
+            const name = document.getElementById('act-name').value.trim();
+            if (!name) { toast('활동/수상 이름을 입력해주세요.', 'error'); return; }
+            const grades = [...document.querySelectorAll('.act-grade:checked')].map(cb => Number(cb.value));
+            const data = {
+                kind: document.getElementById('act-kind').value,
+                category: document.getElementById('act-category').value.trim(),
+                name,
+                role: document.getElementById('act-role').value.trim(),
+                description: document.getElementById('act-desc').value.trim(),
+                grades
+            };
+            if (id) { const a = activities.find(x => x.id === id); if (a) Object.assign(a, data); }
+            else { activities.push({ id: generateUniqueId('act-'), ...data }); }
+            saveActivities(); renderActivities(); closeActivityModal(); toast('활동/수상 저장됨 ✓', 'success');
+        }
+        async function deleteActivity(id) {
+            if (!(await showConfirm('활동/수상 삭제', '이 항목을 삭제할까요?', { danger: true, confirmText: '삭제', icon: '🗑️' }))) return;
+            activities = activities.filter(x => x.id !== id); saveActivities(); renderActivities();
+        }
+
+        function renderRequirements() {
+            const el = document.getElementById('requirements-table'); if (!el) return;
+            const unis = typeof universities !== 'undefined' ? universities : [];
+            if (!unis.length) { el.innerHTML = '<div class="am-empty">University List에 대학을 추가하면 학교별 요구사항이 여기에 표시돼요.</div>'; return; }
+            let html = '<div class="req-wrap"><table class="req-table"><thead><tr><th style="text-align:left;">학교</th>';
+            REQ_COLS.forEach(c => html += `<th>${c.label}</th>`);
+            html += '<th>완료율</th></tr></thead><tbody>';
+            unis.forEach(u => {
+                const req = requirements[u.id] || {};
+                const doneCount = REQ_COLS.filter(c => req[c.key]).length;
+                const pct = Math.round(doneCount / REQ_COLS.length * 100);
+                html += `<tr><td class="req-uni">${esc(u.nameEn || u.nameKo || '(이름 없음)')}</td>`;
+                REQ_COLS.forEach(c => {
+                    html += `<td><input type="checkbox" class="req-check" ${req[c.key] ? 'checked' : ''} onchange="toggleRequirement('${u.id}','${c.key}',this.checked)"></td>`;
+                });
+                html += `<td class="req-progress" style="color:${pct === 100 ? '#16a34a' : 'var(--text-muted)'}">${pct}%</td></tr>`;
+            });
+            html += '</tbody></table></div>';
+            el.innerHTML = html;
+        }
+        function toggleRequirement(uniId, key, checked) {
+            if (!requirements[uniId]) requirements[uniId] = {};
+            requirements[uniId][key] = checked;
+            saveRequirements(); renderRequirements();
+        }
+
         function showSection(sectionId) {
             // Hide all main content sections
             document.querySelectorAll('main section.card').forEach(section => {
@@ -5231,6 +5990,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 if (personalNotesTabButton) {
                     openTab({currentTarget: personalNotesTabButton}, 'personal-notes');
                 }
+            } else if (sectionId === 'app-manager') {
+                loadAppManager();
             }
 
             // Update the URL hash, allowing direct linking to sections and browser history navigation
@@ -5321,6 +6082,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             renderSupplementalEssays(); // Renders the essay list
             renderFavoriteUniversities(); // Populates and displays favorite university selections
             renderProsConsCards(); // Render pros/cons cards initially
+            loadAppManager(); // Load recommendation letters, activities, and requirements
 
             // Render the calendar and upcoming deadlines list for the current month
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
