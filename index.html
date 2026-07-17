@@ -1643,6 +1643,103 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .am-row .am-field{ flex:1; }
         .am-grades{ display:flex; gap:16px; }
         .am-grades label{ display:flex; align-items:center; gap:5px; font-weight:600; color:var(--text); font-size:0.95rem; cursor:pointer; }
+        .am-add.sm{ padding:6px 12px; font-size:0.82rem; }
+        .am-mini-btn{ background:var(--surface-2); border:1px solid var(--border); color:var(--text); font-size:0.8rem; font-weight:700; padding:6px 12px; border-radius:9px; cursor:pointer; transition:all .15s; }
+        .am-mini-btn:hover{ background:var(--surface-3); }
+        .am-mini-btn.danger:hover{ background:#ff3b30; border-color:#ff3b30; color:#fff; }
+
+        /* Academics */
+        .acad-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:20px; }
+        .acad-grid.acad-grid-3{ grid-template-columns:repeat(3, 1fr); }
+        .acad-sub-label{ font-size:0.88rem; font-weight:700; color:var(--text); margin:0 0 10px; }
+        .acad-sub-label span{ font-weight:500; color:var(--text-faint); font-size:0.82rem; }
+        .acad-sem-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:22px; }
+        @media (max-width: 640px){ .acad-grid.acad-grid-3{ grid-template-columns:repeat(3,1fr); } .acad-sem-grid{ grid-template-columns:repeat(2,1fr); } }
+
+        /* Teacher: student detail tabs + read-only profile view */
+        .std-detail-head{ margin:14px 0 4px; }
+        .std-detail-name{ font-size:1.5rem; font-weight:850; color:var(--text); letter-spacing:-0.02em; }
+        .std-detail-sub{ color:var(--text-muted); font-size:0.92rem; margin-top:2px; }
+        .std-tabs{ display:flex; gap:8px; margin:16px 0 20px; border-bottom:1px solid var(--border); }
+        .std-tab{ background:none; border:none; border-bottom:2.5px solid transparent; padding:10px 6px; margin-bottom:-1px; font-size:0.98rem; font-weight:700; color:var(--text-muted); cursor:pointer; transition:color .15s, border-color .15s; }
+        .std-tab:hover{ color:var(--text); }
+        .std-tab.active{ color:var(--accent); border-bottom-color:var(--accent); }
+        .pv-wrap{ display:flex; flex-direction:column; gap:22px; }
+        .pv-section h4{ font-size:1.15rem; font-weight:800; color:var(--text); margin:0 0 12px; }
+        .pv-sub{ font-size:0.8rem; font-weight:700; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; margin:14px 0 8px; }
+        .pv-kv-row{ display:flex; flex-wrap:wrap; gap:10px; }
+        .pv-kv{ flex:1 1 120px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:10px 14px; }
+        .pv-k{ display:block; font-size:0.75rem; color:var(--text-faint); font-weight:700; }
+        .pv-v{ display:block; font-size:1.15rem; font-weight:800; color:var(--text); font-variant-numeric:tabular-nums; }
+        .pv-sem-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+        .pv-sem{ background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:8px 6px; text-align:center; }
+        .pv-sem-l{ display:block; font-size:0.72rem; color:var(--text-faint); font-weight:700; }
+        .pv-sem-v{ display:block; font-size:1rem; font-weight:800; color:var(--text); font-variant-numeric:tabular-nums; }
+        .pv-chips{ display:flex; flex-wrap:wrap; gap:7px; }
+        .pv-chip{ font-size:0.82rem; font-weight:600; padding:5px 11px; border-radius:999px; background:rgba(0,113,227,0.1); color:var(--accent); }
+        .pv-chip.alt{ background:rgba(124,58,237,0.12); color:#7c3aed; }
+        html[data-theme="dark"] .pv-chip.alt{ color:#c4b5fd; background:rgba(124,58,237,0.28); }
+        .pv-chip b{ font-weight:800; }
+        .pv-act{ background:var(--surface-2); border:1px solid var(--border); border-radius:13px; padding:13px 15px; margin-bottom:10px; }
+        .pv-act-top{ display:flex; align-items:center; gap:9px; }
+        .pv-act-num{ width:22px; height:22px; border-radius:7px; background:var(--surface-3); color:var(--text-muted); font-weight:800; font-size:0.78rem; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+        .pv-act-title{ font-weight:700; color:var(--text); flex:1; min-width:0; }
+        .pv-act-type{ font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:999px; background:#e0e7ff; color:#4338ca; white-space:nowrap; }
+        html[data-theme="dark"] .pv-act-type{ background:rgba(67,56,202,0.35); color:#c7d2fe; }
+        .pv-act-desc{ color:var(--text-muted); font-size:0.88rem; margin-top:7px; line-height:1.5; }
+        .pv-act-details{ color:var(--text); font-size:0.88rem; margin-top:6px; line-height:1.55; white-space:pre-line; padding-top:6px; border-top:1px dashed var(--border); }
+        .pv-act-timing{ color:var(--text-faint); font-size:0.8rem; margin-top:7px; }
+        @media (max-width:640px){ .pv-sem-grid{ grid-template-columns:repeat(2,1fr); } }
+        .acad-field{ display:flex; flex-direction:column; }
+        .acad-field.acad-span2{ grid-column:span 2; }
+        .acad-field label{ font-size:0.78rem; font-weight:700; color:var(--text-muted); margin-bottom:5px; }
+        .acad-field input{ padding:10px 12px; border-radius:11px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.98rem; outline:none; }
+        .acad-field input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,113,227,0.15); }
+        .acad-tests-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; font-size:0.88rem; font-weight:700; color:var(--text-muted); }
+        .acad-test-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px; }
+        .acad-test-card{ display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:8px 10px; }
+        .acad-test-name{ flex:1.4; min-width:0; padding:8px 10px; border-radius:9px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.9rem; outline:none; }
+        .acad-test-score{ flex:0.8; min-width:0; padding:8px 10px; border-radius:9px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.9rem; outline:none; }
+        .acad-test-name:focus, .acad-test-score:focus{ border-color:var(--accent); }
+
+        /* Activities (expandable) */
+        .act-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; margin-bottom:10px; overflow:hidden; }
+        .act-head{ display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer; user-select:none; }
+        .act-num{ flex:0 0 auto; width:26px; height:26px; border-radius:8px; background:var(--surface-3); color:var(--text-muted); font-weight:800; font-size:0.85rem; display:flex; align-items:center; justify-content:center; }
+        .act-headmain{ flex:1; min-width:0; }
+        .act-title{ font-weight:700; color:var(--text); font-size:0.98rem; }
+        .act-summary{ color:var(--text-muted); font-size:0.85rem; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .act-card.open .act-summary{ white-space:normal; }
+        .act-typechip{ flex:0 0 auto; font-size:0.72rem; font-weight:700; padding:3px 9px; border-radius:999px; background:#e0e7ff; color:#4338ca; white-space:nowrap; }
+        html[data-theme="dark"] .act-typechip{ background:rgba(67,56,202,0.35); color:#c7d2fe; }
+        .act-chev{ flex:0 0 auto; color:var(--text-faint); transition:transform .2s; }
+        .act-card.open .act-chev{ transform:rotate(180deg); }
+        .act-expand{ max-height:0; overflow:hidden; transition:max-height .25s ease; }
+        .act-card.open .act-expand{ max-height:600px; }
+        .act-detail-block{ padding:0 16px 12px; }
+        .act-detail-label{ font-size:0.76rem; font-weight:800; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:5px; }
+        .act-detail-text{ color:var(--text); font-size:0.92rem; line-height:1.6; white-space:pre-line; }
+        .act-timing{ padding:0 16px 12px; color:var(--text-muted); font-size:0.85rem; }
+        .act-actions2{ display:flex; gap:8px; padding:0 16px 14px; }
+
+        /* Honors table */
+        .hon-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:14px; }
+        table.hon-table{ width:100%; border-collapse:collapse; font-size:0.9rem; min-width:440px; }
+        .hon-table th, .hon-table td{ padding:11px 12px; border-bottom:1px solid var(--border); text-align:center; }
+        .hon-table th{ background:var(--surface-2); color:var(--text-muted); font-weight:700; font-size:0.8rem; }
+        .hon-table tr:last-child td{ border-bottom:none; }
+        .hon-table td.hon-title{ text-align:left; font-weight:700; color:var(--text); }
+        .hon-year{ color:var(--text-muted); font-variant-numeric:tabular-nums; }
+        .hon-level{ font-size:0.74rem; font-weight:800; padding:3px 10px; border-radius:999px; white-space:nowrap; }
+        .hl-intl{ background:#fee2e2; color:#b91c1c; }
+        .hl-natl{ background:#ffedd5; color:#b45309; }
+        .hl-reg{ background:#dbeafe; color:#1e40af; }
+        .hl-sch{ background:#f3f4f6; color:#4b5563; }
+        html[data-theme="dark"] .hl-intl{ background:rgba(185,28,28,0.35); color:#fca5a5; }
+        html[data-theme="dark"] .hl-natl{ background:rgba(180,83,9,0.35); color:#fcd34d; }
+        html[data-theme="dark"] .hl-reg{ background:rgba(30,64,175,0.4); color:#93c5fd; }
+        html[data-theme="dark"] .hl-sch{ background:rgba(120,120,128,0.24); color:#c7c7cc; }
+        @media (max-width: 640px){ .acad-grid{ grid-template-columns:repeat(2, 1fr); } .acad-field.acad-span2{ grid-column:span 2; } }
 
         /* feedback read-receipt */
         .sfb-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
@@ -1839,7 +1936,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <a href="#home" onclick="showSection('home')">Home</a>
                 <a href="#university-list" onclick="showSection('university-list')">University List</a>
                 <a href="#my-essays" onclick="showSection('my-essays')">My Essays</a>
-                <a href="#app-manager" onclick="showSection('app-manager')">지원 관리</a>
+                <a href="#app-manager" onclick="showSection('app-manager')">Profile</a>
                 <a href="#my-notes" onclick="showSection('my-notes')">To-Do List</a>
                 <button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="다크모드 전환" aria-label="다크모드 전환">🌙</button>
                 <button type="button" class="dash-data-btn" onclick="openDataModal()" title="데이터 백업·캘린더">⚙️</button>
@@ -2143,8 +2240,51 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
         <!-- Application Manager: recommendation letters, activities/honors, per-school requirements -->
         <section id="app-manager" class="bg-white p-8 rounded-xl card transition-shadow duration-300 hover:shadow-xl">
-            <h2 class="text-3xl font-bold mb-2 section-title">📋 지원 관리</h2>
-            <p class="text-lg leading-relaxed mb-8">추천서, 활동·수상, 학교별 요구사항까지 — 원서에서 가장 자주 놓치는 것들을 한 곳에서 챙기세요.</p>
+            <h2 class="text-3xl font-bold mb-2 section-title">🎓 Student Profile</h2>
+            <p class="text-lg leading-relaxed mb-8">Common App 구조 그대로 — 성적·활동·수상을 한 곳에 정리해 원서의 뼈대를 미리 완성하세요.</p>
+
+            <!-- Academics -->
+            <div class="am-block">
+                <div class="am-head"><h3>📊 Academics</h3></div>
+                <p class="am-sub">GPA·표준화 시험 점수를 기록하고, Duolingo·IELTS 같은 공인 성적은 자유롭게 추가하세요.</p>
+                <div class="acad-grid acad-grid-3">
+                    <div class="acad-field"><label>GPA 기준</label><input type="text" id="acad-gpa-scale" placeholder="예: 4.0 / 4.5" oninput="saveAcademics()"></div>
+                    <div class="acad-field"><label>SAT</label><input type="text" id="acad-sat" placeholder="예: 1500" oninput="saveAcademics()"></div>
+                    <div class="acad-field"><label>ACT</label><input type="text" id="acad-act" placeholder="예: 34" oninput="saveAcademics()"></div>
+                </div>
+                <div class="acad-sub-label">학기별 GPA <span>(9학년 1학기 → 12학년 2학기)</span></div>
+                <div class="acad-sem-grid" id="acad-sem-grid"></div>
+                <div class="acad-tests-head">
+                    <span>AP 과목 · 점수</span>
+                    <button type="button" class="am-add sm" onclick="addAp()">+ AP 추가</button>
+                </div>
+                <div id="acad-aps"></div>
+                <div class="acad-tests-head" style="margin-top:18px;">
+                    <span>공인 성적 (Duolingo · IELTS · TOEFL 등)</span>
+                    <button type="button" class="am-add sm" onclick="addAcadTest()">+ 성적 추가</button>
+                </div>
+                <div id="acad-tests"></div>
+            </div>
+
+            <!-- Activities (Common App 10) -->
+            <div class="am-block">
+                <div class="am-head">
+                    <h3>🎯 Activities</h3>
+                    <button type="button" class="am-add" onclick="openActivityModal()">+ 활동 추가</button>
+                </div>
+                <p class="am-sub">Common App 핵심 활동 <b>10개</b>를 중요도 순으로. 직책·조직·요약을 단정하게 쓰고, 카드를 펼쳐 세부 기여도와 성과를 더하세요.</p>
+                <div id="activity-list"></div>
+            </div>
+
+            <!-- Honors -->
+            <div class="am-block">
+                <div class="am-head">
+                    <h3>🏆 Honors</h3>
+                    <button type="button" class="am-add" onclick="openHonorModal()">+ 수상 추가</button>
+                </div>
+                <p class="am-sub">교내외 수상을 이름 · 수준(International/National/Regional/School) · 연도로 관리하세요.</p>
+                <div id="honor-list"></div>
+            </div>
 
             <!-- Recommendation letters -->
             <div class="am-block">
@@ -2154,16 +2294,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 </div>
                 <p class="am-sub">추천서를 써주실 분과 진행 상태를 추적하세요. 마감 직전 펑크를 막는 가장 중요한 체크예요.</p>
                 <div id="rec-list"></div>
-            </div>
-
-            <!-- Activities & honors -->
-            <div class="am-block">
-                <div class="am-head">
-                    <h3>🏆 활동 · 수상 목록</h3>
-                    <button type="button" class="am-add" onclick="openActivityModal()">+ 활동/수상 추가</button>
-                </div>
-                <p class="am-sub">Common App 활동 10개 · 수상 5개를 미리 정리·압축하세요. 설명은 150자 이내로 다듬는 연습을 해두면 원서 시즌이 편해요.</p>
-                <div id="activity-list"></div>
             </div>
 
             <!-- Per-school requirements -->
@@ -2307,26 +2437,39 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         </div>
     </div>
 
-    <!-- Activity / honor add/edit modal -->
+    <!-- Activity (Common App style) add/edit modal -->
     <div id="activity-modal" class="modal hidden">
-        <div class="modal-content" style="max-width:560px;">
+        <div class="modal-content" style="max-width:580px;">
             <span class="close-button" onclick="closeActivityModal()">×</span>
-            <h2 class="text-2xl font-bold mb-6">🏆 활동 · 수상</h2>
+            <h2 class="text-2xl font-bold mb-6">🎯 활동 (Activity)</h2>
             <input type="hidden" id="act-id">
             <div class="am-form">
                 <div class="am-row">
-                    <div class="am-field"><label>구분</label>
-                        <select id="act-kind"><option value="활동">활동 (Activity)</option><option value="수상">수상 (Honor/Award)</option></select>
+                    <div class="am-field"><label>조직 / 활동명 (Organization)</label><input type="text" id="act-org" placeholder="예: 로봇공학 동아리, Model UN"></div>
+                    <div class="am-field"><label>분야 (Type)</label>
+                        <select id="act-type">
+                            <option value="">선택</option>
+                            <option>Academic</option><option>Art</option><option>Athletics</option>
+                            <option>Community Service</option><option>Career</option><option>Debate/Speech</option>
+                            <option>Leadership</option><option>Music</option><option>Research</option>
+                            <option>Science/Math</option><option>Volunteer</option><option>Other</option>
+                        </select>
                     </div>
-                    <div class="am-field"><label>분야 (선택)</label><input type="text" id="act-category" placeholder="예: 학술, 봉사, 스포츠, 예술"></div>
                 </div>
-                <div class="am-field"><label>이름 / 조직</label><input type="text" id="act-name" placeholder="예: 로봇공학 동아리 / 전국 수학경시대회"></div>
-                <div class="am-field"><label>역할 / 직책 (선택)</label><input type="text" id="act-role" placeholder="예: 회장, 팀장, 금상"></div>
+                <div class="am-field"><label>직책 / 역할 (Position/Leadership)</label><input type="text" id="act-position" placeholder="예: President, Team Captain, Founder"></div>
                 <div class="am-field">
-                    <label>설명 <span id="act-desc-count" style="font-weight:400; color:var(--text-faint);">(0/150)</span></label>
-                    <textarea id="act-desc" rows="3" maxlength="150" placeholder="한 일과 성과를 임팩트 있게 (150자 이내)" oninput="updateActDescCount()"></textarea>
+                    <label>활동 요약 <span id="act-desc-count" style="font-weight:400; color:var(--text-faint);">(0/150)</span></label>
+                    <textarea id="act-desc" rows="2" maxlength="150" placeholder="Common App 규격: 한 일과 성과를 150자 이내로 임팩트 있게" oninput="updateActDescCount()"></textarea>
                 </div>
-                <div class="am-field"><label>참여 학년 (선택)</label>
+                <div class="am-field">
+                    <label>세부 기여도 & 성과 (상세 — 나만 보는 메모)</label>
+                    <textarea id="act-details" rows="4" placeholder="구체적인 역할, 수치 성과, 배운 점 등을 자유롭게. (원서 요약을 다듬는 재료가 돼요)"></textarea>
+                </div>
+                <div class="am-row">
+                    <div class="am-field"><label>주당 시간 (Hrs/Week)</label><input type="text" id="act-hours" placeholder="예: 5"></div>
+                    <div class="am-field"><label>연간 주수 (Weeks/Year)</label><input type="text" id="act-weeks" placeholder="예: 30"></div>
+                </div>
+                <div class="am-field"><label>참여 학년</label>
                     <div class="am-grades">
                         <label><input type="checkbox" class="act-grade" value="9"> 9</label>
                         <label><input type="checkbox" class="act-grade" value="10"> 10</label>
@@ -2338,6 +2481,35 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <div class="flex justify-end gap-3 mt-6">
                 <button type="button" class="data-btn" onclick="closeActivityModal()">취소</button>
                 <button type="button" class="data-btn primary" onclick="saveActivity()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Honor / award add/edit modal -->
+    <div id="honor-modal" class="modal hidden">
+        <div class="modal-content" style="max-width:480px;">
+            <span class="close-button" onclick="closeHonorModal()">×</span>
+            <h2 class="text-2xl font-bold mb-6">🏆 수상 (Honor)</h2>
+            <input type="hidden" id="hon-id">
+            <div class="am-form">
+                <div class="am-field"><label>수상명 (Title)</label><input type="text" id="hon-title" placeholder="예: 전국 수학경시대회 금상, AP Scholar"></div>
+                <div class="am-row">
+                    <div class="am-field"><label>수상 수준 (Level)</label>
+                        <select id="hon-level">
+                            <option value="School">School (교내)</option>
+                            <option value="Regional">Regional (지역)</option>
+                            <option value="National">National (전국)</option>
+                            <option value="International">International (국제)</option>
+                        </select>
+                    </div>
+                    <div class="am-field"><label>수상 연도 (Year)</label>
+                        <select id="hon-year"><option value="">선택</option></select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="data-btn" onclick="closeHonorModal()">취소</button>
+                <button type="button" class="data-btn primary" onclick="saveHonor()">저장</button>
             </div>
         </div>
     </div>
@@ -4694,7 +4866,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             setTimeout(() => location.reload(), 900);
         }
 
-        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements'];
+        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors'];
 
         function triggerDownload(filename, content, mime) {
             const blob = new Blob([content], { type: mime });
@@ -5657,7 +5829,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (list) list.style.display = 'block';
         }
 
-        let currentStudentUid = null, currentStudentEmail = '', currentStudentName = '', currentStudentRisk = 'green';
+        let currentStudentUid = null, currentStudentEmail = '', currentStudentName = '', currentStudentRisk = 'green', currentStudentData = null;
         async function openStudentDetail(uid) {
             currentStudentUid = uid;
             const detail = document.getElementById('teacher-view-detail');
@@ -5668,11 +5840,75 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const snap = await fbDb.collection('students').doc(uid).get();
                 if (!snap.exists) { detail.innerHTML = '<p>데이터가 없어요.</p>'; return; }
                 const data = snap.data();
+                currentStudentData = data;
                 currentStudentEmail = data.email || '';
                 currentStudentName = (data.profile && (data.profile.nameKo || data.profile.nameEn)) || data.name || data.email || '학생';
                 currentStudentRisk = computeStudentRisk(data).level;
-                detail.innerHTML = `<button class="teacher-back" onclick="showTeacherList()">← 학생 목록</button>${buildStudentReport(data)}${buildFeedbackPanel(data)}`;
+                const p = data.profile || {};
+                const sub = [p.grade ? p.grade + '학년' : '', p.major || ''].filter(Boolean).join(' · ');
+                detail.innerHTML = `
+                    <button class="teacher-back" onclick="showTeacherList()">← 학생 목록</button>
+                    <div class="std-detail-head">
+                        <div class="std-detail-name">${esc(currentStudentName)}</div>
+                        <div class="std-detail-sub">${esc(sub || currentStudentEmail)}</div>
+                    </div>
+                    <div class="std-tabs">
+                        <button class="std-tab" id="std-tab-report" onclick="switchStudentTab('report')">📊 진행 현황</button>
+                        <button class="std-tab" id="std-tab-profile" onclick="switchStudentTab('profile')">🎓 프로필</button>
+                    </div>
+                    <div id="std-tab-content"></div>`;
+                switchStudentTab('report');
             } catch (e) { detail.innerHTML = `<div class="teacher-error">${esc(e.message)}</div>`; }
+        }
+        function switchStudentTab(tab) {
+            const data = currentStudentData; if (!data) return;
+            const rBtn = document.getElementById('std-tab-report'), pBtn = document.getElementById('std-tab-profile');
+            if (rBtn) rBtn.classList.toggle('active', tab === 'report');
+            if (pBtn) pBtn.classList.toggle('active', tab === 'profile');
+            const c = document.getElementById('std-tab-content'); if (!c) return;
+            c.innerHTML = (tab === 'profile') ? buildStudentProfile(data) : (buildStudentReport(data) + buildFeedbackPanel(data));
+        }
+
+        // Read-only Common App profile view for the teacher
+        function buildStudentProfile(data) {
+            const ad = data.appData || {};
+            const acad = safeParse(ad.myAcademics, {}) || {};
+            const acts = safeParse(ad.myActivities, []) || [];
+            const hons = safeParse(ad.myHonors, []) || [];
+            const sem = acad.gpaSem || {};
+            const semCells = GPA_SEMESTERS.map(s => `<div class="pv-sem"><span class="pv-sem-l">${s.k}</span><span class="pv-sem-v">${esc(sem[s.k] || '–')}</span></div>`).join('');
+            const kv = (k, v) => `<div class="pv-kv"><span class="pv-k">${k}</span><span class="pv-v">${esc(v || '–')}</span></div>`;
+            const apList = (Array.isArray(acad.aps) ? acad.aps : []).filter(a => a.name).map(a => `<span class="pv-chip">${esc(a.name)}${a.score ? ' <b>' + esc(a.score) + '</b>' : ''}</span>`).join('') || '<span class="rp-dim">–</span>';
+            const testList = (Array.isArray(acad.tests) ? acad.tests : []).filter(a => a.name).map(a => `<span class="pv-chip alt">${esc(a.name)}${a.score ? ' <b>' + esc(a.score) + '</b>' : ''}</span>`).join('') || '<span class="rp-dim">–</span>';
+            const actList = acts.length ? acts.map((a, i) => {
+                const gradeStr = (a.grades && a.grades.length) ? a.grades.join(', ') : '';
+                const timing = [a.hours ? `주 ${esc(a.hours)}h` : '', a.weeks ? `연 ${esc(a.weeks)}주` : '', gradeStr ? `학년 ${gradeStr}` : ''].filter(Boolean).join(' · ');
+                return `<div class="pv-act">
+                    <div class="pv-act-top"><span class="pv-act-num">${i + 1}</span><span class="pv-act-title">${esc([a.position, a.org].filter(Boolean).join(' · ') || '(활동)')}</span>${a.type ? `<span class="pv-act-type">${esc(a.type)}</span>` : ''}</div>
+                    ${a.description ? `<div class="pv-act-desc">${esc(a.description)}</div>` : ''}
+                    ${a.details ? `<div class="pv-act-details">${esc(a.details)}</div>` : ''}
+                    ${timing ? `<div class="pv-act-timing">🕒 ${timing}</div>` : ''}
+                </div>`;
+            }).join('') : '<span class="rp-dim">등록된 활동이 없어요.</span>';
+            const honRows = hons.length ? hons.map(h => `<tr><td class="hon-title">${esc(h.title || '')}</td><td><span class="hon-level ${HONOR_LEVEL_CLASS[h.level] || 'hl-sch'}">${esc(h.level || 'School')}</span></td><td class="hon-year">${esc(h.year || '–')}</td></tr>`).join('') : '';
+            return `<div class="pv-wrap">
+                <div class="pv-section">
+                    <h4>📊 Academics</h4>
+                    <div class="pv-kv-row">${kv('GPA 기준', acad.gpaScale)}${kv('SAT', acad.sat)}${kv('ACT', acad.act)}</div>
+                    <div class="pv-sub">학기별 GPA</div>
+                    <div class="pv-sem-grid">${semCells}</div>
+                    <div class="pv-sub">AP 과목 · 점수</div><div class="pv-chips">${apList}</div>
+                    <div class="pv-sub">공인 성적</div><div class="pv-chips">${testList}</div>
+                </div>
+                <div class="pv-section">
+                    <h4>🎯 Activities (${acts.length})</h4>
+                    ${actList}
+                </div>
+                <div class="pv-section">
+                    <h4>🏆 Honors (${hons.length})</h4>
+                    ${honRows ? `<div class="hon-wrap"><table class="hon-table"><thead><tr><th style="text-align:left;">수상명</th><th>수준</th><th>연도</th></tr></thead><tbody>${honRows}</tbody></table></div>` : '<span class="rp-dim">등록된 수상이 없어요.</span>'}
+                </div>
+            </div>`;
         }
 
         function buildFeedbackPanel(data) {
@@ -5885,9 +6121,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
          * Simulates page switching by showing/hiding sections.
          * @param {string} sectionId - The ID of the section to display.
          */
-        // ================= Application Manager (지원 관리) =================
+        // ================= Student Profile (Academics · Activities · Honors) =================
         let recommenders = [];
         let activities = [];
+        let honors = [];
+        let academics = {};
         let requirements = {}; // { uniId: {app,rec,transcript,test,supp,interview} }
         const REQ_COLS = [
             { key: 'app', label: '원서 제출' },
@@ -5899,14 +6137,35 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         ];
         const REC_STATUS_CLASS = { '요청 전': 'rst-req0', '요청함': 'rst-req1', '작성 중': 'rst-wip', '제출 완료': 'rst-done' };
 
+        // One-time split of legacy combined activities (kind='활동'/'수상') into Activities + Honors
+        function migrateProfileSchema() {
+            if (localStorage.getItem('profileSchema') === 'v2') return;
+            const old = safeParse(localStorage.getItem('myActivities'), null);
+            if (Array.isArray(old) && old.some(a => a && a.kind)) {
+                const acts = [], hons = [];
+                old.forEach(a => {
+                    if (a.kind === '수상') hons.push({ id: a.id || generateUniqueId('hon-'), title: a.name || '', level: 'School', year: '' });
+                    else acts.push({ id: a.id || generateUniqueId('act-'), org: a.name || '', position: a.role || '', type: a.category || '', description: a.description || '', details: '', hours: '', weeks: '', grades: a.grades || [] });
+                });
+                localStorage.setItem('myActivities', JSON.stringify(acts));
+                const existingHon = safeParse(localStorage.getItem('myHonors'), []) || [];
+                localStorage.setItem('myHonors', JSON.stringify(existingHon.concat(hons)));
+            }
+            localStorage.setItem('profileSchema', 'v2');
+        }
+
         function loadAppManager() {
+            migrateProfileSchema();
             recommenders = safeParse(localStorage.getItem('myRecommenders'), []) || [];
             activities = safeParse(localStorage.getItem('myActivities'), []) || [];
+            honors = safeParse(localStorage.getItem('myHonors'), []) || [];
+            academics = safeParse(localStorage.getItem('myAcademics'), {}) || {};
             requirements = safeParse(localStorage.getItem('myRequirements'), {}) || {};
-            renderRecommenders(); renderActivities(); renderRequirements();
+            renderAcademics(); renderActivities(); renderHonors(); renderRecommenders(); renderRequirements();
         }
         function saveRecommenders() { localStorage.setItem('myRecommenders', JSON.stringify(recommenders)); }
         function saveActivities() { localStorage.setItem('myActivities', JSON.stringify(activities)); }
+        function saveHonors() { localStorage.setItem('myHonors', JSON.stringify(honors)); }
         function saveRequirements() { localStorage.setItem('myRequirements', JSON.stringify(requirements)); }
 
         function renderRecommenders() {
@@ -5958,23 +6217,113 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             recommenders = recommenders.filter(x => x.id !== id); saveRecommenders(); renderRecommenders();
         }
 
+        // ----- Academics -----
+        const GPA_SEMESTERS = [
+            { k: '9-1', l: '9학년 1학기' }, { k: '9-2', l: '9학년 2학기' },
+            { k: '10-1', l: '10학년 1학기' }, { k: '10-2', l: '10학년 2학기' },
+            { k: '11-1', l: '11학년 1학기' }, { k: '11-2', l: '11학년 2학기' },
+            { k: '12-1', l: '12학년 1학기' }, { k: '12-2', l: '12학년 2학기' }
+        ];
+        function saveAcademicsObj() { localStorage.setItem('myAcademics', JSON.stringify(academics)); }
+        function renderAcademics() {
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+            set('acad-gpa-scale', academics.gpaScale); set('acad-sat', academics.sat); set('acad-act', academics.act);
+            // migrate legacy single AP string → cards
+            if (typeof academics.ap === 'string' && academics.ap.trim() && !Array.isArray(academics.aps)) {
+                academics.aps = academics.ap.split(',').map(s => s.trim()).filter(Boolean).map(s => {
+                    const m = s.match(/^(.*?)(\d)\s*$/); return m ? { id: generateUniqueId('ap-'), name: m[1].trim(), score: m[2] } : { id: generateUniqueId('ap-'), name: s, score: '' };
+                });
+                delete academics.ap; saveAcademicsObj();
+            }
+            renderGpaSemesters(); renderApList(); renderAcadTests();
+        }
+        function saveAcademics() {
+            const val = id => (document.getElementById(id) ? document.getElementById(id).value.trim() : '');
+            academics.gpaScale = val('acad-gpa-scale'); academics.sat = val('acad-sat'); academics.act = val('acad-act');
+            saveAcademicsObj();
+        }
+        function renderGpaSemesters() {
+            const el = document.getElementById('acad-sem-grid'); if (!el) return;
+            const sem = academics.gpaSem || {};
+            el.innerHTML = GPA_SEMESTERS.map(s => `<div class="acad-field"><label>${s.l}</label><input type="text" value="${esc(sem[s.k] || '')}" placeholder="예: 3.9" oninput="updateGpaSem('${s.k}', this.value)"></div>`).join('');
+        }
+        function updateGpaSem(k, v) {
+            if (!academics.gpaSem) academics.gpaSem = {};
+            academics.gpaSem[k] = v.trim(); saveAcademicsObj();
+        }
+        // AP subjects (individual cards)
+        function renderApList() {
+            const el = document.getElementById('acad-aps'); if (!el) return;
+            const aps = Array.isArray(academics.aps) ? academics.aps : [];
+            if (!aps.length) { el.innerHTML = '<div class="am-empty" style="padding:14px;">AP 과목과 점수를 "+ AP 추가"로 하나씩 넣으세요.</div>'; return; }
+            el.innerHTML = '<div class="acad-test-grid">' + aps.map(t => `
+                <div class="acad-test-card">
+                    <input type="text" class="acad-test-name" value="${esc(t.name || '')}" placeholder="과목 (예: Calculus BC)" oninput="updateAp('${t.id}','name',this.value)">
+                    <input type="text" class="acad-test-score" value="${esc(t.score || '')}" placeholder="점수" oninput="updateAp('${t.id}','score',this.value)">
+                    <button class="am-icon-btn" title="삭제" onclick="removeAp('${t.id}')">🗑️</button>
+                </div>`).join('') + '</div>';
+        }
+        function addAp() {
+            if (!Array.isArray(academics.aps)) academics.aps = [];
+            academics.aps.push({ id: generateUniqueId('ap-'), name: '', score: '' });
+            saveAcademicsObj(); renderApList();
+        }
+        function updateAp(id, field, v) { const t = (academics.aps || []).find(x => x.id === id); if (!t) return; t[field] = v; saveAcademicsObj(); }
+        function removeAp(id) { academics.aps = (academics.aps || []).filter(x => x.id !== id); saveAcademicsObj(); renderApList(); }
+        // Certified tests (Duolingo/IELTS/…)
+        function renderAcadTests() {
+            const el = document.getElementById('acad-tests'); if (!el) return;
+            const tests = Array.isArray(academics.tests) ? academics.tests : [];
+            if (!tests.length) { el.innerHTML = '<div class="am-empty" style="padding:14px;">Duolingo·IELTS·TOEFL 등 공인 성적을 "+ 성적 추가"로 넣으세요.</div>'; return; }
+            el.innerHTML = '<div class="acad-test-grid">' + tests.map(t => `
+                <div class="acad-test-card">
+                    <input type="text" class="acad-test-name" value="${esc(t.name || '')}" placeholder="시험명 (예: Duolingo)" oninput="updateAcadTest('${t.id}','name',this.value)">
+                    <input type="text" class="acad-test-score" value="${esc(t.score || '')}" placeholder="점수" oninput="updateAcadTest('${t.id}','score',this.value)">
+                    <button class="am-icon-btn" title="삭제" onclick="removeAcadTest('${t.id}')">🗑️</button>
+                </div>`).join('') + '</div>';
+        }
+        function addAcadTest() {
+            if (!Array.isArray(academics.tests)) academics.tests = [];
+            academics.tests.push({ id: generateUniqueId('tst-'), name: '', score: '' });
+            saveAcademicsObj(); renderAcadTests();
+        }
+        function updateAcadTest(id, field, v) { const t = (academics.tests || []).find(x => x.id === id); if (!t) return; t[field] = v; saveAcademicsObj(); }
+        function removeAcadTest(id) { academics.tests = (academics.tests || []).filter(x => x.id !== id); saveAcademicsObj(); renderAcadTests(); }
+
+        // ----- Activities (Common App style, expandable) -----
+        let openActIds = new Set();
         function renderActivities() {
             const el = document.getElementById('activity-list'); if (!el) return;
-            if (!activities.length) { el.innerHTML = '<div class="am-empty">아직 활동·수상이 없어요. "+ 활동/수상 추가"로 시작하세요.</div>'; return; }
-            el.innerHTML = activities.map(a => `
-                <div class="act-card">
-                    <div class="act-top">
-                        <span class="act-kind ${a.kind || '활동'}">${a.kind || '활동'}</span>
-                        <span class="act-name">${esc(a.name || '')}</span>
-                        ${a.role ? `<span class="act-role">${esc(a.role)}</span>` : ''}
-                        <div class="act-actions">
-                            <button class="am-icon-btn" onclick="openActivityModal('${a.id}')" title="수정">✏️</button>
-                            <button class="am-icon-btn" onclick="deleteActivity('${a.id}')" title="삭제">🗑️</button>
+            if (!activities.length) { el.innerHTML = '<div class="am-empty">아직 활동이 없어요. "+ 활동 추가"로 시작하세요.</div>'; return; }
+            el.innerHTML = activities.map((a, i) => {
+                const open = openActIds.has(a.id);
+                const gradeStr = (a.grades && a.grades.length) ? a.grades.join(', ') : '';
+                const timing = [a.hours ? `주 ${esc(a.hours)}시간` : '', a.weeks ? `연 ${esc(a.weeks)}주` : '', gradeStr ? `학년 ${gradeStr}` : ''].filter(Boolean).join(' · ');
+                const title = [a.position, a.org].filter(Boolean).map(esc).join(' · ') || '(활동명 없음)';
+                return `<div class="act-card ${open ? 'open' : ''}">
+                    <div class="act-head" onclick="toggleActivity('${a.id}')">
+                        <span class="act-num">${i + 1}</span>
+                        <div class="act-headmain">
+                            <div class="act-title">${title}</div>
+                            ${a.description ? `<div class="act-summary">${esc(a.description)}</div>` : ''}
+                        </div>
+                        ${a.type ? `<span class="act-typechip">${esc(a.type)}</span>` : ''}
+                        <span class="act-chev">⌄</span>
+                    </div>
+                    <div class="act-expand">
+                        ${a.details ? `<div class="act-detail-block"><div class="act-detail-label">세부 기여도 & 성과</div><div class="act-detail-text">${esc(a.details)}</div></div>` : '<div class="act-detail-block rp-dim">세부 내용이 아직 없어요. 수정에서 추가해보세요.</div>'}
+                        ${timing ? `<div class="act-timing">🕒 ${timing}</div>` : ''}
+                        <div class="act-actions2">
+                            <button class="am-mini-btn" onclick="event.stopPropagation();openActivityModal('${a.id}')">✏️ 수정</button>
+                            <button class="am-mini-btn danger" onclick="event.stopPropagation();deleteActivity('${a.id}')">🗑️ 삭제</button>
                         </div>
                     </div>
-                    ${a.description ? `<div class="act-desc">${esc(a.description)}</div>` : ''}
-                    ${(a.category || (a.grades && a.grades.length)) ? `<div class="act-grades-tag">${a.category ? esc(a.category) : ''}${a.category && a.grades && a.grades.length ? ' · ' : ''}${a.grades && a.grades.length ? ('학년 ' + a.grades.join(', ')) : ''}</div>` : ''}
-                </div>`).join('');
+                </div>`;
+            }).join('');
+        }
+        function toggleActivity(id) {
+            if (openActIds.has(id)) openActIds.delete(id); else openActIds.add(id);
+            renderActivities();
         }
         function updateActDescCount() {
             const t = document.getElementById('act-desc'), c = document.getElementById('act-desc-count');
@@ -5983,11 +6332,13 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         function openActivityModal(id) {
             const a = id ? activities.find(x => x.id === id) : null;
             document.getElementById('act-id').value = a ? a.id : '';
-            document.getElementById('act-kind').value = a ? (a.kind || '활동') : '활동';
-            document.getElementById('act-category').value = a ? (a.category || '') : '';
-            document.getElementById('act-name').value = a ? (a.name || '') : '';
-            document.getElementById('act-role').value = a ? (a.role || '') : '';
+            document.getElementById('act-org').value = a ? (a.org || '') : '';
+            document.getElementById('act-type').value = a ? (a.type || '') : '';
+            document.getElementById('act-position').value = a ? (a.position || '') : '';
             document.getElementById('act-desc').value = a ? (a.description || '') : '';
+            document.getElementById('act-details').value = a ? (a.details || '') : '';
+            document.getElementById('act-hours').value = a ? (a.hours || '') : '';
+            document.getElementById('act-weeks').value = a ? (a.weeks || '') : '';
             document.querySelectorAll('.act-grade').forEach(cb => { cb.checked = !!(a && a.grades && a.grades.includes(Number(cb.value))); });
             updateActDescCount();
             document.getElementById('activity-modal').classList.remove('hidden');
@@ -5995,24 +6346,71 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         function closeActivityModal() { document.getElementById('activity-modal').classList.add('hidden'); }
         function saveActivity() {
             const id = document.getElementById('act-id').value;
-            const name = document.getElementById('act-name').value.trim();
-            if (!name) { toast('활동/수상 이름을 입력해주세요.', 'error'); return; }
+            const org = document.getElementById('act-org').value.trim();
+            if (!org) { toast('조직 / 활동명을 입력해주세요.', 'error'); return; }
+            if (!id && activities.length >= 10) toast('Common App 활동은 10개까지예요. 중요도 순으로 정리해보세요.', 'info');
             const grades = [...document.querySelectorAll('.act-grade:checked')].map(cb => Number(cb.value));
             const data = {
-                kind: document.getElementById('act-kind').value,
-                category: document.getElementById('act-category').value.trim(),
-                name,
-                role: document.getElementById('act-role').value.trim(),
+                org, type: document.getElementById('act-type').value,
+                position: document.getElementById('act-position').value.trim(),
                 description: document.getElementById('act-desc').value.trim(),
+                details: document.getElementById('act-details').value.trim(),
+                hours: document.getElementById('act-hours').value.trim(),
+                weeks: document.getElementById('act-weeks').value.trim(),
                 grades
             };
             if (id) { const a = activities.find(x => x.id === id); if (a) Object.assign(a, data); }
-            else { activities.push({ id: generateUniqueId('act-'), ...data }); }
-            saveActivities(); renderActivities(); closeActivityModal(); toast('활동/수상 저장됨 ✓', 'success');
+            else { const nid = generateUniqueId('act-'); activities.push({ id: nid, ...data }); openActIds.add(nid); }
+            saveActivities(); renderActivities(); closeActivityModal(); toast('활동 저장됨 ✓', 'success');
         }
         async function deleteActivity(id) {
-            if (!(await showConfirm('활동/수상 삭제', '이 항목을 삭제할까요?', { danger: true, confirmText: '삭제', icon: '🗑️' }))) return;
+            if (!(await showConfirm('활동 삭제', '이 활동을 삭제할까요?', { danger: true, confirmText: '삭제', icon: '🗑️' }))) return;
             activities = activities.filter(x => x.id !== id); saveActivities(); renderActivities();
+        }
+
+        // ----- Honors (table) -----
+        const HONOR_LEVEL_CLASS = { International: 'hl-intl', National: 'hl-natl', Regional: 'hl-reg', School: 'hl-sch' };
+        function renderHonors() {
+            const el = document.getElementById('honor-list'); if (!el) return;
+            if (!honors.length) { el.innerHTML = '<div class="am-empty">아직 수상 내역이 없어요. "+ 수상 추가"로 넣으세요.</div>'; return; }
+            const rows = honors.map(h => `
+                <tr>
+                    <td class="hon-title">${esc(h.title || '')}</td>
+                    <td><span class="hon-level ${HONOR_LEVEL_CLASS[h.level] || 'hl-sch'}">${esc(h.level || 'School')}</span></td>
+                    <td class="hon-year">${esc(h.year || '-')}</td>
+                    <td class="hon-act">
+                        <button class="am-icon-btn" onclick="openHonorModal('${h.id}')" title="수정">✏️</button>
+                        <button class="am-icon-btn" onclick="deleteHonor('${h.id}')" title="삭제">🗑️</button>
+                    </td>
+                </tr>`).join('');
+            el.innerHTML = `<div class="hon-wrap"><table class="hon-table"><thead><tr><th style="text-align:left;">수상명</th><th>수준</th><th>연도</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        }
+        function populateHonorYears() {
+            const sel = document.getElementById('hon-year'); if (!sel || sel.options.length > 1) return;
+            for (let y = 2028; y >= 2020; y--) { const o = document.createElement('option'); o.value = String(y); o.textContent = y + '년'; sel.appendChild(o); }
+        }
+        function openHonorModal(id) {
+            populateHonorYears();
+            const h = id ? honors.find(x => x.id === id) : null;
+            document.getElementById('hon-id').value = h ? h.id : '';
+            document.getElementById('hon-title').value = h ? (h.title || '') : '';
+            document.getElementById('hon-level').value = h ? (h.level || 'School') : 'School';
+            document.getElementById('hon-year').value = h ? (h.year || '') : '';
+            document.getElementById('honor-modal').classList.remove('hidden');
+        }
+        function closeHonorModal() { document.getElementById('honor-modal').classList.add('hidden'); }
+        function saveHonor() {
+            const id = document.getElementById('hon-id').value;
+            const title = document.getElementById('hon-title').value.trim();
+            if (!title) { toast('수상명을 입력해주세요.', 'error'); return; }
+            const data = { title, level: document.getElementById('hon-level').value, year: document.getElementById('hon-year').value };
+            if (id) { const h = honors.find(x => x.id === id); if (h) Object.assign(h, data); }
+            else { honors.push({ id: generateUniqueId('hon-'), ...data }); }
+            saveHonors(); renderHonors(); closeHonorModal(); toast('수상 저장됨 ✓', 'success');
+        }
+        async function deleteHonor(id) {
+            if (!(await showConfirm('수상 삭제', '이 수상 내역을 삭제할까요?', { danger: true, confirmText: '삭제', icon: '🗑️' }))) return;
+            honors = honors.filter(x => x.id !== id); saveHonors(); renderHonors();
         }
 
         function renderRequirements() {
