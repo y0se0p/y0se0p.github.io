@@ -6,7 +6,7 @@
    afterward everything a student enters saves and persists normally. */
 (function () {
     try {
-        var RESET_VERSION = 'fresh-start-2026-07';
+        var RESET_VERSION = 'fresh-start-2026-07-v2';
         if (localStorage.getItem('appResetVersion') !== RESET_VERSION) {
             ['myUniversities', 'mySupplementalEssays', 'myPersonalNotes', 'myMotivationStatement',
              'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks'].forEach(function (k) {
@@ -1624,6 +1624,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <button class="onb-google" onclick="onbSignIn()"><span>🔑</span> Google로 시작하기</button>
             <p class="onb-err" id="onb-login-err"></p>
             <p class="onb-note">로그인하면 내 데이터가 안전하게 클라우드에 저장되고, 어느 기기에서나 이어서 작업할 수 있어요.</p>
+            <p class="onb-note" style="margin-top:8px; opacity:0.6;">버전 2026.07.17-B</p>
         </div>
 
         <!-- Step 2: profile form -->
