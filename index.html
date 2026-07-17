@@ -950,8 +950,24 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .tstudent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
         .tstudent-card { text-align: left; background: #fff; border: 1px solid #ececee; border-radius: 16px; padding: 18px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05); }
         .tstudent-card:hover { transform: translateY(-3px); box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.09); }
+        .tsc-top { margin-bottom: 8px; }
         .tsc-name { font-size: 1.05rem; font-weight: 700; color: #1d1d1f; }
         .tsc-email { font-size: 0.82rem; color: #86868b; margin-top: 2px; }
+
+        /* Stagnation alert (traffic-light) */
+        .risk-badge { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 9999px; white-space: nowrap; }
+        .risk-red { background: #fef2f2; color: #b91c1c; }
+        .risk-yellow { background: #fffbeb; color: #b45309; }
+        .risk-green { background: #ecfdf5; color: #047857; }
+        .care-alert { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 18px; padding: 18px 20px; margin-bottom: 18px; }
+        .care-alert-head { font-size: 1rem; font-weight: 700; color: #b45309; margin-bottom: 12px; }
+        .care-list { display: flex; flex-direction: column; gap: 8px; }
+        .care-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #fff; border: 1px solid #fde3c4; cursor: pointer; text-align: left; transition: background 0.15s; }
+        .care-item:hover { background: #fffbf5; }
+        .care-name { font-weight: 700; color: #1d1d1f; flex-shrink: 0; }
+        .care-reason { color: #6e6e73; font-size: 0.88rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .care-go { margin-left: auto; color: #c7c7cc; flex-shrink: 0; }
+        .care-ok { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 18px; padding: 18px 20px; margin-bottom: 18px; font-weight: 600; color: #047857; }
         .tsc-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 0.85rem; color: #6e6e73; font-weight: 600; }
         .teacher-empty, .teacher-error { padding: 30px; text-align: center; color: #86868b; line-height: 1.6; }
         .teacher-error { color: #b91c1c; }
@@ -967,6 +983,32 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .fb-item { background: #f9f9fb; border-radius: 12px; padding: 12px 14px; }
         .fb-meta { font-size: 0.78rem; color: #86868b; font-weight: 600; margin-bottom: 4px; }
         .fb-text { font-size: 0.92rem; color: #1d1d1f; white-space: pre-wrap; }
+
+        /* Per-essay cards with feedback + version history */
+        .ecard-list { display: flex; flex-direction: column; gap: 10px; }
+        .ecard { border: 1px solid #ececee; border-radius: 12px; padding: 14px 16px; background: #fff; }
+        .ecard-head { display: flex; align-items: flex-start; gap: 12px; }
+        .ecard-main { flex: 1; min-width: 0; }
+        .ecard-uni { font-weight: 700; color: #1d1d1f; font-size: 0.95rem; }
+        .ecard-stage { font-size: 0.78rem; font-weight: 600; color: #6e6e73; background: #f0f0f2; padding: 2px 8px; border-radius: 9999px; }
+        .ecard-prompt { font-size: 0.85rem; color: #6e6e73; margin-top: 5px; line-height: 1.5; }
+        .ecard-fb-btn { flex-shrink: 0; font-size: 0.85rem; font-weight: 600; padding: 6px 12px; border-radius: 10px; border: 1px solid #e5e5ea; background: #fff; color: #4f46e5; cursor: pointer; }
+        .ecard-fb-btn:hover { background: #f0eefe; }
+        .ecard-fb-btn.has { background: #f0eefe; border-color: #ddd6fe; }
+        .ecard-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+        .ver-tag { font-size: 0.76rem; color: #86868b; font-weight: 600; }
+        .ver-chip { font-size: 0.76rem; font-weight: 600; padding: 3px 9px; border-radius: 9999px; background: #f0f0f2; color: #4b5563; text-decoration: none; white-space: nowrap; }
+        .ver-chip:hover { background: #e5e5ea; }
+        .ver-chip.cur { background: #eaf2fe; color: #0071e3; }
+        .ecard-fb { margin-top: 12px; border-top: 1px solid #f0f0f2; padding-top: 12px; }
+        .efb-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+        .efb-item { font-size: 0.88rem; color: #1d1d1f; background: #f9f9fb; border-radius: 8px; padding: 8px 10px; }
+        .efb-meta { font-size: 0.74rem; color: #86868b; font-weight: 600; margin-right: 6px; }
+        .efb-input-row { display: flex; gap: 8px; }
+        .efb-input { flex: 1; border: 1px solid #e5e5ea; border-radius: 9px; padding: 8px 11px; font-size: 0.88rem; color: #1d1d1f; }
+        .efb-input:focus { outline: none; border-color: #4f46e5; }
+        .efb-send { font-size: 0.82rem; font-weight: 600; padding: 8px 14px; border-radius: 9px; border: none; background: #4f46e5; color: #fff; cursor: pointer; white-space: nowrap; }
+        .efb-send:hover { background: #4338ca; }
 
         /* Student's view of teacher feedback (home) */
         .sfb-card { background: #f0eefe; border: 1px solid #ddd6fe; border-radius: 18px; padding: 18px 20px; margin-bottom: 16px; }
@@ -3535,11 +3577,19 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 // If editing existing essay
                 const essayIndex = supplementalEssays.findIndex(e => e.id === essayId);
                 if (essayIndex > -1) {
-                    supplementalEssays[essayIndex] = { ...supplementalEssays[essayIndex], ...newEssayData };
+                    const existing = supplementalEssays[essayIndex];
+                    // Archive a version snapshot whenever the Google Doc link changes
+                    const history = Array.isArray(existing.linkHistory) ? [...existing.linkHistory] : [];
+                    const lastLink = history.length ? history[history.length - 1].link : '';
+                    if (newEssayData.googleDocLink && newEssayData.googleDocLink !== lastLink) {
+                        history.push({ link: newEssayData.googleDocLink, at: Date.now(), stage: newEssayData.status });
+                    }
+                    supplementalEssays[essayIndex] = { ...existing, ...newEssayData, linkHistory: history };
                 }
             } else {
                 // If adding new essay, generate a new ID
                 newEssayData.id = generateUniqueId('essay-');
+                newEssayData.linkHistory = newEssayData.googleDocLink ? [{ link: newEssayData.googleDocLink, at: Date.now(), stage: newEssayData.status }] : [];
                 supplementalEssays.push(newEssayData);
             }
 
@@ -4285,21 +4335,33 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                         Object.keys(d.appData).forEach(k => localStorage.setItem(k, d.appData[k]));
                         refreshAppFromStorage();
                     }
-                    renderStudentFeedback(d.feedback);
+                    renderStudentFeedback(d);
                 } else {
                     await pushStudentData(); // first-ever login → seed cloud from local
                 }
             } catch (e) { console.warn('pull failed', e); }
         }
 
-        // Show teacher feedback on the student's home
-        function renderStudentFeedback(fb) {
+        // Show teacher feedback (overall + per-essay) on the student's home
+        function renderStudentFeedback(d) {
             const el = document.getElementById('student-feedback');
             if (!el) return;
-            if (!Array.isArray(fb) || !fb.length) { el.innerHTML = ''; return; }
-            const items = fb.slice().reverse().slice(0, 4).map(f =>
-                `<div class="sfb-item"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</div><div class="sfb-text">${esc(f.text)}</div></div>`).join('');
-            el.innerHTML = `<div class="sfb-card"><div class="sfb-head">💬 선생님 피드백 (${fb.length})</div>${items}</div>`;
+            const general = Array.isArray(d && d.feedback) ? d.feedback.map(f => ({ ...f, ctx: '종합' })) : [];
+            const essays = safeParse((d && d.appData && d.appData.mySupplementalEssays) || '[]', []);
+            const unis = safeParse((d && d.appData && d.appData.myUniversities) || '[]', []);
+            const ef = (d && d.essayFeedback) || {};
+            const perEssay = [];
+            Object.keys(ef).forEach(eid => {
+                const essay = essays.find(e => e.id === eid);
+                const uni = essay ? unis.find(u => u.id === essay.universityId) : null;
+                const ctx = uni ? `${uni.nameEn} 에세이` : '에세이';
+                (ef[eid] || []).forEach(f => perEssay.push({ ...f, ctx }));
+            });
+            const all = general.concat(perEssay).sort((a, b) => b.at - a.at);
+            if (!all.length) { el.innerHTML = ''; return; }
+            const items = all.slice(0, 6).map(f =>
+                `<div class="sfb-item"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div><div class="sfb-text">${esc(f.text)}</div></div>`).join('');
+            el.innerHTML = `<div class="sfb-card"><div class="sfb-head">💬 선생님 피드백 (${all.length})</div>${items}</div>`;
         }
 
         let syncErrorAlerted = false;
@@ -4402,6 +4464,43 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             return { uniCount: unis.length, essayTotal: essays.length, essayInProg: einp, adminPct: at ? Math.round(ad2 / at * 100) : 0 };
         }
 
+        // Stagnation / bottleneck risk detector for a student
+        function computeStudentRisk(d) {
+            const reasons = [];
+            let level = 'green';
+            const updatedAt = d.updatedAt || 0;
+            const daysStale = updatedAt ? Math.floor((Date.now() - updatedAt) / 86400000) : null;
+            const ad = d.appData || {};
+            const unis = safeParse(ad.myUniversities, []);
+            const essays = safeParse(ad.mySupplementalEssays, []);
+            const earlyUni = s => ['Prospective', 'In Progress'].includes(normalizeUniStatus(s));
+            const earlyEssay = s => ['Brainstorming', 'First Draft'].includes(normalizeEssayStatus(s));
+            // 🔴 Deadline within 30 days but still stuck early
+            unis.forEach(u => {
+                const nd = uniNearestDeadline(u);
+                if (!nd) return;
+                const dday = daysUntil(nd.date);
+                if (dday < 0 || dday > 30) return;
+                const ue = essays.filter(e => e.universityId === u.id);
+                const stuck = earlyUni(u.applicationStatus) || ue.length === 0 || ue.every(e => earlyEssay(e.status));
+                if (stuck) {
+                    level = 'red';
+                    const uniShort = (u.nameEn || '').split(' ')[0];
+                    reasons.push(`${uniShort} D-${dday} 마감 임박인데 진행 정체`);
+                }
+            });
+            // 🟡 No activity for 14+ days
+            if (daysStale !== null && daysStale >= 14) {
+                if (level !== 'red') level = 'yellow';
+                reasons.push(`${daysStale}일째 업데이트 없음`);
+            }
+            return { level, reasons, daysStale: daysStale === null ? 999 : daysStale };
+        }
+        function riskBadge(level) {
+            const m = { red: ['risk-red', '🔴 긴급'], yellow: ['risk-yellow', '🟡 정체'], green: ['risk-green', '🟢 양호'] }[level] || ['risk-green', '🟢 양호'];
+            return `<span class="risk-badge ${m[0]}">${m[1]}</span>`;
+        }
+
         async function loadTeacherStudents() {
             const list = document.getElementById('teacher-view-list');
             showTeacherList();
@@ -4413,16 +4512,27 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                     list.innerHTML = `<div class="teacher-empty">아직 공유한 학생이 없어요.<br>학생이 로그인 후 <b>👩‍🏫 선생님께 공유</b>에서 <b>${esc(email)}</b> 를 입력하면 여기 나타나요.</div>`;
                     return;
                 }
-                const cards = [];
-                snap.forEach(doc => {
-                    const d = doc.data(); const st = studentStats(d);
-                    cards.push(`<button class="tstudent-card" onclick="openStudentDetail('${doc.id}')">
-                        <div class="tsc-name">${esc(d.name || d.email)}</div>
-                        <div class="tsc-email">${esc(d.email || '')}</div>
-                        <div class="tsc-stats"><span>🏫 ${st.uniCount}개</span><span>✍️ ${st.essayInProg}/${st.essayTotal}</span><span>✅ ${st.adminPct}%</span></div>
-                    </button>`);
-                });
-                list.innerHTML = `<div class="tstudent-grid">${cards.join('')}</div>`;
+                const students = [];
+                snap.forEach(doc => { const d = doc.data(); students.push({ id: doc.id, d, risk: computeStudentRisk(d), stats: studentStats(d) }); });
+                const order = { red: 0, yellow: 1, green: 2 };
+                students.sort((a, b) => (order[a.risk.level] - order[b.risk.level]) || (b.risk.daysStale - a.risk.daysStale));
+
+                const risky = students.filter(s => s.risk.level !== 'green');
+                let html = '';
+                if (risky.length) {
+                    html += `<div class="care-alert"><div class="care-alert-head">⚠️ 케어가 필요한 학생 (${risky.length}명)</div><div class="care-list">`
+                        + risky.map(s => `<button class="care-item" onclick="openStudentDetail('${s.id}')">${riskBadge(s.risk.level)}<span class="care-name">${esc(s.d.name || s.d.email)}</span><span class="care-reason">${esc(s.risk.reasons.join(' · '))}</span><span class="care-go">→</span></button>`).join('')
+                        + `</div></div>`;
+                } else {
+                    html += `<div class="care-ok">✅ 모든 학생이 순조롭게 진행 중이에요!</div>`;
+                }
+                html += `<div class="tstudent-grid">` + students.map(s => `<button class="tstudent-card" onclick="openStudentDetail('${s.id}')">
+                        <div class="tsc-top">${riskBadge(s.risk.level)}</div>
+                        <div class="tsc-name">${esc(s.d.name || s.d.email)}</div>
+                        <div class="tsc-email">${esc(s.d.email || '')}</div>
+                        <div class="tsc-stats"><span>🏫 ${s.stats.uniCount}개</span><span>✍️ ${s.stats.essayInProg}/${s.stats.essayTotal}</span><span>✅ ${s.stats.adminPct}%</span></div>
+                    </button>`).join('') + `</div>`;
+                list.innerHTML = html;
             } catch (e) { list.innerHTML = `<div class="teacher-error">불러오기 실패: ${esc(e.message)}</div>`; }
         }
 
@@ -4469,6 +4579,27 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             } catch (e) { alert('피드백 저장 실패: ' + e.message); }
         }
 
+        // Per-essay feedback (keeps open panels across re-render)
+        let openEssayFbIds = new Set();
+        function toggleEssayFeedback(eid) {
+            const el = document.getElementById('ecard-fb-' + eid);
+            if (!el) return;
+            const show = el.style.display === 'none';
+            el.style.display = show ? 'block' : 'none';
+            if (show) openEssayFbIds.add(eid); else openEssayFbIds.delete(eid);
+        }
+        async function submitEssayFeedback(eid) {
+            const input = document.getElementById('efb-input-' + eid);
+            const text = (input.value || '').trim();
+            if (!text || !currentStudentUid) return;
+            const entry = { text, teacherEmail: currentUser.email, teacherName: currentUser.displayName || currentUser.email, at: Date.now() };
+            openEssayFbIds.add(eid); // keep this panel open after refresh
+            try {
+                await fbDb.collection('students').doc(currentStudentUid).update({ ['essayFeedback.' + eid]: firebase.firestore.FieldValue.arrayUnion(entry) });
+                openStudentDetail(currentStudentUid);
+            } catch (e) { alert('피드백 저장 실패: ' + e.message); }
+        }
+
         function buildStudentReport(data) {
             const ad = data.appData || {};
             const unis = safeParse(ad.myUniversities, []);
@@ -4480,7 +4611,31 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             const adminTotal = admin.reduce((s, c) => s + (c.items ? c.items.length : 0), 0);
             const adminDone = admin.reduce((s, c) => s + (c.items ? c.items.filter(i => i.done).length : 0), 0);
             const uniRows = unis.map(u => `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''}</td><td>${esc(u.category || '-')}</td><td>${esc(uniStatusLabel(u.applicationStatus))}</td><td class="rp-dim">${esc(u.deadline || '-')}</td></tr>`).join('');
-            const essayRows = essays.map(e => { const uni = unis.find(u => u.id === e.universityId); return `<tr><td>${esc(uni ? uni.nameEn : '—')}</td><td>${esc(essayStageLabel(e.status))}</td></tr>`; }).join('');
+            const essayFeedback = data.essayFeedback || {};
+            const verLabel = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} 버전`; };
+            const essayCards = essays.map(e => {
+                const uni = unis.find(u => u.id === e.universityId);
+                const hist = Array.isArray(e.linkHistory) ? e.linkHistory : [];
+                const histChips = hist.slice().reverse().map(h => `<a class="ver-chip" href="${esc(h.link)}" target="_blank" rel="noopener">${verLabel(h.at)}</a>`).join('');
+                const fbList = essayFeedback[e.id] || [];
+                const fbItems = fbList.slice().reverse().map(f => `<div class="efb-item"><span class="efb-meta">${esc(f.teacherName || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</span> ${esc(f.text)}</div>`).join('') || '<span class="rp-dim">아직 이 문항에 남긴 피드백이 없어요.</span>';
+                const snip = e.prompt ? (e.prompt.length > 100 ? e.prompt.slice(0, 100) + '…' : e.prompt) : '';
+                const open = openEssayFbIds.has(e.id);
+                return `<div class="ecard">
+                    <div class="ecard-head">
+                        <div class="ecard-main">
+                            <div><span class="ecard-uni">${esc(uni ? uni.nameEn : '—')}</span> <span class="ecard-stage">${esc(essayStageLabel(e.status))}</span></div>
+                            ${snip ? `<div class="ecard-prompt">${esc(snip)}</div>` : ''}
+                        </div>
+                        <button class="ecard-fb-btn ${fbList.length ? 'has' : ''}" onclick="toggleEssayFeedback('${e.id}')">💬${fbList.length ? ` ${fbList.length}` : ''}</button>
+                    </div>
+                    ${(e.googleDocLink || histChips) ? `<div class="ecard-links">${e.googleDocLink ? `<a class="ver-chip cur" href="${esc(e.googleDocLink)}" target="_blank" rel="noopener">📄 현재본</a>` : ''}${histChips ? `<span class="ver-tag">🕒 버전:</span>${histChips}` : ''}</div>` : ''}
+                    <div class="ecard-fb" id="ecard-fb-${e.id}" style="display:${open ? 'block' : 'none'};">
+                        <div class="efb-list">${fbItems}</div>
+                        <div class="efb-input-row"><input type="text" id="efb-input-${e.id}" class="efb-input" placeholder="이 문항에 대한 피드백…" onkeydown="if(event.key==='Enter'){event.preventDefault();submitEssayFeedback('${e.id}');}"><button class="efb-send" onclick="submitEssayFeedback('${e.id}')">전송</button></div>
+                    </div>
+                </div>`;
+            }).join('');
             return `
                 <h3 class="report-name">${esc(data.name || data.email)}</h3>
                 <div class="report-email">${esc(data.email || '')}</div>
@@ -4488,8 +4643,8 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 <div class="report-section"><h4>🏫 대학 (${unis.length})</h4>
                     ${unis.length ? `<table class="report-table"><thead><tr><th>대학</th><th>분류</th><th>진행 상태</th><th>마감</th></tr></thead><tbody>${uniRows}</tbody></table>` : '<p class="rp-dim">등록된 대학 없음</p>'}
                 </div>
-                <div class="report-section"><h4>✍️ 에세이 (${essays.length})</h4>
-                    ${essays.length ? `<table class="report-table"><thead><tr><th>대학</th><th>단계</th></tr></thead><tbody>${essayRows}</tbody></table>` : '<p class="rp-dim">등록된 에세이 없음</p>'}
+                <div class="report-section"><h4>✍️ 에세이 (${essays.length}) · 문항별 피드백</h4>
+                    ${essays.length ? `<div class="ecard-list">${essayCards}</div>` : '<p class="rp-dim">등록된 에세이 없음</p>'}
                 </div>
                 <div class="report-section"><h4>✅ 행정 체크리스트</h4>
                     <div class="report-progress"><div class="report-progress-fill" style="width:${adminTotal ? Math.round(adminDone / adminTotal * 100) : 0}%"></div></div>
