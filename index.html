@@ -1643,6 +1643,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .am-grades label{ display:flex; align-items:center; gap:5px; font-weight:600; color:var(--text); font-size:0.95rem; cursor:pointer; }
 
         /* feedback read-receipt */
+        .sfb-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+        .sfb-del{ flex:0 0 auto; background:none; border:none; cursor:pointer; font-size:0.85rem; padding:2px 5px; border-radius:7px; opacity:0.5; transition:opacity .15s, background .15s; }
+        .sfb-del:hover{ opacity:1; background:var(--surface-3); }
         .sfb-ack-row{ margin-top:8px; }
         .sfb-ack-btn{ background:var(--accent); color:#fff; border:none; border-radius:9px; padding:5px 12px; font-size:0.8rem; font-weight:700; cursor:pointer; transition:filter .15s; }
         .sfb-ack-btn:hover{ filter:brightness(1.08); }
@@ -5093,9 +5096,33 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const ackRow = f.id ? (f.ackAt
                     ? `<div class="sfb-ack-row"><span class="sfb-acked">✓ 확인함</span></div>`
                     : `<div class="sfb-ack-row"><button class="sfb-ack-btn" onclick="markFeedbackRead('${f.id}','${f._kind}','${f._eid || ''}')">확인했어요 ✓</button></div>`) : '';
-                return `<div class="sfb-item"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div><div class="sfb-text">${esc(f.text)}</div>${ackRow}</div>`;
+                const delBtn = `<button class="sfb-del" title="피드백 삭제" onclick="deleteStudentFeedback('${f.id || ''}','${f._kind}','${f._eid || ''}',${f.at || 0})">🗑️</button>`;
+                return `<div class="sfb-item"><div class="sfb-top"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div>${delBtn}</div><div class="sfb-text">${esc(f.text)}</div>${ackRow}</div>`;
             }).join('');
             el.innerHTML = `<div class="sfb-card"><div class="sfb-head">💬 선생님 피드백 (${all.length})</div>${items}</div>`;
+        }
+
+        // Student deletes a piece of teacher feedback from their record
+        async function deleteStudentFeedback(id, kind, eid, at) {
+            if (!currentUser || !fbDb) return;
+            if (!(await showConfirm('피드백 삭제', '이 선생님 피드백을 삭제할까요? 되돌릴 수 없어요.', { danger: true, confirmText: '삭제', icon: '🗑️' }))) return;
+            try {
+                const ref = fbDb.collection('students').doc(currentUser.uid);
+                const snap = await ref.get();
+                if (!snap.exists) return;
+                const d = snap.data();
+                const match = f => (id && f.id === id) || (!id && at && f.at === at);
+                if (kind === 'essay' && eid) {
+                    const arr = (d.essayFeedback && d.essayFeedback[eid]) ? d.essayFeedback[eid].filter(f => !match(f)) : [];
+                    await ref.update({ ['essayFeedback.' + eid]: arr });
+                } else {
+                    const arr = Array.isArray(d.feedback) ? d.feedback.filter(f => !match(f)) : [];
+                    await ref.update({ feedback: arr });
+                }
+                toast('피드백을 삭제했어요.', 'success');
+                const fresh = await ref.get();
+                if (fresh.exists) renderStudentFeedback(fresh.data());
+            } catch (e) { toast('삭제 실패: ' + (e.message || e), 'error'); }
         }
 
         // Student marks a piece of feedback as read → the acknowledgement syncs back to the teacher
