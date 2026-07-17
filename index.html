@@ -931,12 +931,50 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .auth-signin { font-size: 0.85rem; font-weight: 600; padding: 8px 16px; border-radius: 9999px; border: none; background: #0071e3; color: #fff; cursor: pointer; }
         .auth-signin:hover { background: #0060c0; }
         .auth-user { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: #1d1d1f; }
-        .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #d1d1d6; transition: background 0.2s; }
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #d1d1d6; transition: background 0.2s; cursor: help; }
+        .sync-dot.syncing { background: #f59e0b; }
         .sync-dot.synced { background: #34c759; }
+        .sync-dot.error { background: #ef4444; }
         .auth-signout { font-size: 0.8rem; font-weight: 600; padding: 6px 12px; border-radius: 9999px; border: 1px solid #e5e5ea; background: #fff; color: #6e6e73; cursor: pointer; }
         .auth-signout:hover { background: #f0f0f2; }
         .auth-share, .auth-teacher { font-size: 0.82rem; font-weight: 600; padding: 7px 13px; border-radius: 9999px; border: 1px solid #ddd6fe; background: #f0eefe; color: #4f46e5; cursor: pointer; }
         .auth-share:hover, .auth-teacher:hover { background: #e0e7ff; }
+        .auth-role { font-size: 0.78rem; font-weight: 600; padding: 6px 11px; border-radius: 9999px; border: 1px solid #e5e5ea; background: #fff; color: #6e6e73; cursor: pointer; }
+        .auth-role:hover { background: #f0f0f2; }
+        .role-tag { font-size: 0.7rem; font-weight: 700; color: #4f46e5; background: #f0eefe; padding: 2px 7px; border-radius: 9999px; }
+
+        /* Teacher dashboard */
+        #teacher-dashboard.dashboard-home, #teacher-dashboard { background: transparent; box-shadow: none; padding: 0; }
+        #teacher-dashboard:hover { transform: none; box-shadow: none; }
+        .teacher-toolbar { display: flex; justify-content: flex-end; margin-bottom: 14px; }
+        .tstudent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+        .tstudent-card { text-align: left; background: #fff; border: 1px solid #ececee; border-radius: 16px; padding: 18px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05); }
+        .tstudent-card:hover { transform: translateY(-3px); box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 16px 40px rgba(0,0,0,0.09); }
+        .tsc-name { font-size: 1.05rem; font-weight: 700; color: #1d1d1f; }
+        .tsc-email { font-size: 0.82rem; color: #86868b; margin-top: 2px; }
+        .tsc-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 0.85rem; color: #6e6e73; font-weight: 600; }
+        .teacher-empty, .teacher-error { padding: 30px; text-align: center; color: #86868b; line-height: 1.6; }
+        .teacher-error { color: #b91c1c; }
+        #teacher-view-detail { background: #fff; border: 1px solid #ececee; border-radius: 18px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05); }
+
+        /* Feedback (teacher writes) */
+        .fb-section { margin-top: 22px; border-top: 1px solid #f0f0f2; padding-top: 18px; }
+        .fb-textarea { width: 100%; border: 1px solid #e5e5ea; border-radius: 12px; padding: 12px 14px; font-size: 0.92rem; font-family: inherit; color: #1d1d1f; resize: vertical; }
+        .fb-textarea:focus { outline: none; border-color: #4f46e5; }
+        .fb-submit { margin-top: 8px; font-size: 0.88rem; font-weight: 600; padding: 9px 18px; border-radius: 10px; border: none; background: #4f46e5; color: #fff; cursor: pointer; }
+        .fb-submit:hover { background: #4338ca; }
+        .fb-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+        .fb-item { background: #f9f9fb; border-radius: 12px; padding: 12px 14px; }
+        .fb-meta { font-size: 0.78rem; color: #86868b; font-weight: 600; margin-bottom: 4px; }
+        .fb-text { font-size: 0.92rem; color: #1d1d1f; white-space: pre-wrap; }
+
+        /* Student's view of teacher feedback (home) */
+        .sfb-card { background: #f0eefe; border: 1px solid #ddd6fe; border-radius: 18px; padding: 18px 20px; margin-bottom: 16px; }
+        .sfb-head { font-size: 0.9rem; font-weight: 700; color: #4f46e5; margin-bottom: 10px; }
+        .sfb-item { background: #fff; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+        .sfb-item:last-child { margin-bottom: 0; }
+        .sfb-meta { font-size: 0.76rem; color: #86868b; font-weight: 600; margin-bottom: 3px; }
+        .sfb-text { font-size: 0.92rem; color: #1d1d1f; white-space: pre-wrap; }
 
         /* Teacher dashboard */
         .teacher-list { display: flex; flex-direction: column; gap: 8px; }
@@ -1401,6 +1439,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <h2 id="dash-greeting-title">오늘도 한 걸음 👋</h2>
                 <p id="dash-greeting-date"></p>
             </div>
+            <div id="student-feedback"></div>
             <div class="dash-grid">
                 <!-- Commitment hero (kept from original) -->
                 <div class="bento span-2 row-2">
@@ -1735,6 +1774,19 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <!-- Add more FAQ items here if needed -->
                 </div>
             </div>
+        </section>
+
+        <!-- Teacher-only dashboard (shown instead of the student app when role = teacher) -->
+        <section id="teacher-dashboard" class="card">
+            <div class="dash-greeting">
+                <h2>👩‍🏫 선생님 대시보드</h2>
+                <p id="teacher-sub"></p>
+            </div>
+            <div class="teacher-toolbar">
+                <button type="button" class="data-btn" onclick="loadTeacherStudents()">🔄 새로고침</button>
+            </div>
+            <div id="teacher-view-list"></div>
+            <div id="teacher-view-detail" style="display:none;"></div>
         </section>
 
     </main>
@@ -4201,7 +4253,25 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
                 await pullStudentData(user.uid);
                 bindCloudAutoPush();
             }
+            applyRoleView();
             updateAuthUI();
+        }
+
+        // Switch between the student app and the teacher dashboard based on role
+        function applyRoleView() {
+            const navLinks = document.querySelectorAll('.dash-nav a');
+            const teacherSection = document.getElementById('teacher-dashboard');
+            if (currentRole === 'teacher') {
+                document.querySelectorAll('main > section.card').forEach(s => s.classList.remove('active-section'));
+                navLinks.forEach(a => a.style.display = 'none');
+                teacherSection.classList.add('active-section');
+                document.getElementById('teacher-sub').textContent = `${currentUser.displayName || currentUser.email} 선생님 · 공유받은 학생들의 진행 현황을 보고 피드백을 남길 수 있어요`;
+                loadTeacherStudents();
+            } else {
+                navLinks.forEach(a => a.style.display = '');
+                teacherSection.classList.remove('active-section');
+                if (!document.querySelector('main > section.card.active-section')) showSection('home');
+            }
         }
 
         function safeParse(s, fallback) { try { return JSON.parse(s); } catch (e) { return fallback; } }
@@ -4209,28 +4279,57 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
         async function pullStudentData(uid) {
             try {
                 const snap = await fbDb.collection('students').doc(uid).get();
-                if (snap.exists && snap.data().appData) {
-                    const appData = snap.data().appData;
-                    Object.keys(appData).forEach(k => localStorage.setItem(k, appData[k]));
-                    refreshAppFromStorage();
+                if (snap.exists) {
+                    const d = snap.data();
+                    if (d.appData) {
+                        Object.keys(d.appData).forEach(k => localStorage.setItem(k, d.appData[k]));
+                        refreshAppFromStorage();
+                    }
+                    renderStudentFeedback(d.feedback);
                 } else {
                     await pushStudentData(); // first-ever login → seed cloud from local
                 }
             } catch (e) { console.warn('pull failed', e); }
         }
 
+        // Show teacher feedback on the student's home
+        function renderStudentFeedback(fb) {
+            const el = document.getElementById('student-feedback');
+            if (!el) return;
+            if (!Array.isArray(fb) || !fb.length) { el.innerHTML = ''; return; }
+            const items = fb.slice().reverse().slice(0, 4).map(f =>
+                `<div class="sfb-item"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</div><div class="sfb-text">${esc(f.text)}</div></div>`).join('');
+            el.innerHTML = `<div class="sfb-card"><div class="sfb-head">💬 선생님 피드백 (${fb.length})</div>${items}</div>`;
+        }
+
+        let syncErrorAlerted = false;
+        function setSyncState(state, title) {
+            const dot = document.getElementById('sync-dot');
+            if (!dot) return;
+            dot.classList.remove('syncing', 'synced', 'error');
+            if (state) dot.classList.add(state);
+            dot.title = title || '';
+        }
         async function pushStudentData() {
             if (!currentUser || currentRole !== 'student' || !fbDb) return;
             const appData = {};
             BACKUP_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) appData[k] = v; });
+            setSyncState('syncing', '저장 중…');
             try {
                 await fbDb.collection('students').doc(currentUser.uid).set({
                     email: currentUser.email, name: currentUser.displayName || currentUser.email,
                     updatedAt: Date.now(), appData
                 }, { merge: true });
-                const dot = document.getElementById('sync-dot');
-                if (dot) { dot.classList.add('synced'); setTimeout(() => dot.classList.remove('synced'), 1200); }
-            } catch (e) { console.warn('push failed', e); }
+                setSyncState('synced', '클라우드에 저장됨 ✓');
+            } catch (e) {
+                console.error('Cloud sync failed:', e);
+                const msg = (e && e.message) ? e.message : String(e);
+                setSyncState('error', '동기화 실패: ' + msg);
+                if (!syncErrorAlerted) {
+                    syncErrorAlerted = true;
+                    alert('클라우드 저장에 실패했어요 😢\n\n원인: ' + msg + '\n\n가장 흔한 원인은 Firestore Database가 아직 안 만들어진 경우예요. Firebase 콘솔 → "빌드 → Firestore Database → 데이터베이스 만들기"를 했는지 확인해주세요.');
+                }
+            }
         }
 
         function scheduleCloudPush() { clearTimeout(cloudPushTimer); cloudPushTimer = setTimeout(pushStudentData, 1500); }
@@ -4259,13 +4358,25 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             if (!el) return;
             if (!currentUser) {
                 el.innerHTML = `<button class="auth-signin" onclick="signInWithGoogle()">🔑 로그인</button>`;
-            } else {
-                const name = esc(currentUser.displayName || currentUser.email);
-                const extra = currentRole === 'teacher'
-                    ? `<button class="auth-teacher" onclick="openTeacherDashboard()">👩‍🏫 학생 관리</button>`
-                    : `<button class="auth-share" onclick="shareWithTeacher()">👩‍🏫 선생님께 공유</button>`;
-                el.innerHTML = `${extra}<span class="auth-user"><span id="sync-dot" class="sync-dot"></span>${name}</span><button class="auth-signout" onclick="signOutUser()">로그아웃</button>`;
+                return;
             }
+            const name = esc(currentUser.displayName || currentUser.email);
+            const shareBtn = currentRole === 'teacher' ? '' : `<button class="auth-share" onclick="shareWithTeacher()">👩‍🏫 선생님께 공유</button>`;
+            const syncDot = currentRole === 'student' ? `<span id="sync-dot" class="sync-dot" title="클라우드 동기화 상태"></span>` : '';
+            const roleTag = currentRole === 'teacher' ? ' <span class="role-tag">선생님</span>' : '';
+            el.innerHTML = `${shareBtn}<span class="auth-user">${syncDot}${name}${roleTag}</span><button class="auth-role" onclick="changeRole()" title="학생/선생님 전환">역할</button><button class="auth-signout" onclick="signOutUser()">로그아웃</button>`;
+        }
+
+        async function changeRole() {
+            if (!currentUser || !fbDb) return;
+            const cur = currentRole === 'teacher' ? '선생님' : '학생';
+            const r = (prompt('역할을 입력하세요 — "학생" 또는 "선생님":', cur) || '').trim();
+            if (!r) return;
+            const role = r.includes('선생') ? 'teacher' : 'student';
+            try {
+                await fbDb.collection('users').doc(currentUser.uid).set({ role }, { merge: true });
+                location.reload();
+            } catch (e) { alert('역할 변경 실패: ' + e.message); }
         }
 
         async function shareWithTeacher() {
@@ -4278,28 +4389,84 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             } catch (e) { alert('공유 실패: ' + e.message); }
         }
 
-        function closeTeacherModal() { document.getElementById('teacher-modal').classList.add('hidden'); }
-        async function openTeacherDashboard() {
-            const modal = document.getElementById('teacher-modal');
-            const body = document.getElementById('teacher-modal-body');
-            modal.classList.remove('hidden');
-            body.innerHTML = '<p class="text-gray-500">불러오는 중…</p>';
-            try {
-                const snap = await fbDb.collection('students').where('sharedWith', 'array-contains', (currentUser.email || '').toLowerCase()).get();
-                if (snap.empty) { body.innerHTML = '<p class="text-gray-500">아직 공유된 학생이 없어요. 학생이 "선생님께 공유"에서 선생님 이메일을 입력하면 여기에 나타나요.</p>'; return; }
-                const rows = [];
-                snap.forEach(doc => { const d = doc.data(); rows.push({ id: doc.id, name: d.name || d.email, email: d.email }); });
-                body.innerHTML = `<div class="teacher-list">${rows.map(r => `<button class="teacher-student" onclick="viewStudent('${r.id}')"><span class="ts-name">${esc(r.name)}</span><span class="ts-email">${esc(r.email)}</span><span class="ts-arrow">→</span></button>`).join('')}</div>`;
-            } catch (e) { body.innerHTML = `<p class="text-red-600">불러오기 실패: ${esc(e.message)}</p>`; }
+        function closeTeacherModal() { const m = document.getElementById('teacher-modal'); if (m) m.classList.add('hidden'); }
+
+        function studentStats(d) {
+            const ad = d.appData || {};
+            const unis = safeParse(ad.myUniversities, []);
+            const essays = safeParse(ad.mySupplementalEssays, []);
+            const admin = safeParse(ad.myAdminTasks, []);
+            const at = admin.reduce((s, c) => s + (c.items ? c.items.length : 0), 0);
+            const ad2 = admin.reduce((s, c) => s + (c.items ? c.items.filter(i => i.done).length : 0), 0);
+            const einp = essays.filter(e => normalizeEssayStatus(e.status) !== 'Done').length;
+            return { uniCount: unis.length, essayTotal: essays.length, essayInProg: einp, adminPct: at ? Math.round(ad2 / at * 100) : 0 };
         }
 
-        async function viewStudent(uid) {
-            const body = document.getElementById('teacher-modal-body');
-            body.innerHTML = '<p class="text-gray-500">불러오는 중…</p>';
+        async function loadTeacherStudents() {
+            const list = document.getElementById('teacher-view-list');
+            showTeacherList();
+            list.innerHTML = '<p class="rp-dim">불러오는 중…</p>';
+            try {
+                const email = (currentUser.email || '').toLowerCase();
+                const snap = await fbDb.collection('students').where('sharedWith', 'array-contains', email).get();
+                if (snap.empty) {
+                    list.innerHTML = `<div class="teacher-empty">아직 공유한 학생이 없어요.<br>학생이 로그인 후 <b>👩‍🏫 선생님께 공유</b>에서 <b>${esc(email)}</b> 를 입력하면 여기 나타나요.</div>`;
+                    return;
+                }
+                const cards = [];
+                snap.forEach(doc => {
+                    const d = doc.data(); const st = studentStats(d);
+                    cards.push(`<button class="tstudent-card" onclick="openStudentDetail('${doc.id}')">
+                        <div class="tsc-name">${esc(d.name || d.email)}</div>
+                        <div class="tsc-email">${esc(d.email || '')}</div>
+                        <div class="tsc-stats"><span>🏫 ${st.uniCount}개</span><span>✍️ ${st.essayInProg}/${st.essayTotal}</span><span>✅ ${st.adminPct}%</span></div>
+                    </button>`);
+                });
+                list.innerHTML = `<div class="tstudent-grid">${cards.join('')}</div>`;
+            } catch (e) { list.innerHTML = `<div class="teacher-error">불러오기 실패: ${esc(e.message)}</div>`; }
+        }
+
+        function showTeacherList() {
+            const detail = document.getElementById('teacher-view-detail');
+            const list = document.getElementById('teacher-view-list');
+            if (detail) detail.style.display = 'none';
+            if (list) list.style.display = 'block';
+        }
+
+        let currentStudentUid = null;
+        async function openStudentDetail(uid) {
+            currentStudentUid = uid;
+            const detail = document.getElementById('teacher-view-detail');
+            document.getElementById('teacher-view-list').style.display = 'none';
+            detail.style.display = 'block';
+            detail.innerHTML = '<p class="rp-dim">불러오는 중…</p>';
             try {
                 const snap = await fbDb.collection('students').doc(uid).get();
-                body.innerHTML = snap.exists ? buildStudentReport(snap.data()) : '<p>데이터가 없어요.</p>';
-            } catch (e) { body.innerHTML = `<p class="text-red-600">${esc(e.message)}</p>`; }
+                if (!snap.exists) { detail.innerHTML = '<p>데이터가 없어요.</p>'; return; }
+                const data = snap.data();
+                detail.innerHTML = `<button class="teacher-back" onclick="showTeacherList()">← 학생 목록</button>${buildStudentReport(data)}${buildFeedbackPanel(data)}`;
+            } catch (e) { detail.innerHTML = `<div class="teacher-error">${esc(e.message)}</div>`; }
+        }
+
+        function buildFeedbackPanel(data) {
+            const fb = Array.isArray(data.feedback) ? data.feedback : [];
+            const items = fb.slice().reverse().map(f =>
+                `<div class="fb-item"><div class="fb-meta">${esc(f.teacherName || f.teacherEmail || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</div><div class="fb-text">${esc(f.text)}</div></div>`).join('') || '<p class="rp-dim">아직 남긴 피드백이 없어요.</p>';
+            return `<div class="report-section fb-section"><h4>💬 피드백 남기기</h4>
+                <textarea id="fb-input" class="fb-textarea" rows="3" placeholder="학생에게 남길 피드백을 입력하세요 (학생이 로그인하면 홈에서 볼 수 있어요)"></textarea>
+                <div><button class="fb-submit" onclick="submitFeedback()">피드백 저장</button></div>
+                <div class="fb-list">${items}</div></div>`;
+        }
+
+        async function submitFeedback() {
+            const ta = document.getElementById('fb-input');
+            const text = (ta.value || '').trim();
+            if (!text || !currentStudentUid) return;
+            const entry = { text, teacherEmail: currentUser.email, teacherName: currentUser.displayName || currentUser.email, at: Date.now() };
+            try {
+                await fbDb.collection('students').doc(currentStudentUid).update({ feedback: firebase.firestore.FieldValue.arrayUnion(entry) });
+                openStudentDetail(currentStudentUid);
+            } catch (e) { alert('피드백 저장 실패: ' + e.message); }
         }
 
         function buildStudentReport(data) {
@@ -4315,7 +4482,6 @@ This website is a crucial tool for achieving my dream of studying abroad in the 
             const uniRows = unis.map(u => `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''}</td><td>${esc(u.category || '-')}</td><td>${esc(uniStatusLabel(u.applicationStatus))}</td><td class="rp-dim">${esc(u.deadline || '-')}</td></tr>`).join('');
             const essayRows = essays.map(e => { const uni = unis.find(u => u.id === e.universityId); return `<tr><td>${esc(uni ? uni.nameEn : '—')}</td><td>${esc(essayStageLabel(e.status))}</td></tr>`; }).join('');
             return `
-                <button class="teacher-back" onclick="openTeacherDashboard()">← 학생 목록</button>
                 <h3 class="report-name">${esc(data.name || data.email)}</h3>
                 <div class="report-email">${esc(data.email || '')}</div>
                 ${motivation ? `<div class="report-section"><h4>🎯 다짐</h4><p class="report-motiv">${esc(motivation)}</p></div>` : ''}
