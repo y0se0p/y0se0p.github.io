@@ -1624,7 +1624,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <button class="onb-google" onclick="onbSignIn()"><span>🔑</span> Google로 시작하기</button>
             <p class="onb-err" id="onb-login-err"></p>
             <p class="onb-note">로그인하면 내 데이터가 안전하게 클라우드에 저장되고, 어느 기기에서나 이어서 작업할 수 있어요.</p>
-            <p class="onb-note" style="margin-top:8px; opacity:0.6;">버전 2026.07.17-B</p>
+            <p class="onb-note" style="margin-top:8px; opacity:0.6;">버전 2026.07.17-C</p>
         </div>
 
         <!-- Step 2: profile form -->
@@ -2070,6 +2070,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <div class="data-row">
                     <div><div class="data-title">📅 캘린더로 내보내기 (.ics)</div><div class="data-desc">원서 마일스톤을 구글·애플 캘린더에 넣어 실제 알림 받기</div></div>
                     <button type="button" class="data-btn" onclick="exportICS()">.ics 저장</button>
+                </div>
+                <div class="data-row" style="border-top:1px solid var(--border); margin-top:6px; padding-top:16px;">
+                    <div><div class="data-title" style="color:#ff3b30;">🗑️ 내 계정 완전 초기화</div><div class="data-desc">이 계정의 <b>모든 데이터(대학·에세이·다짐·프로필)를 클라우드와 이 기기에서 영구 삭제</b>하고 처음부터 새로 시작합니다. 되돌릴 수 없어요.</div></div>
+                    <button type="button" class="data-btn" style="background:#ff3b30; color:#fff;" onclick="resetMyAccount()">완전 초기화</button>
                 </div>
             </div>
         </div>
@@ -4353,6 +4357,35 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
         function openDataModal() { document.getElementById('data-modal').classList.remove('hidden'); }
         function closeDataModal() { document.getElementById('data-modal').classList.add('hidden'); }
+
+        // Permanently wipe THIS account's cloud + local data, then restart fresh
+        async function resetMyAccount() {
+            const ok = await showConfirm('내 계정 완전 초기화', '이 계정의 모든 데이터(대학·에세이·다짐·행정·프로필)를 클라우드와 이 기기에서 영구 삭제하고 처음부터 새로 시작합니다.\n\n되돌릴 수 없어요. 계속할까요?', { danger: true, confirmText: '영구 삭제', icon: '🗑️' });
+            if (!ok) return;
+            closeDataModal();
+            toast('초기화 중…', 'info');
+            // Stop auto-push so cleared local state isn't re-uploaded mid-reset
+            cloudSyncBound = true;
+            try {
+                if (fbDb && currentUser) {
+                    // Overwrite the student doc with an empty one (works with the standard update rule)
+                    await withTimeout(fbDb.collection('students').doc(currentUser.uid).set(
+                        { email: currentUser.email, name: currentUser.displayName || currentUser.email, appData: {}, sharedWith: [], updatedAt: Date.now() },
+                        { merge: false }), 12000).catch(async () => {
+                            await fbDb.collection('students').doc(currentUser.uid).set({ appData: {} }, { merge: true }).catch(() => {});
+                        });
+                    // Remove the profile so onboarding restarts on reload
+                    await withTimeout(fbDb.collection('users').doc(currentUser.uid).delete(), 12000).catch(() => {});
+                }
+            } catch (e) { console.warn('cloud reset failed', e); }
+            // Wipe every local trace
+            try {
+                clearLocalAppData();
+                ['onboardedRole', 'userProfile', 'myMotivationStatement', 'firstChoiceUniId', 'secondChoiceUniId'].forEach(k => localStorage.removeItem(k));
+            } catch (e) {}
+            toast('초기화 완료! 새로 시작합니다.', 'success');
+            setTimeout(() => location.reload(), 900);
+        }
 
         const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights'];
 
