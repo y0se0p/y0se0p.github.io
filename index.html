@@ -1648,6 +1648,27 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .sfb-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
         .sfb-del{ flex:0 0 auto; background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); cursor:pointer; font-size:0.76rem; font-weight:700; padding:4px 10px; border-radius:8px; white-space:nowrap; transition:all .15s; }
         .sfb-del:hover{ background:#ff3b30; border-color:#ff3b30; color:#fff; }
+
+        /* ===== Financial Aid: modal section + chips ===== */
+        .finaid-box{ background:linear-gradient(135deg, rgba(0,113,227,0.06), rgba(124,58,237,0.06)); border:1px solid rgba(124,58,237,0.22); border-radius:16px; padding:16px 18px; }
+        html[data-theme="dark"] .finaid-box{ background:linear-gradient(135deg, rgba(10,132,255,0.1), rgba(157,105,255,0.1)); border-color:rgba(157,105,255,0.3); }
+        .finaid-head{ font-size:1rem; font-weight:800; color:var(--text); margin-bottom:4px; letter-spacing:-0.01em; }
+        .finaid-desc{ font-size:0.82rem; color:var(--text-muted); margin-bottom:14px; line-height:1.5; }
+        .finaid-opts{ display:flex; gap:12px; flex-wrap:wrap; }
+        .finaid-opt{ flex:1 1 200px; display:flex; align-items:flex-start; gap:10px; padding:13px 14px; background:var(--surface); border:2px solid var(--border); border-radius:13px; cursor:pointer; transition:border-color .15s, background .15s; }
+        .finaid-opt input{ width:20px; height:20px; margin-top:1px; cursor:pointer; flex:0 0 auto; }
+        .finaid-opt.css input{ accent-color:#0071e3; }
+        .finaid-opt.inst input{ accent-color:#7c3aed; }
+        .finaid-opt.css:has(input:checked){ border-color:#0071e3; background:rgba(0,113,227,0.06); }
+        .finaid-opt.inst:has(input:checked){ border-color:#7c3aed; background:rgba(124,58,237,0.06); }
+        .finaid-opt-t{ display:block; font-weight:800; color:var(--text); font-size:0.95rem; }
+        .finaid-opt-s{ display:block; font-size:0.78rem; color:var(--text-muted); margin-top:2px; }
+        .finaid-opt > span{ display:block; }
+        .finaid-chip{ display:inline-block; font-size:0.7rem; font-weight:800; padding:3px 9px; border-radius:999px; white-space:nowrap; letter-spacing:0.01em; }
+        .finaid-chip.css{ background:#dbeafe; color:#1e40af; }
+        .finaid-chip.inst{ background:#ede9fe; color:#6d28d9; }
+        html[data-theme="dark"] .finaid-chip.css{ background:rgba(30,64,175,0.4); color:#93c5fd; }
+        html[data-theme="dark"] .finaid-chip.inst{ background:rgba(109,40,217,0.4); color:#c4b5fd; }
         .sfb-ack-row{ margin-top:8px; }
         .sfb-ack-btn{ background:var(--accent); color:#fff; border:none; border-radius:9px; padding:5px 12px; font-size:0.8rem; font-weight:700; cursor:pointer; transition:filter .15s; }
         .sfb-ack-btn:hover{ filter:brightness(1.08); }
@@ -2448,6 +2469,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <label for="uni-applying-major" class="block text-gray-700 text-sm font-bold mb-2">Applying Major:</label>
                     <input type="text" id="uni-applying-major" class="shadow border rounded w-full py-2 px-3 text-gray-700" placeholder="e.g., Computer Science">
                 </div>
+                <div class="md:col-span-2 finaid-box">
+                    <div class="finaid-head">💰 Financial Aid Application Form</div>
+                    <p class="finaid-desc">이 대학에 재정 보조를 신청한다면 <b>필요한 서류 종류</b>를 선택하세요. 국제학생은 누락하면 치명적이에요.</p>
+                    <div class="finaid-opts">
+                        <label class="finaid-opt css"><input type="checkbox" id="uni-finaid-css"><span class="finaid-opt-t">CSS Profile</span><span class="finaid-opt-s">College Board 재정 보조 신청서</span></label>
+                        <label class="finaid-opt inst"><input type="checkbox" id="uni-finaid-inst"><span class="finaid-opt-t">Institutional Form</span><span class="finaid-opt-s">학교 자체 재정 보조 폼</span></label>
+                    </div>
+                </div>
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">장단점 (Pros & Cons):</label>
                     <p class="text-xs text-gray-500 mb-2">한 줄짜리 키워드/문장 단위로 입력하세요. (예: "소규모 수업", "학비 높음") — Enter 또는 추가 버튼</p>
@@ -3154,6 +3183,16 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             </div>`;
         }
 
+        // Financial-aid chips (light-blue CSS Profile / purple Institutional Form) shared by student cards & teacher report
+        function finAidChips(uni) {
+            const fa = uni && uni.finAid;
+            if (!fa) return '';
+            let out = '';
+            if (fa.css) out += '<span class="finaid-chip css" title="CSS Profile 필요">💰 CSS</span>';
+            if (fa.inst) out += '<span class="finaid-chip inst" title="Institutional Form (학교 자체 폼) 필요">💰 Inst. Form</span>';
+            return out;
+        }
+
         function renderUniversities(dataToRender = universities) {
             const list = document.getElementById('university-card-list');
             const countEl = document.getElementById('uni-count');
@@ -3238,7 +3277,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                             <div class="uni-card-name">${esc(uni.nameEn) || '(이름 없음)'}${uni.nameKo ? ` <span class="uni-card-nameko">${esc(uni.nameKo)}</span>` : ''}</div>
                             <div class="uni-card-meta">${[esc(uni.location), esc(uni.ranking)].filter(Boolean).join(' · ') || '-'}</div>
                         </div>
-                        <div class="uni-card-tags">${matchBadge}${catBadge}${ddayHtml}</div>
+                        <div class="uni-card-tags">${matchBadge}${catBadge}${finAidChips(uni)}${ddayHtml}</div>
                         <div class="uni-card-status" onclick="event.stopPropagation()">
                             <div class="status-cell-wrapper ${statusClass}">
                                 <select onchange="updateApplicationStatus(this, '${uni.id}')" class="status-select">${uniStatusOptionsHtml(uni.applicationStatus)}</select>
@@ -3416,6 +3455,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     document.getElementById('uni-campus-video').value = uni.campusVideoLink || '';
                     document.getElementById('uni-curriculum-link').value = uni.curriculumLink || '';
                     document.getElementById('uni-signature-color').value = getSignatureColor(uni);
+                    document.getElementById('uni-finaid-css').checked = !!(uni.finAid && uni.finAid.css);
+                    document.getElementById('uni-finaid-inst').checked = !!(uni.finAid && uni.finAid.inst);
                 }
             } else {
                 universityModalTitle.innerText = 'Add New University';
@@ -3470,7 +3511,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 usnewsLink: document.getElementById('uni-usnews-link').value.trim(),
                 campusVideoLink: document.getElementById('uni-campus-video').value.trim(),
                 curriculumLink: document.getElementById('uni-curriculum-link').value.trim(),
-                signatureColor: document.getElementById('uni-signature-color').value
+                signatureColor: document.getElementById('uni-signature-color').value,
+                finAid: {
+                    css: document.getElementById('uni-finaid-css').checked,
+                    inst: document.getElementById('uni-finaid-inst').checked
+                }
             };
 
             // Basic validation for English university name
@@ -5745,7 +5790,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const uniRows = sortedUnis.map(u => {
                 const nd = uniNearestDeadline(u);
                 const ddayBadge = nd ? `<span class="rp-dday ${daysUntil(nd.date) <= 30 ? 'soon' : ''}">D-${daysUntil(nd.date)}</span>` : '';
-                return `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''}</td><td>${esc(u.category || '-')}</td><td>${esc(uniStatusLabel(u.applicationStatus))}</td><td class="rp-dim">${esc(u.deadline || '-')} ${ddayBadge}</td></tr>`;
+                return `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''} ${finAidChips(u)}</td><td>${esc(u.category || '-')}</td><td>${esc(uniStatusLabel(u.applicationStatus))}</td><td class="rp-dim">${esc(u.deadline || '-')} ${ddayBadge}</td></tr>`;
             }).join('');
             const essayFeedback = data.essayFeedback || {};
             const verLabel = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} 버전`; };
