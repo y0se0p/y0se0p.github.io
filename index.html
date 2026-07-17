@@ -4653,7 +4653,13 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
                 .catch(err => toast('로그인 실패: ' + (err && err.message ? err.message : err), 'error'));
         }
-        function signOutUser() { if (fbAuth) fbAuth.signOut(); }
+        function signOutUser() {
+            if (!fbAuth) return;
+            // Clear this browser so the next person who logs in doesn't see the previous user's data
+            clearLocalAppData();
+            try { localStorage.removeItem('onboardedRole'); localStorage.removeItem('userProfile'); } catch (e) {}
+            fbAuth.signOut();
+        }
 
         async function handleAuthChange(user) {
             currentUser = user;
@@ -4728,19 +4734,26 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
         function safeParse(s, fallback) { try { return JSON.parse(s); } catch (e) { return fallback; } }
 
+        // Wipe this browser's app data so one account never inherits another account's local state
+        function clearLocalAppData() {
+            try { BACKUP_KEYS.forEach(k => localStorage.removeItem(k)); } catch (e) {}
+        }
+
         async function pullStudentData(uid) {
             try {
                 const snap = await fbDb.collection('students').doc(uid).get();
-                if (snap.exists) {
-                    const d = snap.data();
-                    if (d.appData) {
-                        Object.keys(d.appData).forEach(k => localStorage.setItem(k, d.appData[k]));
-                        refreshAppFromStorage();
-                    }
-                    renderStudentFeedback(d);
-                } else {
-                    await pushStudentData(); // first-ever login → seed cloud from local
+                const d = snap.exists ? snap.data() : null;
+                const hasCloudData = !!(d && d.appData && Object.keys(d.appData).length > 0);
+                // Always reset local first → a new/empty account can't show the previous user's data
+                clearLocalAppData();
+                if (hasCloudData) {
+                    Object.keys(d.appData).forEach(k => localStorage.setItem(k, d.appData[k]));
                 }
+                refreshAppFromStorage();
+                if (!hasCloudData) {
+                    await pushStudentData(); // brand-new account → seed cloud with the fresh (empty) state
+                }
+                if (d) renderStudentFeedback(d);
             } catch (e) { console.warn('pull failed', e); }
         }
 
