@@ -2530,7 +2530,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
             <!-- Tab Content: Personal Notes and Calendar -->
             <div id="personal-notes" class="tab-content active bg-gray-50 p-6 rounded-lg border border-gray-200" style="display: block;">
-                <h3 class="text-2xl font-semibold mb-4 text-blue-700">🗓️ 원서 제출 타임라인 (마일스톤 자동 표시)</h3>
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+                    <h3 class="text-2xl font-semibold text-blue-700">🗓️ 원서 제출 타임라인 (마일스톤 자동 표시)</h3>
+                    <button type="button" class="data-btn primary" onclick="exportDeadlinesToICS()">📅 구글 캘린더로 내보내기</button>
+                </div>
                 <div id="calendar-container" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
                     <div class="flex justify-between items-center mb-4">
                         <button id="prev-month" class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600">‹ 이전 달</button>
@@ -5039,6 +5042,40 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             });
             all.sort((a, b) => a.date - b.date);
             return all;
+        }
+
+        // Export all university deadlines as an .ics file → import into Google Calendar / Apple Calendar
+        function exportDeadlinesToICS() {
+            const deadlines = collectSortedDeadlines();
+            if (!deadlines.length) { toast('내보낼 마감일이 없어요. University List에서 대학 마감일을 먼저 입력하세요.', 'info'); return; }
+            const p2 = n => String(n).padStart(2, '0');
+            const dstr = d => `${d.getFullYear()}${p2(d.getMonth() + 1)}${p2(d.getDate())}`;
+            const esc = s => String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+            const now = new Date();
+            const stamp = `${dstr(now)}T${p2(now.getHours())}${p2(now.getMinutes())}${p2(now.getSeconds())}`;
+            const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//University Explorer//KO//', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+            deadlines.forEach((dl, i) => {
+                const start = dl.date;
+                const end = new Date(start.getTime() + 86400000);
+                const title = `🎓 ${dl.uniName || dl.uniNameKo || '대학'} 원서 마감${dl.type ? ' (' + dl.type + ')' : ''}`;
+                lines.push('BEGIN:VEVENT',
+                    `UID:${dstr(start)}-${i}-${(dl.uniId || 'x')}@university-explorer`,
+                    `DTSTAMP:${stamp}`,
+                    `DTSTART;VALUE=DATE:${dstr(start)}`,
+                    `DTEND;VALUE=DATE:${dstr(end)}`,
+                    `SUMMARY:${esc(title)}`,
+                    `DESCRIPTION:${esc('University Explorer 원서 마감일' + (dl.uniNameKo ? ' · ' + dl.uniNameKo : ''))}`,
+                    'BEGIN:VALARM', 'TRIGGER:-P3D', 'ACTION:DISPLAY', `DESCRIPTION:${esc(title + ' D-3')}`, 'END:VALARM',
+                    'END:VEVENT');
+            });
+            lines.push('END:VCALENDAR');
+            const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'university-deadlines.ics';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+            toast(`마감일 ${deadlines.length}개를 캘린더 파일(.ics)로 내보냈어요! 📅\nGoogle 캘린더 → 설정 → 가져오기에서 이 파일을 올리면 돼요.`, 'success');
         }
 
         /** Renders the home dashboard bento cards from live data. */
