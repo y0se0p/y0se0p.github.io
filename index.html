@@ -2217,15 +2217,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <div class="onb-who" id="onb-who"></div>
 
             <div class="onb-form">
-                <label class="onb-field" style="margin-bottom:10px;"><span style="display:block;font-size:0.85rem;font-weight:700;color:var(--text-muted);margin-bottom:6px;">저는…</span></label>
-                <div class="onb-role">
-                    <div class="onb-role-opt active" id="onb-role-student" onclick="onbSelectRole('student')">
-                        <span class="ic">🎒</span><span class="lb">학생</span>
-                    </div>
-                    <div class="onb-role-opt" id="onb-role-teacher" onclick="onbSelectRole('teacher')">
-                        <span class="ic">👩‍🏫</span><span class="lb">선생님</span>
+                <div id="onb-role-block">
+                    <label class="onb-field" style="margin-bottom:10px;"><span style="display:block;font-size:0.85rem;font-weight:700;color:var(--text-muted);margin-bottom:6px;">저는…</span></label>
+                    <div class="onb-role">
+                        <div class="onb-role-opt active" id="onb-role-student" onclick="onbSelectRole('student')">
+                            <span class="ic">🎒</span><span class="lb">학생</span>
+                        </div>
+                        <div class="onb-role-opt" id="onb-role-teacher" onclick="onbSelectRole('teacher')">
+                            <span class="ic">👩‍🏫</span><span class="lb">선생님</span>
+                        </div>
                     </div>
                 </div>
+                <div id="onb-invite-note" class="onb-hide" style="display:flex;align-items:center;gap:8px;padding:12px 14px;margin-bottom:16px;border-radius:12px;background:rgba(0,113,227,0.08);border:1px solid rgba(0,113,227,0.25);font-size:0.9rem;font-weight:600;color:var(--text);">👩‍🏫 <b id="onb-invite-teacher"></b>&nbsp;선생님과 자동으로 연결돼요</div>
 
                 <div class="onb-row">
                     <div class="onb-field">
@@ -5689,6 +5692,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const en = document.getElementById('onb-name-en');
             if (en && !en.value && user.displayName) en.value = user.displayName;
             onbSelectRole('student');
+            // Arrived via a teacher invite link → this is a student; hide the role picker and show who they'll connect to
+            const t = getTeacherLinkParam();
+            const block = document.getElementById('onb-role-block');
+            const note = document.getElementById('onb-invite-note');
+            if (t) {
+                onbSelectRole('student');
+                if (block) block.classList.add('onb-hide');
+                if (note) { const b = document.getElementById('onb-invite-teacher'); if (b) b.textContent = t; note.classList.remove('onb-hide'); }
+            } else {
+                if (block) block.classList.remove('onb-hide');
+                if (note) note.classList.add('onb-hide');
+            }
         }
         // Reject after `ms` so a stalled Firestore call can't hang the UI forever
         function withTimeout(promise, ms) {
@@ -5737,6 +5752,13 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 cloudOk = false; cloudErr = e;
                 console.error('cloud profile save failed:', e);
                 if (onbRole === 'student') bindCloudAutoPush();
+            }
+
+            // New student: wire up chat + realtime + invite-link auto-connect (parity with returning users)
+            if (onbRole === 'student') {
+                initStudentChat();
+                watchOwnStudentDoc(currentUser.uid);
+                await maybeAutoShareTeacher();
             }
 
             // Enter the app either way
