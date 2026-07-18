@@ -1397,6 +1397,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .uni-prog-track { flex: 1; height: 6px; background: var(--surface-3); border-radius: 999px; overflow: hidden; }
         .uni-prog-track i { display: block; height: 100%; border-radius: 999px; transition: width .3s ease; }
         .uni-prog-pct { font-size: 0.72rem; font-weight: 800; font-variant-numeric: tabular-nums; flex: 0 0 auto; min-width: 30px; text-align: right; }
+        /* Compare modal table */
+        .cmp-modal-content { max-width: min(96vw, 1100px); width: 96%; }
+        .cmp-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; -webkit-overflow-scrolling: touch; }
+        .cmp-table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 0.86rem; }
+        .cmp-table th, .cmp-table td { padding: 10px 14px; text-align: center; white-space: nowrap; border-bottom: 1px solid var(--border); }
+        .cmp-table thead th { position: sticky; top: 0; background: var(--surface-2); font-weight: 800; z-index: 2; color: var(--text); }
+        .cmp-table th.cmp-corner, .cmp-table td.cmp-label { position: sticky; left: 0; background: var(--surface); text-align: left; font-weight: 700; color: var(--text-muted); z-index: 1; box-shadow: 1px 0 0 var(--border); }
+        .cmp-table thead th.cmp-corner { z-index: 3; background: var(--surface-2); }
+        .cmp-uni { min-width: 128px; }
+        .cmp-ko { display: block; font-size: 0.72rem; color: var(--text-faint); font-weight: 600; margin-top: 2px; }
+        .cmp-table tbody tr:hover td { background: var(--surface-3); }
+        .cmp-table tbody tr:hover td.cmp-label { background: var(--surface-3); }
         .uni-card-tags { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .cat-badge { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 9999px; white-space: nowrap; }
         .cat-Reach { background: #fee2e2; color: #991b1b; }
@@ -2430,6 +2442,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <div class="uni-toolbar-right">
                     <button type="button" class="match-settings-btn" onclick="openMatchModal()">🎯 매칭 설정</button>
                     <button type="button" class="match-settings-btn" onclick="openCostModal()">💰 예산 매칭</button>
+                    <button type="button" class="match-settings-btn" onclick="openCompareModal()">⚖️ 비교</button>
                     <div class="uni-sort">
                         <label for="uni-sort-select">정렬</label>
                         <select id="uni-sort-select">
@@ -3911,6 +3924,40 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const pct = parts.length ? Math.round(parts.reduce((a, b) => a + b, 0) / parts.length * 100) : 0;
             return { pct, essayDone, essayTotal, reqDone, reqTotal };
         }
+
+        // Side-by-side comparison of all universities (rows = attributes, columns = schools)
+        function openCompareModal() {
+            if (!universities.length) { toast('비교할 대학이 없어요. 먼저 대학을 추가하세요.', 'info'); return; }
+            const list = universities;
+            const rows = [
+                ['🏆 랭킹', u => u.ranking || '–'],
+                ['📊 합격률', u => u.acceptanceRate || '–'],
+                ['📝 평균 SAT', u => u.avgSat || '–'],
+                ['📈 평균 GPA', u => u.avgGpa || '–'],
+                ['🎯 평균 ACT', u => u.avgAct || '–'],
+                ['💰 학비', u => { const v = formatCurrencyUSD(u.tuition); return v && v !== '-' ? v : '–'; }],
+                ['👥 규모', u => u.enrollment || '–'],
+                ['🏫 유형', u => u.type || '–'],
+                ['📋 전략', u => u.applicationStrategy || '–'],
+                ['⏰ 마감', u => { const nd = uniNearestDeadline(u); return nd ? `D-${daysUntil(nd.date)}${nd.type ? ' ' + nd.type : ''}` : '–'; }],
+                ['✍️ 시험정책', u => u.testPolicy || '–'],
+                ['🎯 매칭', u => { const m = computeMatchScore(u); return m.hasWeights ? m.pct + '%' : '–'; }],
+                ['✅ 준비', u => computeUniProgress(u).pct + '%'],
+            ];
+            const head = `<th class="cmp-corner">항목</th>` + list.map(u => `<th class="cmp-uni">${esc(u.nameEn || '(이름 없음)')}${u.nameKo ? `<span class="cmp-ko">${esc(u.nameKo)}</span>` : ''}</th>`).join('');
+            const bodyRows = rows.map(([label, fn]) => `<tr><td class="cmp-label">${label}</td>${list.map(u => `<td>${esc(String(fn(u)))}</td>`).join('')}</tr>`).join('');
+            let modal = document.getElementById('compare-modal');
+            if (!modal) { modal = document.createElement('div'); modal.id = 'compare-modal'; modal.className = 'modal hidden'; document.body.appendChild(modal); }
+            modal.innerHTML = `<div class="modal-content cmp-modal-content">
+                <span class="close-button" onclick="closeCompareModal()">×</span>
+                <h2 class="text-2xl font-bold mb-1">⚖️ 대학 비교</h2>
+                <p class="text-sm text-gray-500 mb-4">등록한 ${list.length}개 대학을 나란히 비교해요. 좌우로 스크롤하세요.</p>
+                <div class="cmp-scroll"><table class="cmp-table"><thead><tr>${head}</tr></thead><tbody>${bodyRows}</tbody></table></div>
+            </div>`;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeCompareModal() { const m = document.getElementById('compare-modal'); if (m) m.classList.add('hidden'); document.body.style.overflow = ''; }
 
         function renderUniversities(dataToRender = universities) {
             const list = document.getElementById('university-card-list');
