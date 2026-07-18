@@ -1389,6 +1389,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .uni-card-name { font-size: 1.02rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .uni-card-nameko { font-size: 0.85rem; font-weight: 500; color: var(--text-faint); }
         .uni-card-meta { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .uni-prog { display: flex; align-items: center; gap: 8px; margin-top: 7px; max-width: 260px; }
+        .uni-prog-lbl { font-size: 0.7rem; font-weight: 700; color: var(--text-faint); flex: 0 0 auto; }
+        .uni-prog-track { flex: 1; height: 6px; background: var(--surface-3); border-radius: 999px; overflow: hidden; }
+        .uni-prog-track i { display: block; height: 100%; border-radius: 999px; transition: width .3s ease; }
+        .uni-prog-pct { font-size: 0.72rem; font-weight: 800; font-variant-numeric: tabular-nums; flex: 0 0 auto; min-width: 30px; text-align: right; }
         .uni-card-tags { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .cat-badge { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 9999px; white-space: nowrap; }
         .cat-Reach { background: #fee2e2; color: #991b1b; }
@@ -2974,6 +2979,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     </select>
                 </div>
                 <div>
+                    <label for="uni-test-policy" class="block text-gray-700 text-sm font-bold mb-2">시험 점수 정책 (Test Policy)</label>
+                    <select id="uni-test-policy" class="shadow border rounded w-full py-2 px-3 text-gray-700">
+                        <option value="">선택</option>
+                        <option value="필수">필수 (Required)</option>
+                        <option value="Test-Optional">선택 (Test-Optional)</option>
+                        <option value="Test-Blind">미반영 (Test-Blind)</option>
+                    </select>
+                </div>
+                <div>
                     <label for="uni-deadline" class="block text-gray-700 text-sm font-bold mb-2">지원 마감일 (예: EA: 11/1, RD: 1/1)</label>
                     <input type="text" id="uni-deadline" class="shadow border rounded w-full py-2 px-3 text-gray-700">
                 </div>
@@ -3877,6 +3891,21 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             toast(size > 800000 ? '저장됐어요 ✓ (용량이 커지고 있어요 — 링크 사용 권장)' : '합격 결과가 저장됐어요 ✓', 'success');
         }
 
+        // Per-school application readiness: blends essay completion + the 6-item requirements checklist
+        function computeUniProgress(uni) {
+            const es = (supplementalEssays || []).filter(e => e.universityId === uni.id);
+            const essayTotal = es.length;
+            const essayDone = es.filter(e => normalizeEssayStatus(e.status) === 'Done').length;
+            const r = (typeof requirements !== 'undefined' && requirements && requirements[uni.id]) || {};
+            const reqTotal = REQ_COLS.length;
+            const reqDone = REQ_COLS.filter(c => r[c.key]).length;
+            const parts = [];
+            if (essayTotal) parts.push(essayDone / essayTotal);
+            parts.push(reqDone / reqTotal);
+            const pct = parts.length ? Math.round(parts.reduce((a, b) => a + b, 0) / parts.length * 100) : 0;
+            return { pct, essayDone, essayTotal, reqDone, reqTotal };
+        }
+
         function renderUniversities(dataToRender = universities) {
             const list = document.getElementById('university-card-list');
             const countEl = document.getElementById('uni-count');
@@ -3920,15 +3949,20 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const catBadge = uni.category ? `<span class="cat-badge cat-${esc(uni.category)}">${esc(uni.category)}</span>` : '';
                 const match = computeMatchScore(uni);
                 const matchBadge = match.hasWeights ? `<span class="match-badge ${matchTierClass(match.pct)}" title="내 선호도와의 일치도 (매칭 설정 기준)">🎯 ${match.pct}%</span>` : '';
+                const prog = computeUniProgress(uni);
+                const progColor = prog.pct >= 80 ? '#34c759' : prog.pct >= 40 ? '#f59e0b' : '#ff3b30';
 
                 // Application info as soft-coloured badges (chunking to lower visual load)
                 const deadlineBadges = (uni.deadline || '').split(',').map(s => s.trim()).filter(Boolean)
                     .map(d => `<span class="info-badge badge-red">📅 ${esc(d)}</span>`).join('');
                 const commonAppBadge = uni.commonApp
                     ? `<span class="info-badge badge-blue">Common App <b>${/^\s*y/i.test(uni.commonApp) ? '✓' : esc(uni.commonApp)}</b></span>` : '';
+                const testPolicyBadge = uni.testPolicy
+                    ? `<span class="info-badge ${uni.testPolicy === '필수' ? 'badge-red' : uni.testPolicy === 'Test-Blind' ? 'badge-blue' : 'badge-green'}"><span class="lbl">시험</span> ${esc(uni.testPolicy)}</span>` : '';
                 const infoBadges = [
                     deadlineBadges,
                     commonAppBadge,
+                    testPolicyBadge,
                     uni.supplementaryEssays ? `<span class="info-badge badge-gray"><span class="lbl">서플</span> ${esc(uni.supplementaryEssays)}</span>` : '',
                     uni.recommendations ? `<span class="info-badge badge-gray"><span class="lbl">추천서</span> ${esc(uni.recommendations)}</span>` : '',
                     uni.engProficiency ? `<span class="info-badge badge-green">${esc(uni.engProficiency)}</span>` : ''
@@ -3960,6 +3994,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <div class="uni-card-main">
                             <div class="uni-card-name">${esc(uni.nameEn) || '(이름 없음)'}${uni.nameKo ? ` <span class="uni-card-nameko">${esc(uni.nameKo)}</span>` : ''}</div>
                             <div class="uni-card-meta">${[esc(uni.location), esc(uni.ranking)].filter(Boolean).join(' · ') || '-'}</div>
+                            <div class="uni-prog" title="지원 준비: 에세이 ${prog.essayDone}/${prog.essayTotal} · 요구사항 ${prog.reqDone}/${prog.reqTotal} 완료" onclick="event.stopPropagation()">
+                                <span class="uni-prog-lbl">준비</span>
+                                <div class="uni-prog-track"><i style="width:${prog.pct}%;background:${progColor}"></i></div>
+                                <span class="uni-prog-pct" style="color:${progColor}">${prog.pct}%</span>
+                            </div>
                         </div>
                         <div class="uni-card-tags">${matchBadge}${catBadge}${finAidChips(uni)}${resultBadge(uni)}${ddayHtml}</div>
                         <div class="uni-card-status" onclick="event.stopPropagation()">
@@ -4119,6 +4158,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     document.getElementById('uni-avg-act').value = uni.avgAct || '';
                     document.getElementById('uni-eng-proficiency').value = uni.engProficiency || '';
                     document.getElementById('uni-common-app').value = uni.commonApp || '';
+                    document.getElementById('uni-test-policy').value = uni.testPolicy || '';
                     document.getElementById('uni-deadline').value = uni.deadline || '';
                     document.getElementById('uni-supplementary-essays-modal').value = uni.supplementaryEssays || '';
                     document.getElementById('uni-recommendations').value = uni.recommendations || '';
@@ -4181,6 +4221,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 avgAct: document.getElementById('uni-avg-act').value.trim(),
                 engProficiency: document.getElementById('uni-eng-proficiency').value.trim(),
                 commonApp: document.getElementById('uni-common-app').value,
+                testPolicy: document.getElementById('uni-test-policy').value,
                 deadline: document.getElementById('uni-deadline').value.trim(),
                 supplementaryEssays: document.getElementById('uni-supplementary-essays-modal').value.trim(),
                 recommendations: document.getElementById('uni-recommendations').value.trim(),
