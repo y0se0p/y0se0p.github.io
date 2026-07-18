@@ -8322,6 +8322,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 if (btn && input) {
                     btn.addEventListener('click', () => { addUniPc(type, input.value); input.value = ''; input.focus(); });
                     input.addEventListener('keydown', (e) => {
+                        // Korean/IME safe: ignore Enter while the input method is still composing,
+                        // otherwise the last character gets committed twice (중복 생성 버그)
+                        if (e.isComposing || e.keyCode === 229) return;
                         if (e.key === 'Enter') { e.preventDefault(); addUniPc(type, input.value); input.value = ''; }
                     });
                 }
