@@ -7343,7 +7343,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             return emailjsReady;
         }
         async function sendFeedbackEmail(kind) {
-            if (!currentStudentEmail) return;
+            if (!currentStudentEmail) { toast('학생 이메일 주소가 없어 알림 메일을 못 보냈어요. (피드백은 저장됨)', 'error'); return; }
             const urgencyMap = { red: '🔴 긴급 · 즉시 확인', yellow: '🟡 중요 · 확인 요망', green: '🔵 신규 피드백' };
             const params = {
                 to_email: currentStudentEmail,
@@ -7362,6 +7362,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             } catch (e) {
                 if (e && e.message === 'not-configured') return; // silently skip until the teacher sets up EmailJS
                 console.warn('email send failed', e);
+                const reason = (e && (e.text || e.message)) || JSON.stringify(e);
+                toast('📧 이메일 발송 실패: ' + reason + '\n(피드백 자체는 저장됐어요)', 'error');
             }
         }
 
