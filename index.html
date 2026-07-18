@@ -2705,8 +2705,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <div id="result-accept-fields">
                     <div class="am-field"><label>1년 재정지원 · 장학금 (USD)</label><input type="number" id="result-aid" placeholder="예: 30000"></div>
                     <div class="am-field">
-                        <label>합격 레터 업로드 <span style="color:#ff3b30;">*합격 시 필수</span></label>
-                        <p class="am-sub" style="margin:0 0 8px;">이미지(JPG/PNG) 또는 PDF. 이미지는 자동으로 압축돼요.</p>
+                        <label>합격 레터 <span style="color:#ff3b30;">*합격 시 필수</span></label>
+                        <p class="am-sub" style="margin:0 0 8px;">✅ <b>링크 권장</b> — 구글 드라이브/사진 링크를 붙여넣으면 저장 공간을 안 쓰고 안전해요.</p>
+                        <input type="url" id="result-letter-link" placeholder="https:// 합격레터 링크 붙여넣기" style="margin-bottom:8px;">
+                        <p class="am-sub" style="margin:0 0 6px;">또는 파일 업로드 (이미지/PDF · 자동 압축, 용량 제한):</p>
                         <input type="file" id="result-letter-file" accept="image/*,application/pdf" onchange="onLetterFileChange(event)">
                         <div id="result-letter-preview" class="result-letter-preview"></div>
                     </div>
@@ -3788,9 +3790,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             document.getElementById('result-status').value = uni.result || '';
             document.getElementById('result-aid').value = uni.aidAmount || '';
             document.getElementById('result-letter-file').value = '';
+            const isLink = /^https?:\/\//i.test(uni.acceptLetter || '');
+            document.getElementById('result-letter-link').value = isLink ? uni.acceptLetter : '';
             const prev = document.getElementById('result-letter-preview');
             prev.innerHTML = uni.acceptLetter
-                ? `<div class="result-letter-ok">📎 저장된 합격레터 있음 · <a href="${uni.acceptLetter}" target="_blank" rel="noopener">보기</a> <span class="rp-dim">(다시 올리면 교체돼요)</span></div>`
+                ? `<div class="result-letter-ok">📎 저장된 합격레터 있음 · <a href="${uni.acceptLetter}" target="_blank" rel="noopener">보기</a> <span class="rp-dim">(링크 붙여넣기 또는 새 파일로 교체돼요)</span></div>`
                 : '';
             onResultStatusChange();
             document.getElementById('result-modal').classList.remove('hidden');
@@ -3825,9 +3829,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const prev = document.getElementById('result-letter-preview');
             if (file.type.startsWith('image/')) {
                 try {
-                    let dataUrl = await compressImageToDataUrl(file, 1100, 0.62);
-                    if (dataUrl.length > 900000) dataUrl = await compressImageToDataUrl(file, 800, 0.5);
-                    if (dataUrl.length > 900000) { toast('이미지가 너무 커요. 더 작은 이미지를 사용해주세요.', 'error'); return; }
+                    let dataUrl = await compressImageToDataUrl(file, 1000, 0.55);
+                    if (dataUrl.length > 500000) dataUrl = await compressImageToDataUrl(file, 750, 0.45);
+                    if (dataUrl.length > 500000) { toast('이미지가 너무 커요. 링크로 넣거나 더 작은 이미지를 사용해주세요.', 'error'); return; }
                     pendingLetter = { dataUrl, name: file.name };
                     prev.innerHTML = `<img src="${dataUrl}" class="result-letter-img"><div class="result-letter-ok">✓ ${esc(file.name)}</div>`;
                 } catch (e) { toast('이미지 처리에 실패했어요.', 'error'); }
@@ -3843,9 +3847,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const uni = universities.find(u => u.id === uniId); if (!uni) return;
             const status = document.getElementById('result-status').value;
             const aid = document.getElementById('result-aid').value.trim();
-            const letter = pendingLetter ? pendingLetter.dataUrl : (uni.acceptLetter || '');
-            const letterName = pendingLetter ? pendingLetter.name : (uni.acceptLetterName || '');
-            if (status === '합격' && !letter) { toast('합격은 합격 레터 업로드가 필수예요.', 'error'); return; }
+            const linkVal = (document.getElementById('result-letter-link').value || '').trim();
+            // Prefer a pasted link (zero storage) over an uploaded base64 file
+            const letter = linkVal || (pendingLetter ? pendingLetter.dataUrl : (uni.acceptLetter || ''));
+            const letterName = linkVal ? '링크' : (pendingLetter ? pendingLetter.name : (uni.acceptLetterName || ''));
+            if (status === '합격' && !letter) { toast('합격은 합격 레터(링크 또는 파일)가 필수예요.', 'error'); return; }
+            const prevLetter = uni.acceptLetter, prevName = uni.acceptLetterName;
             uni.result = status;
             uni.aidAmount = status === '합격' ? aid : '';
             uni.acceptLetter = status === '합격' ? letter : '';
@@ -3853,10 +3860,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             // Keep the application-status dropdown in sync with the decision
             const statusMap = { '합격': 'Accepted', '불합격': 'Rejected', '대기': 'Waitlist', '유예': 'Deferred' };
             if (statusMap[status]) uni.applicationStatus = statusMap[status];
+            // Guard against Firestore's 1 MiB per-document limit (base64 letters can blow past it and break sync)
+            const size = JSON.stringify(universities).length;
+            if (size > 1000000) {
+                uni.acceptLetter = prevLetter; uni.acceptLetterName = prevName; // revert oversized change
+                toast('⚠️ 대학 데이터가 1MB를 넘어 저장할 수 없어요. 합격레터는 파일 대신 링크로 넣어주세요.', 'error');
+                return;
+            }
             saveUniversities();
             applyFiltersAndSort();
             closeResultModal();
-            toast('합격 결과가 저장됐어요 ✓', 'success');
+            toast(size > 800000 ? '저장됐어요 ✓ (용량이 커지고 있어요 — 링크 사용 권장)' : '합격 결과가 저장됐어요 ✓', 'success');
         }
 
         function renderUniversities(dataToRender = universities) {
@@ -6487,12 +6501,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
         function stopTeacherStudentsWatch() { if (teacherStudentsUnsub) { try { teacherStudentsUnsub(); } catch (e) {} teacherStudentsUnsub = null; } }
 
+        let teacherEmail = '';
         async function loadTeacherStudents() {
             const list = document.getElementById('teacher-view-list');
-            showTeacherList();
+            // show the list view (without re-subscribing yet)
+            const detail = document.getElementById('teacher-view-detail');
+            if (detail) detail.style.display = 'none';
+            if (list) list.style.display = 'block';
+            stopWatchStudentChat();
             list.innerHTML = '<p class="rp-dim">불러오는 중…</p>';
-            const email = (currentUser.email || '').toLowerCase();
-            // 1) load teacher's own saved state once
+            teacherEmail = (currentUser.email || '').toLowerCase();
+            // load teacher's own saved state once
             try {
                 const tsnap = await withTimeout(fbDb.collection('users').doc(currentUser.uid).get(), 10000);
                 const td = tsnap.exists ? tsnap.data() : {};
@@ -6503,15 +6522,26 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     admitLevels: td.admitLevels || {}
                 };
             } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {} }; }
+            stopTeacherStudentsWatch();   // manual refresh → force a fresh subscription
+            startCohortWatch();
+        }
 
-            // 2) subscribe to shared students in REALTIME so new messages / progress update live
-            stopTeacherStudentsWatch();
-            teacherStudentsUnsub = fbDb.collection('students').where('sharedWith', 'array-contains', email)
+        // Realtime cohort listener that is ACTIVE ONLY WHILE the teacher is actually looking at the
+        // student list (tab visible + not in a student-detail view). This keeps unread badges / progress
+        // live during active use, but stops racking up Firestore reads when the tab is backgrounded or
+        // the teacher drills into one student — which is what keeps a 100-student school on the free tier.
+        function startCohortWatch() {
+            if (teacherStudentsUnsub) return;                 // already watching
+            if (!fbDb || currentRole !== 'teacher' || !teacherEmail) return;
+            if (document.hidden) return;                      // tab not visible → don't spend reads
+            const detail = document.getElementById('teacher-view-detail');
+            if (detail && detail.style.display !== 'none') return; // in a student detail → cohort listener not needed
+            const list = document.getElementById('teacher-view-list');
+            teacherStudentsUnsub = fbDb.collection('students').where('sharedWith', 'array-contains', teacherEmail)
                 .onSnapshot(snap => {
-                    const detailOpen = document.getElementById('teacher-view-detail').style.display !== 'none';
                     if (snap.empty) {
                         teacherStudents = [];
-                        if (!detailOpen) list.innerHTML = `<div class="teacher-empty">아직 공유한 학생이 없어요.<br>학생이 로그인 후 <b>👩‍🏫 선생님께 공유</b>에서 <b>${esc(email)}</b> 를 입력하면 여기 나타나요.</div>`;
+                        if (list) list.innerHTML = `<div class="teacher-empty">아직 공유한 학생이 없어요.<br>학생이 로그인 후 <b>👩‍🏫 선생님께 공유</b>에서 <b>${esc(teacherEmail)}</b> 를 입력하면 여기 나타나요.</div>`;
                         return;
                     }
                     teacherStudents = [];
@@ -6520,14 +6550,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         teacherStudents.push({ id: doc.id, d, risk: computeStudentRisk(d), stats: studentStats(d), gaps: computeStudentGaps(d, doc.id) });
                     });
                     recordCohortSnapshot(teacherStudents);
-                    // Detail open → data is now fresh; the list rebuilds when the teacher returns (showTeacherList).
-                    if (detailOpen) return;
                     refreshTeacherDashboard();
-                }, err => {
-                    if (document.getElementById('teacher-view-detail').style.display === 'none')
-                        list.innerHTML = `<div class="teacher-error">불러오기 실패: ${esc(err.message || err)}</div>`;
-                });
+                }, err => { if (list) list.innerHTML = `<div class="teacher-error">불러오기 실패: ${esc(err.message || err)}</div>`; });
         }
+        // Pause/resume the cohort listener as the tab loses/gains visibility (free-tier friendly).
+        document.addEventListener('visibilitychange', () => {
+            if (currentRole !== 'teacher') return;
+            if (document.hidden) stopTeacherStudentsWatch();
+            else startCohortWatch();
+        });
 
         // ---- Gap detector: what is this student missing? (케어의 핵심) ----
         function rawChoiceId(v) {
@@ -6841,12 +6872,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const list = document.getElementById('teacher-view-list');
             if (detail) detail.style.display = 'none';
             if (list) list.style.display = 'block';
-            if (teacherStudents.length) refreshTeacherDashboard();
+            if (teacherStudents.length) refreshTeacherDashboard(); // show cached data instantly
+            startCohortWatch();                                    // re-subscribe → fresh live snapshot
         }
 
         let currentStudentUid = null, currentStudentEmail = '', currentStudentName = '', currentStudentRisk = 'green', currentStudentData = null;
         async function openStudentDetail(uid, initialTab) {
             currentStudentUid = uid;
+            stopTeacherStudentsWatch(); // free-tier: pause cohort reads while viewing one student
             const detail = document.getElementById('teacher-view-detail');
             document.getElementById('teacher-view-list').style.display = 'none';
             detail.style.display = 'block';
