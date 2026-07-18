@@ -2024,6 +2024,111 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .tchat-body{ border-radius:0; }
         .std-tab-badge{ display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; margin-left:6px; border-radius:999px; background:#ff3b30; color:#fff; font-size:0.7rem; font-weight:800; }
         .tsc-chat-badge{ display:inline-flex; align-items:center; gap:2px; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:999px; background:#ff3b30; color:#fff; }
+
+        /* ===== Teacher Command Center (관제탑) v3 ===== */
+        .cockpit{ margin-bottom:18px; }
+        .cp-tiles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px; }
+        .cp-tile{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:15px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.05); transition:transform .18s, box-shadow .18s; }
+        .cp-tile.clickable{ cursor:pointer; }
+        .cp-tile.clickable:hover{ transform:translateY(-2px); box-shadow:0 2px 6px rgba(0,0,0,0.06),0 16px 40px rgba(0,0,0,0.09); }
+        .cp-tile.active{ border-color:var(--accent); box-shadow:0 0 0 2px rgba(0,113,227,0.25); }
+        .cp-tile-label{ font-size:0.76rem; font-weight:700; color:var(--text-muted); margin-bottom:8px; display:flex; align-items:center; gap:5px; }
+        .cp-tile-big{ font-size:1.9rem; font-weight:800; color:var(--text); letter-spacing:-0.02em; line-height:1; font-variant-numeric:tabular-nums; }
+        .cp-tile-sub{ font-size:0.74rem; color:var(--text-faint); margin-top:6px; font-weight:600; }
+        .cp-lights{ display:flex; gap:12px; align-items:center; }
+        .cp-light{ display:inline-flex; align-items:center; gap:4px; font-size:1.15rem; font-weight:800; padding:4px 10px; border-radius:12px; cursor:pointer; transition:background .15s; font-variant-numeric:tabular-nums; }
+        .cp-light:hover{ background:var(--surface-3); }
+        .cp-light.on{ background:rgba(0,113,227,0.12); }
+        .cp-light.red{ color:#dc2626; } .cp-light.yellow{ color:#d97706; } .cp-light.green{ color:#16a34a; }
+        .cp-res{ display:flex; flex-wrap:wrap; gap:6px 12px; }
+        .cp-res span{ font-size:0.9rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
+        .cp-res .zero{ color:var(--text-faint); font-weight:600; }
+        .cp-unread.hot .cp-tile-big{ color:#ff3b30; }
+
+        /* Deadline radar */
+        .radar{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px 18px; margin-bottom:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.05); }
+        .radar-head{ font-size:0.92rem; font-weight:800; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+        .radar-track{ display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; }
+        .radar-chip{ flex:0 0 auto; min-width:132px; text-align:left; background:var(--surface-2); border:1px solid var(--border); border-radius:13px; padding:10px 13px; cursor:pointer; transition:transform .15s, border-color .15s; }
+        .radar-chip:hover{ transform:translateY(-2px); border-color:var(--accent); }
+        .radar-chip.soon{ background:rgba(255,59,48,0.08); border-color:rgba(255,59,48,0.35); }
+        .radar-chip.urgent{ background:rgba(255,59,48,0.14); border-color:rgba(255,59,48,0.55); }
+        .radar-dday{ font-size:1.05rem; font-weight:800; color:var(--text); font-variant-numeric:tabular-nums; }
+        .radar-chip.soon .radar-dday, .radar-chip.urgent .radar-dday{ color:#dc2626; }
+        .radar-uni{ font-size:0.8rem; font-weight:700; color:var(--text); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px; }
+        .radar-who{ font-size:0.74rem; color:var(--text-faint); margin-top:2px; }
+        .radar-empty{ font-size:0.86rem; color:var(--text-faint); }
+
+        /* Priority queue (오늘의 우선순위) */
+        .pqueue{ background:#fff7ed; border:1px solid #fed7aa; border-radius:18px; padding:16px 18px; margin-bottom:18px; }
+        .pqueue-head{ font-size:0.98rem; font-weight:800; color:#b45309; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+        .pq-list{ display:flex; flex-direction:column; gap:8px; }
+        .pq-item{ display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 13px; cursor:pointer; transition:transform .12s, box-shadow .12s; }
+        .pq-item:hover{ transform:translateX(3px); box-shadow:0 4px 14px rgba(0,0,0,0.07); }
+        .pq-name{ font-weight:800; color:var(--text); font-size:0.9rem; flex:0 0 auto; min-width:78px; }
+        .pq-reason{ font-size:0.83rem; color:var(--text-muted); flex:1; }
+        .pq-tag{ flex:0 0 auto; font-size:0.72rem; font-weight:800; padding:3px 9px; border-radius:999px; }
+        .pq-tag.msg{ background:#ff3b30; color:#fff; } .pq-tag.dead{ background:#fee2e2; color:#b91c1c; } .pq-tag.gap{ background:#fef3c7; color:#92400e; }
+        .pqueue-ok{ background:#ecfdf5; border:1px solid #a7f3d0; color:#047857; border-radius:18px; padding:16px 20px; margin-bottom:18px; font-weight:700; }
+
+        /* ===== Progress Matrix ===== */
+        .tmatrix-scroll{ overflow-x:auto; border:1px solid var(--border); border-radius:18px; box-shadow:0 1px 2px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.05); background:var(--surface); }
+        table.tmatrix{ border-collapse:separate; border-spacing:0; width:100%; min-width:1040px; font-size:0.84rem; }
+        table.tmatrix th, table.tmatrix td{ padding:11px 12px; text-align:center; white-space:nowrap; border-bottom:1px solid var(--border); }
+        table.tmatrix thead th{ position:sticky; top:0; z-index:3; background:var(--surface-2); font-size:0.74rem; font-weight:800; color:var(--text-muted); border-bottom:1.5px solid var(--border); }
+        table.tmatrix th.tm-stick, table.tmatrix td.tm-stick{ position:sticky; left:0; z-index:2; background:var(--surface); text-align:left; box-shadow:1px 0 0 var(--border); }
+        table.tmatrix thead th.tm-stick{ z-index:4; background:var(--surface-2); }
+        table.tmatrix tbody tr{ cursor:pointer; transition:background .12s; }
+        table.tmatrix tbody tr:hover td{ background:var(--surface-3); }
+        table.tmatrix tbody tr:hover td.tm-stick{ background:var(--surface-3); }
+        .tm-name{ font-weight:800; color:var(--text); font-size:0.9rem; }
+        .tm-name-row{ display:flex; align-items:center; gap:7px; }
+        .tm-sub{ font-size:0.72rem; color:var(--text-faint); margin-top:2px; }
+        .tm-riskdot{ width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
+        .tm-riskdot.red{ background:#ff3b30; } .tm-riskdot.yellow{ background:#ff9500; } .tm-riskdot.green{ background:#34c759; }
+        .tm-cls{ font-size:0.68rem; font-weight:700; padding:2px 7px; border-radius:999px; background:rgba(0,113,227,0.12); color:var(--accent); }
+        .tm-choice{ display:flex; flex-direction:column; gap:2px; align-items:flex-start; font-size:0.76rem; }
+        .tm-choice span{ display:inline-flex; align-items:center; gap:4px; }
+        .tm-cdot{ width:7px; height:7px; border-radius:50%; }
+        .cdot-Reach{ background:#dc2626; } .cdot-Match{ background:#d97706; } .cdot-Safe{ background:#16a34a; } .cdot-none{ background:#9ca3af; }
+        .tm-miss{ color:var(--text-faint); font-style:italic; }
+        .tm-dots{ display:inline-flex; gap:3px; }
+        .tm-dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+        .tm-mini{ display:flex; flex-direction:column; align-items:center; gap:4px; }
+        .tm-minibar{ width:52px; height:6px; background:var(--surface-3); border-radius:999px; overflow:hidden; }
+        .tm-minibar i{ display:block; height:100%; border-radius:999px; }
+        .tm-num{ font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
+        .tm-dim{ color:var(--text-faint); }
+        .tm-dday{ font-weight:800; font-variant-numeric:tabular-nums; }
+        .tm-dday.soon{ color:#dc2626; }
+        .tm-pill{ display:inline-block; font-weight:800; font-size:0.78rem; padding:3px 9px; border-radius:999px; font-variant-numeric:tabular-nums; }
+        .pill-good{ background:rgba(52,199,89,0.15); color:#15803d; } .pill-mid{ background:rgba(255,149,0,0.16); color:#b45309; } .pill-low{ background:rgba(255,59,48,0.13); color:#b91c1c; } .pill-none{ background:var(--surface-3); color:var(--text-faint); }
+        .tm-msgbadge{ display:inline-flex; min-width:20px; height:20px; padding:0 6px; align-items:center; justify-content:center; border-radius:999px; background:#ff3b30; color:#fff; font-weight:800; font-size:0.74rem; }
+        .tm-gapbadge{ display:inline-flex; min-width:20px; height:20px; padding:0 6px; align-items:center; justify-content:center; border-radius:999px; font-weight:800; font-size:0.74rem; }
+        .gap-red{ background:#fee2e2; color:#b91c1c; } .gap-yellow{ background:#fef3c7; color:#92400e; } .gap-ok{ background:rgba(52,199,89,0.15); color:#15803d; }
+
+        /* Care checklist in student detail */
+        .care-check{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px 20px; margin-bottom:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.05); }
+        .care-check-head{ font-size:1rem; font-weight:800; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+        .care-check-head .cc-count{ font-size:0.76rem; font-weight:800; padding:2px 10px; border-radius:999px; }
+        .cc-list{ display:flex; flex-direction:column; gap:8px; }
+        .cc-row{ display:flex; align-items:flex-start; gap:10px; padding:9px 12px; border-radius:11px; background:var(--surface-2); border:1px solid var(--border); }
+        .cc-row.red{ background:rgba(255,59,48,0.06); border-color:rgba(255,59,48,0.28); }
+        .cc-row.yellow{ background:rgba(255,149,0,0.07); border-color:rgba(255,149,0,0.28); }
+        .cc-ic{ flex:0 0 auto; font-size:1rem; line-height:1.4; }
+        .cc-txt{ flex:1; font-size:0.88rem; color:var(--text); font-weight:600; line-height:1.4; }
+        .cc-allgood{ display:flex; align-items:center; gap:8px; color:#15803d; font-weight:700; font-size:0.92rem; }
+        html[data-theme="dark"] .pqueue{ background:rgba(180,83,9,0.14); border-color:rgba(251,146,60,0.32); }
+        html[data-theme="dark"] .pqueue-head{ color:#fdba74; }
+        html[data-theme="dark"] .pqueue-ok{ background:rgba(5,150,105,0.14); border-color:rgba(16,185,129,0.32); color:#6ee7b7; }
+        html[data-theme="dark"] .cp-tile, html[data-theme="dark"] .radar, html[data-theme="dark"] .tmatrix-scroll,
+        html[data-theme="dark"] .care-check{ box-shadow:0 1px 3px rgba(0,0,0,0.5),0 8px 24px rgba(0,0,0,0.4); }
+        html[data-theme="dark"] .pill-good{ background:rgba(52,199,89,0.2); color:#4ade80; }
+        html[data-theme="dark"] .pill-mid{ background:rgba(255,149,0,0.2); color:#fbbf24; }
+        html[data-theme="dark"] .pill-low{ background:rgba(255,59,48,0.2); color:#fca5a5; }
+        html[data-theme="dark"] .gap-red{ background:rgba(255,59,48,0.2); color:#fca5a5; }
+        html[data-theme="dark"] .gap-yellow{ background:rgba(255,149,0,0.2); color:#fcd34d; }
+        @media (max-width:640px){ .cp-tiles{ grid-template-columns:repeat(2,1fr); } }
     </style>
     <script>
         (function(){
@@ -5421,13 +5526,16 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             let first = true;
             try {
                 studentDocUnsub = fbDb.collection('students').doc(uid).onSnapshot(snap => {
-                    if (first) { first = false; return; }
                     if (snap.metadata && snap.metadata.hasPendingWrites) return; // our own local write
                     const d = snap.data();
                     if (!d) return;
-                    // Teacher left new feedback → update the home panel and pop the double-check modal in real time
+                    // ALWAYS keep the chat FAB badge + feedback panel in sync with the live doc —
+                    // including the very first snapshot, so unread teacher messages received while the
+                    // student was away show the red badge as soon as the app loads.
                     renderStudentFeedback(d);
                     renderStudentChat(d);
+                    if (first) { first = false; return; } // first snapshot: skip modal pop-ups / conflict warnings only
+                    // Teacher left new feedback → pop the double-check modal in real time
                     maybeShowFeedbackConfirm(d);
                     // Data changed from another device → warn (non-destructive)
                     if (d.lastDevice && d.lastDevice !== getDeviceId() && !conflictWarned) {
@@ -5740,6 +5848,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 document.getElementById('teacher-sub').textContent = `${currentUser.displayName || currentUser.email} 선생님 · 공유받은 학생들의 진행 현황을 보고 피드백을 남길 수 있어요`;
                 loadTeacherStudents();
             } else {
+                stopTeacherStudentsWatch();
                 navLinks.forEach(a => a.style.display = '');
                 teacherSection.classList.remove('active-section');
                 if (!document.querySelector('main > section.card.active-section')) showSection('home');
@@ -6313,8 +6422,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
         // ===== Teacher dashboard state =====
         let teacherStudents = [];
+        let teacherStudentsUnsub = null;
         let teacherState = { studentClasses: {}, feedbackTemplates: [], statsHistory: [], admitLevels: {} };
-        let teacherFilter = { q: '', sort: 'risk', risk: 'all', cls: 'all' };
+        let teacherFilter = { q: '', sort: 'risk', risk: 'all', cls: 'all', only: '' };
         const DEFAULT_FB_TEMPLATES = [
             '이번 주도 꾸준히 진행하고 있네요. 아주 좋아요! 👏',
             '에세이 초안 방향이 좋아요. 구체적인 경험 사례를 조금 더 넣어볼까요?',
@@ -6375,55 +6485,220 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <span class="ct-date">(${prev.date} → ${cur.date})</span></div>`;
         }
 
+        function stopTeacherStudentsWatch() { if (teacherStudentsUnsub) { try { teacherStudentsUnsub(); } catch (e) {} teacherStudentsUnsub = null; } }
+
         async function loadTeacherStudents() {
             const list = document.getElementById('teacher-view-list');
             showTeacherList();
             list.innerHTML = '<p class="rp-dim">불러오는 중…</p>';
+            const email = (currentUser.email || '').toLowerCase();
+            // 1) load teacher's own saved state once
             try {
-                const email = (currentUser.email || '').toLowerCase();
-                try {
-                    const tsnap = await withTimeout(fbDb.collection('users').doc(currentUser.uid).get(), 10000);
-                    const td = tsnap.exists ? tsnap.data() : {};
-                    teacherState = {
-                        studentClasses: td.studentClasses || {},
-                        feedbackTemplates: (td.feedbackTemplates && td.feedbackTemplates.length) ? td.feedbackTemplates : DEFAULT_FB_TEMPLATES.slice(),
-                        statsHistory: td.statsHistory || [],
-                        admitLevels: td.admitLevels || {}
-                    };
-                } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {} }; }
+                const tsnap = await withTimeout(fbDb.collection('users').doc(currentUser.uid).get(), 10000);
+                const td = tsnap.exists ? tsnap.data() : {};
+                teacherState = {
+                    studentClasses: td.studentClasses || {},
+                    feedbackTemplates: (td.feedbackTemplates && td.feedbackTemplates.length) ? td.feedbackTemplates : DEFAULT_FB_TEMPLATES.slice(),
+                    statsHistory: td.statsHistory || [],
+                    admitLevels: td.admitLevels || {}
+                };
+            } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {} }; }
 
-                const snap = await fbDb.collection('students').where('sharedWith', 'array-contains', email).get();
-                if (snap.empty) {
-                    list.innerHTML = `<div class="teacher-empty">아직 공유한 학생이 없어요.<br>학생이 로그인 후 <b>👩‍🏫 선생님께 공유</b>에서 <b>${esc(email)}</b> 를 입력하면 여기 나타나요.</div>`;
-                    return;
-                }
-                teacherStudents = [];
-                snap.forEach(doc => { const d = doc.data(); teacherStudents.push({ id: doc.id, d, risk: computeStudentRisk(d), stats: studentStats(d) }); });
-                recordCohortSnapshot(teacherStudents);
-                renderTeacherDashboard();
-            } catch (e) { list.innerHTML = `<div class="teacher-error">불러오기 실패: ${esc(e.message)}</div>`; }
+            // 2) subscribe to shared students in REALTIME so new messages / progress update live
+            stopTeacherStudentsWatch();
+            teacherStudentsUnsub = fbDb.collection('students').where('sharedWith', 'array-contains', email)
+                .onSnapshot(snap => {
+                    const detailOpen = document.getElementById('teacher-view-detail').style.display !== 'none';
+                    if (snap.empty) {
+                        teacherStudents = [];
+                        if (!detailOpen) list.innerHTML = `<div class="teacher-empty">아직 공유한 학생이 없어요.<br>학생이 로그인 후 <b>👩‍🏫 선생님께 공유</b>에서 <b>${esc(email)}</b> 를 입력하면 여기 나타나요.</div>`;
+                        return;
+                    }
+                    teacherStudents = [];
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        teacherStudents.push({ id: doc.id, d, risk: computeStudentRisk(d), stats: studentStats(d), gaps: computeStudentGaps(d, doc.id) });
+                    });
+                    recordCohortSnapshot(teacherStudents);
+                    // Detail open → data is now fresh; the list rebuilds when the teacher returns (showTeacherList).
+                    if (detailOpen) return;
+                    refreshTeacherDashboard();
+                }, err => {
+                    if (document.getElementById('teacher-view-detail').style.display === 'none')
+                        list.innerHTML = `<div class="teacher-error">불러오기 실패: ${esc(err.message || err)}</div>`;
+                });
         }
+
+        // ---- Gap detector: what is this student missing? (케어의 핵심) ----
+        function rawChoiceId(v) {
+            if (v == null) return '';
+            if (typeof v !== 'string') return String(v);
+            const t = v.trim();
+            if (t.startsWith('"') && t.endsWith('"')) { try { const p = JSON.parse(t); if (typeof p === 'string') return p; } catch (e) {} }
+            return t;
+        }
+        function uniShort(u) { return (u && u.nameEn) ? u.nameEn.split(' ')[0] : ((u && u.nameKo) || '대학'); }
+        function computeStudentGaps(d, uid) {
+            const gaps = [];
+            const push = (sev, icon, text) => gaps.push({ sev, icon, text });
+            const ad = d.appData || {};
+            const unis = safeParse(ad.myUniversities, []) || [];
+            const essays = safeParse(ad.mySupplementalEssays, []) || [];
+            const recs = safeParse(ad.myRecommenders, []) || [];
+            const reqData = safeParse(ad.myRequirements, {}) || {};
+            const fc = rawChoiceId(ad.firstChoiceUniId);
+            const earlyEssay = s => ['Brainstorming', 'First Draft'].includes(normalizeEssayStatus(s));
+            if (!unis.length) {
+                push('yellow', '🏫', '지원 대학이 아직 등록되지 않았어요');
+            } else if (!fc || !unis.some(u => u.id === fc)) {
+                push('yellow', '🎯', '1지망 대학이 지정되지 않았어요');
+            }
+            unis.forEach(u => {
+                const nd = uniNearestDeadline(u);
+                if (!nd || !nd.date) return;
+                const dday = daysUntil(nd.date);
+                if (dday < 0 || dday > 45) return;
+                const ue = essays.filter(e => e.universityId === u.id);
+                if (dday <= 30 && (ue.length === 0 || ue.every(e => earlyEssay(e.status))))
+                    push('red', '⏰', `${uniShort(u)} D-${dday} 마감 임박인데 에세이 미완`);
+                const r = reqData[u.id] || {};
+                const missing = REQ_COLS.filter(c => !r[c.key]);
+                if (dday <= 30 && missing.length)
+                    push(dday <= 14 ? 'red' : 'yellow', '📄', `${uniShort(u)} 요구사항 미완: ${missing.map(m => m.label).join('·')}`);
+                const fa = u.finAid || {};
+                if ((fa.css || fa.inst) && dday <= 21)
+                    push('yellow', '💰', `${uniShort(u)} 재정지원 서류(${[fa.css ? 'CSS' : '', fa.inst ? 'Inst' : ''].filter(Boolean).join('/')}) 확인 필요`);
+            });
+            if (unis.length) {
+                if (!recs.length) push('yellow', '📮', '추천서가 등록되지 않았어요');
+                else {
+                    const notReq = recs.filter(r => (r.status || '요청 전') === '요청 전').length;
+                    if (notReq) push('yellow', '📮', `추천서 ${notReq}건이 아직 요청 전이에요`);
+                }
+            }
+            const upd = d.updatedAt || 0;
+            const stale = upd ? Math.floor((Date.now() - upd) / 86400000) : null;
+            if (stale !== null && stale >= 14) push(stale >= 30 ? 'red' : 'yellow', '😴', `${stale}일째 업데이트가 없어요`);
+            return gaps;
+        }
+        function gapScore(s) { return (s.gaps || []).reduce((a, g) => a + (g.sev === 'red' ? 100 : g.sev === 'yellow' ? 10 : 1), 0); }
 
         function renderTeacherDashboard() {
             const list = document.getElementById('teacher-view-list');
             if (!list) return;
+            list.innerHTML = `<div class="cockpit" id="tcockpit"></div><div id="tpqueue"></div><div id="teacher-toolbar2-wrap">${buildTeacherToolbar()}</div><div id="tstudent-grid-wrap"></div>`;
+            renderCockpit(); renderPQueue(); renderStudentGrid();
+        }
+        function refreshTeacherDashboard() {
+            if (!document.getElementById('tcockpit')) { renderTeacherDashboard(); return; }
+            renderCockpit(); renderPQueue(); renderStudentGrid();
+        }
+
+        // ---- Cockpit: cohort-wide command center ----
+        function cohortDeadlines(students) {
+            const out = [];
+            students.forEach(s => {
+                (safeParse((s.d.appData || {}).myUniversities, []) || []).forEach(u => {
+                    const nd = uniNearestDeadline(u);
+                    if (!nd || !nd.date) return;
+                    const dday = daysUntil(nd.date);
+                    if (dday < 0 || dday > 120) return;
+                    out.push({ id: s.id, name: s.d.name || s.d.email, uni: uniShort(u), dday });
+                });
+            });
+            return out.sort((a, b) => a.dday - b.dday);
+        }
+        function renderCockpit() {
+            const el = document.getElementById('tcockpit'); if (!el) return;
             const students = teacherStudents;
-            const risky = students.filter(s => s.risk.level !== 'green');
-            let html = buildTeacherStats(students);
-            html += buildCohortTrend();
-            if (risky.length) {
-                const order = { red: 0, yellow: 1, green: 2 };
-                const sortedRisky = risky.slice().sort((a, b) => (order[a.risk.level] - order[b.risk.level]) || (b.risk.daysStale - a.risk.daysStale));
-                html += `<div class="care-alert"><div class="care-alert-head">⚠️ 케어가 필요한 학생 (${risky.length}명)</div><div class="care-list">`
-                    + sortedRisky.map(s => `<button class="care-item" onclick="openStudentDetail('${s.id}')">${riskBadge(s.risk.level)}<span class="care-name">${esc(s.d.name || s.d.email)}</span><span class="care-reason">${esc(s.risk.reasons.join(' · '))}</span><span class="care-go">→</span></button>`).join('')
-                    + `</div></div>`;
-            } else {
-                html += `<div class="care-ok">✅ 모든 학생이 순조롭게 진행 중이에요!</div>`;
-            }
-            html += buildTeacherToolbar();
-            html += `<div id="tstudent-grid-wrap"></div>`;
-            list.innerHTML = html;
-            renderStudentGrid();
+            if (!students.length) { el.innerHTML = ''; return; }
+            const riskCount = { red: 0, yellow: 0, green: 0 };
+            let unread = 0, adminSum = 0;
+            const results = { '합격': 0, '불합격': 0, '대기': 0, '유예': 0 };
+            students.forEach(s => {
+                riskCount[s.risk.level]++;
+                unread += chatUnreadCount(s.d);
+                adminSum += s.stats.adminPct;
+                (safeParse((s.d.appData || {}).myUniversities, []) || []).forEach(u => { if (u.result && results[u.result] != null) results[u.result]++; });
+            });
+            const avgAdmin = Math.round(adminSum / students.length);
+            const deadlines = cohortDeadlines(students);
+            const soon = deadlines.filter(x => x.dday <= 7).length;
+            const ar = teacherFilter.risk;
+            const tiles = `<div class="cp-tiles">
+                <div class="cp-tile">
+                    <div class="cp-tile-label">🚦 학생 신호등</div>
+                    <div class="cp-lights">
+                        <span class="cp-light red ${ar === 'red' ? 'on' : ''}" onclick="cockpitRisk('red')">🔴 ${riskCount.red}</span>
+                        <span class="cp-light yellow ${ar === 'yellow' ? 'on' : ''}" onclick="cockpitRisk('yellow')">🟡 ${riskCount.yellow}</span>
+                        <span class="cp-light green ${ar === 'green' ? 'on' : ''}" onclick="cockpitRisk('green')">🟢 ${riskCount.green}</span>
+                    </div>
+                    <div class="cp-tile-sub">총 ${students.length}명 · 눌러서 필터</div>
+                </div>
+                <div class="cp-tile clickable ${teacherFilter.only === 'unread' ? 'active' : ''} ${unread ? 'cp-unread hot' : ''}" onclick="cockpitUnread()">
+                    <div class="cp-tile-label">📬 안읽은 메시지</div>
+                    <div class="cp-tile-big">${unread}</div>
+                    <div class="cp-tile-sub">${unread ? '눌러서 안읽음 학생만' : '모두 확인함 ✓'}</div>
+                </div>
+                <div class="cp-tile clickable ${teacherFilter.sort === 'deadline' ? 'active' : ''}" onclick="cockpitDeadline()">
+                    <div class="cp-tile-label">⏰ 7일내 마감</div>
+                    <div class="cp-tile-big" style="${soon ? 'color:#dc2626' : ''}">${soon}</div>
+                    <div class="cp-tile-sub">임박 원서 마감 건수</div>
+                </div>
+                <div class="cp-tile">
+                    <div class="cp-tile-label">🎓 합격 결과</div>
+                    <div class="cp-res">
+                        <span class="${results['합격'] ? '' : 'zero'}">🎉 ${results['합격']}</span>
+                        <span class="${results['대기'] ? '' : 'zero'}">📋 ${results['대기']}</span>
+                        <span class="${results['유예'] ? '' : 'zero'}">↩️ ${results['유예']}</span>
+                        <span class="${results['불합격'] ? '' : 'zero'}">❌ ${results['불합격']}</span>
+                    </div>
+                    <div class="cp-tile-sub">누적 결과 집계</div>
+                </div>
+                <div class="cp-tile">
+                    <div class="cp-tile-label">✅ 평균 행정 완료율</div>
+                    <div class="cp-tile-big">${avgAdmin}%</div>
+                    <div class="stat-bar" style="margin-top:8px;"><div class="stat-bar-fill" style="width:${avgAdmin}%;background:#34c759"></div></div>
+                </div>
+            </div>`;
+            const chips = deadlines.slice(0, 12).map(x => {
+                const cls = x.dday <= 3 ? 'urgent' : x.dday <= 7 ? 'soon' : '';
+                return `<button class="radar-chip ${cls}" onclick="openStudentDetail('${x.id}')"><div class="radar-dday">D-${x.dday}</div><div class="radar-uni">${esc(x.uni)}</div><div class="radar-who">${esc(x.name)}</div></button>`;
+            }).join('');
+            const radar = `<div class="radar"><div class="radar-head">🛰️ 마감 레이더 <span class="rp-dim" style="font-weight:600;font-size:0.8rem;">(가까운 순 · 120일 이내)</span></div>${deadlines.length ? `<div class="radar-track">${chips}</div>` : '<div class="radar-empty">다가오는 마감이 없어요.</div>'}</div>`;
+            el.innerHTML = tiles + radar + buildTeacherStats(students) + buildCohortTrend();
+        }
+        function cockpitRisk(level) { teacherFilter.risk = (teacherFilter.risk === level ? 'all' : level); renderCockpit(); syncToolbar(); renderStudentGrid(); scrollToMatrix(); }
+        function cockpitUnread() { teacherFilter.only = (teacherFilter.only === 'unread' ? '' : 'unread'); renderCockpit(); renderStudentGrid(); scrollToMatrix(); }
+        function cockpitDeadline() { teacherFilter.sort = 'deadline'; renderCockpit(); syncToolbar(); renderStudentGrid(); scrollToMatrix(); }
+        function scrollToMatrix() { const m = document.getElementById('tstudent-grid-wrap'); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        function syncToolbar() { const t = document.getElementById('teacher-toolbar2-wrap'); if (t) t.innerHTML = buildTeacherToolbar(); }
+
+        // ---- Priority queue: who needs care right now ----
+        function renderPQueue() {
+            const el = document.getElementById('tpqueue'); if (!el) return;
+            const students = teacherStudents;
+            if (!students.length) { el.innerHTML = ''; return; }
+            const items = [];
+            students.forEach(s => {
+                const u = chatUnreadCount(s.d);
+                const gaps = s.gaps || [];
+                const redGaps = gaps.filter(g => g.sev === 'red');
+                let priority = 0, reason = '', tag = '', tagCls = '';
+                if (u > 0) { priority += 1000 + u; reason = `읽지 않은 메시지 ${u}건`; tag = `💬 ${u}`; tagCls = 'msg'; }
+                priority += gapScore(s);
+                if (!reason) {
+                    if (redGaps.length) { reason = redGaps[0].text; tag = '긴급'; tagCls = 'dead'; }
+                    else if (s.risk.level !== 'green') { reason = s.risk.reasons.join(' · ') || '진행 정체'; tag = s.risk.level === 'red' ? '위험' : '주의'; tagCls = s.risk.level === 'red' ? 'dead' : 'gap'; }
+                    else if (gaps.length) { reason = gaps[0].text; tag = `갭 ${gaps.length}`; tagCls = 'gap'; }
+                }
+                if (s.risk.level === 'red') priority += 300; else if (s.risk.level === 'yellow') priority += 40;
+                if (priority > 0) items.push({ id: s.id, name: s.d.name || s.d.email, reason, tag, tagCls, priority, unread: u });
+            });
+            items.sort((a, b) => b.priority - a.priority);
+            if (!items.length) { el.innerHTML = `<div class="pqueue-ok">✅ 지금 급히 챙길 학생이 없어요. 모두 순조로워요!</div>`; return; }
+            const rows = items.slice(0, 8).map(it => `<button class="pq-item" onclick="openStudentDetail('${it.id}'${it.unread ? ", 'chat'" : ''})"><span class="pq-name">${esc(it.name)}</span><span class="pq-reason">${esc(it.reason)}</span>${it.tag ? `<span class="pq-tag ${it.tagCls}">${esc(it.tag)}</span>` : ''}</button>`).join('');
+            el.innerHTML = `<div class="pqueue"><div class="pqueue-head">🎯 오늘의 우선순위 (${items.length}명 케어 필요)</div><div class="pq-list">${rows}</div></div>`;
         }
 
         function buildTeacherToolbar() {
@@ -6433,6 +6708,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <input type="text" id="tfilter-q" class="tf-search" placeholder="🔍 이름·이메일 검색" value="${esc(teacherFilter.q)}" oninput="onTeacherFilter('q', this.value)">
                 <select class="tf-sel" onchange="onTeacherFilter('sort', this.value)">
                     <option value="risk" ${teacherFilter.sort === 'risk' ? 'selected' : ''}>위험도순</option>
+                    <option value="gaps" ${teacherFilter.sort === 'gaps' ? 'selected' : ''}>빠진 항목 많은순</option>
+                    <option value="unread" ${teacherFilter.sort === 'unread' ? 'selected' : ''}>안읽은 메시지순</option>
                     <option value="stale" ${teacherFilter.sort === 'stale' ? 'selected' : ''}>미응답 오래된순</option>
                     <option value="deadline" ${teacherFilter.sort === 'deadline' ? 'selected' : ''}>마감 임박순</option>
                     <option value="name" ${teacherFilter.sort === 'name' ? 'selected' : ''}>이름순</option>
@@ -6446,7 +6723,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <select class="tf-sel" onchange="onTeacherFilter('cls', this.value)">${clsOpts}</select>
             </div>`;
         }
-        function onTeacherFilter(key, val) { teacherFilter[key] = val; renderStudentGrid(); }
+        function onTeacherFilter(key, val) { teacherFilter[key] = val; if (key !== 'q') renderCockpit(); renderStudentGrid(); }
 
         function renderStudentGrid() {
             const wrap = document.getElementById('tstudent-grid-wrap');
@@ -6457,29 +6734,94 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (q) view = view.filter(s => (s.d.name || '').toLowerCase().includes(q) || (s.d.email || '').toLowerCase().includes(q));
             if (teacherFilter.risk !== 'all') view = view.filter(s => s.risk.level === teacherFilter.risk);
             if (teacherFilter.cls !== 'all') view = view.filter(s => (teacherState.studentClasses[s.id] || '미지정') === teacherFilter.cls);
+            if (teacherFilter.only === 'unread') view = view.filter(s => chatUnreadCount(s.d) > 0);
             if (teacherFilter.sort === 'risk') view.sort((a, b) => (order[a.risk.level] - order[b.risk.level]) || (b.risk.daysStale - a.risk.daysStale));
+            else if (teacherFilter.sort === 'gaps') view.sort((a, b) => gapScore(b) - gapScore(a));
+            else if (teacherFilter.sort === 'unread') view.sort((a, b) => chatUnreadCount(b.d) - chatUnreadCount(a.d));
             else if (teacherFilter.sort === 'stale') view.sort((a, b) => b.risk.daysStale - a.risk.daysStale);
             else if (teacherFilter.sort === 'deadline') view.sort((a, b) => (a.stats.nearestDeadlineTime || Infinity) - (b.stats.nearestDeadlineTime || Infinity));
             else if (teacherFilter.sort === 'name') view.sort((a, b) => (a.d.name || a.d.email || '').localeCompare(b.d.name || b.d.email || ''));
             if (!view.length) { wrap.innerHTML = '<p class="rp-dim" style="padding:16px 4px;">조건에 맞는 학생이 없어요.</p>'; return; }
-            wrap.innerHTML = `<div class="tstudent-grid">` + view.map(s => teacherStudentCard(s)).join('') + `</div>`;
+            const head = `<thead><tr>
+                <th class="tm-stick">학생 (${view.length}명)</th>
+                <th>🎯 지망</th><th>🏫 대학</th><th>✍️ 에세이</th><th>⏰ 마감</th><th>📄 요구</th><th>📮 추천</th><th>💰 재정</th><th>📈 성적</th><th>✅ 행정</th><th>💬</th><th>⚠️ 갭</th>
+            </tr></thead>`;
+            wrap.innerHTML = `<div class="tmatrix-scroll"><table class="tmatrix">${head}<tbody>${view.map(matrixRow).join('')}</tbody></table></div>`;
         }
 
-        function teacherStudentCard(s) {
+        function pctPill(pct, hasData) {
+            if (!hasData) return `<span class="tm-pill pill-none">–</span>`;
+            const cls = pct >= 80 ? 'pill-good' : pct >= 40 ? 'pill-mid' : 'pill-low';
+            return `<span class="tm-pill ${cls}">${pct}%</span>`;
+        }
+        const MATRIX_STATUS_COLORS = { Prospective: '#9ca3af', 'In Progress': '#f59e0b', Submitted: '#2563eb', Pending: '#7c3aed', Accepted: '#16a34a', Waitlist: '#ea580c', Deferred: '#4f46e5', Rejected: '#dc2626' };
+        function matrixRow(s) {
+            const ad = s.d.appData || {};
             const p = s.d.profile || {};
+            const unis = safeParse(ad.myUniversities, []) || [];
+            const essays = safeParse(ad.mySupplementalEssays, []) || [];
+            const recs = safeParse(ad.myRecommenders, []) || [];
+            const reqData = safeParse(ad.myRequirements, {}) || {};
+            const acad = safeParse(ad.myAcademics, {}) || {};
             const cls = teacherState.studentClasses[s.id] || '';
-            const sub = [p.grade ? p.grade + '학년' : '', p.major || ''].filter(Boolean).join(' · ') || (s.d.email || '');
-            const chatUnread = chatUnreadCount(s.d);
-            return `<div class="tstudent-card">
-                <div class="tsc-top">${riskBadge(s.risk.level)}${cls ? `<span class="tsc-class">${esc(cls)}</span>` : ''}${chatUnread ? `<span class="tsc-chat-badge">💬 ${chatUnread}</span>` : ''}</div>
-                <div class="tsc-name">${esc(s.d.name || s.d.email)}</div>
-                <div class="tsc-email">${esc(sub)}</div>
-                <div class="tsc-stats"><span>🏫 ${s.stats.uniCount}개</span><span>✍️ ${s.stats.essayInProg}/${s.stats.essayTotal}</span><span>✅ ${s.stats.adminPct}%</span></div>
-                <div class="tsc-actions">
-                    <button onclick="openStudentDetail('${s.id}')">상세 보기</button>
-                    <button class="tsc-cls-btn" onclick="assignClass('${s.id}')">🏷️ 반</button>
-                </div>
-            </div>`;
+            const sub = [p.grade ? p.grade + '학년' : '', p.major || ''].filter(Boolean).join(' · ');
+            // 🎯 지망
+            const mkChoice = (id, lbl) => {
+                const u = unis.find(x => x.id === rawChoiceId(id));
+                if (!u) return `<span class="tm-miss">${lbl} –</span>`;
+                const lvl = getAdmitLevel(s.id, u.id) || 'none';
+                return `<span title="${esc(lbl)} · ${esc(lvl === 'none' ? '레벨 미지정' : lvl)}"><span class="tm-cdot cdot-${lvl}"></span>${esc(uniShort(u))}</span>`;
+            };
+            const choiceCell = `<div class="tm-choice">${mkChoice(ad.firstChoiceUniId, '1지망')}${mkChoice(ad.secondChoiceUniId, '2지망')}</div>`;
+            // 🏫 대학
+            const uniDots = unis.slice(0, 10).map(u => `<span class="tm-dot" style="background:${MATRIX_STATUS_COLORS[normalizeUniStatus(u.applicationStatus)] || '#9ca3af'}"></span>`).join('');
+            const uniCell = unis.length ? `<div class="tm-mini"><span class="tm-num">${unis.length}</span><span class="tm-dots">${uniDots}</span></div>` : `<span class="tm-dim">0</span>`;
+            // ✍️ 에세이
+            const eDone = essays.filter(e => normalizeEssayStatus(e.status) === 'Done').length;
+            const ePct = essays.length ? Math.round(eDone / essays.length * 100) : 0;
+            const essayCell = essays.length ? `<div class="tm-mini"><span class="tm-num">${eDone}/${essays.length}</span><span class="tm-minibar"><i style="width:${ePct}%;background:${ePct >= 80 ? '#34c759' : ePct >= 40 ? '#f59e0b' : '#ff3b30'}"></i></span></div>` : `<span class="tm-dim">0</span>`;
+            // ⏰ 마감
+            let nearest = Infinity, nd0 = null;
+            unis.forEach(u => { const nd = uniNearestDeadline(u); if (nd && nd.date) { const t = nd.date.getTime(); if (t >= Date.now() - 86400000 && t < nearest) { nearest = t; nd0 = nd; } } });
+            const deadlineCell = nd0 ? `<span class="tm-dday ${daysUntil(nd0.date) <= 7 ? 'soon' : ''}">D-${daysUntil(nd0.date)}</span>` : `<span class="tm-dim">–</span>`;
+            // 📄 요구사항 (평균 완료율)
+            let reqPct = 0, reqHas = false, sum = 0, n = 0;
+            unis.forEach(u => { const r = reqData[u.id]; if (r) { sum += REQ_COLS.filter(c => r[c.key]).length / REQ_COLS.length; n++; } });
+            if (n) { reqPct = Math.round(sum / n * 100); reqHas = true; }
+            const reqCell = pctPill(reqPct, reqHas);
+            // 📮 추천서
+            const recDone = recs.filter(r => (r.status || '요청 전') === '제출 완료').length;
+            const recCell = recs.length ? `<span class="tm-num ${recDone === recs.length ? '' : 'tm-dim'}">${recDone}/${recs.length}</span>` : `<span class="tm-dim">–</span>`;
+            // 💰 재정지원
+            const finCount = unis.filter(u => u.finAid && (u.finAid.css || u.finAid.inst)).length;
+            const finCell = finCount ? `<span class="tm-num">${finCount}곳</span>` : `<span class="tm-dim">–</span>`;
+            // 📈 성적
+            const grade = acad.sat ? `SAT ${esc(acad.sat)}` : (acad.act ? `ACT ${esc(acad.act)}` : '');
+            const gradeCell = grade ? `<span class="tm-num" style="font-size:0.78rem">${grade}</span>` : `<span class="tm-dim">–</span>`;
+            // ✅ 행정
+            const adminItems = (safeParse(ad.myAdminTasks, []) || []).reduce((a, c) => a + ((c.items || []).length), 0);
+            const adminCell = pctPill(s.stats.adminPct, adminItems > 0);
+            // 💬 안읽은 메시지
+            const unread = chatUnreadCount(s.d);
+            const msgCell = unread ? `<span class="tm-msgbadge">${unread}</span>` : `<span class="tm-dim">·</span>`;
+            // ⚠️ 갭
+            const gaps = s.gaps || [];
+            const worst = gaps.some(g => g.sev === 'red') ? 'red' : gaps.some(g => g.sev === 'yellow') ? 'yellow' : 'ok';
+            const gapCell = gaps.length ? `<span class="tm-gapbadge gap-${worst}" title="${esc(gaps.map(g => g.text).join(' / '))}">${gaps.length}</span>` : `<span class="tm-gapbadge gap-ok">✓</span>`;
+            return `<tr onclick="openStudentDetail('${s.id}')">
+                <td class="tm-stick"><div class="tm-name-row"><span class="tm-riskdot ${s.risk.level}"></span><span class="tm-name">${esc(s.d.name || s.d.email)}</span>${cls ? `<span class="tm-cls">${esc(cls)}</span>` : ''}</div>${sub ? `<div class="tm-sub">${esc(sub)}</div>` : ''}</td>
+                <td>${choiceCell}</td>
+                <td>${uniCell}</td>
+                <td>${essayCell}</td>
+                <td>${deadlineCell}</td>
+                <td>${reqCell}</td>
+                <td>${recCell}</td>
+                <td>${finCell}</td>
+                <td>${gradeCell}</td>
+                <td>${adminCell}</td>
+                <td>${msgCell}</td>
+                <td>${gapCell}</td>
+            </tr>`;
         }
 
         async function assignClass(uid) {
@@ -6499,10 +6841,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const list = document.getElementById('teacher-view-list');
             if (detail) detail.style.display = 'none';
             if (list) list.style.display = 'block';
+            if (teacherStudents.length) refreshTeacherDashboard();
         }
 
         let currentStudentUid = null, currentStudentEmail = '', currentStudentName = '', currentStudentRisk = 'green', currentStudentData = null;
-        async function openStudentDetail(uid) {
+        async function openStudentDetail(uid, initialTab) {
             currentStudentUid = uid;
             const detail = document.getElementById('teacher-view-detail');
             document.getElementById('teacher-view-list').style.display = 'none';
@@ -6533,8 +6876,21 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <button class="std-tab" id="std-tab-chat" onclick="switchStudentTab('chat')">💬 메시지${chatUnreadCount(data) ? `<span class="std-tab-badge">${chatUnreadCount(data)}</span>` : ''}</button>
                     </div>
                     <div id="std-tab-content"></div>`;
-                switchStudentTab('report');
+                switchStudentTab(initialTab === 'chat' ? 'chat' : 'report');
             } catch (e) { detail.innerHTML = `<div class="teacher-error">${esc(e.message)}</div>`; }
+        }
+        // Care checklist — surfaces exactly what this student is missing (놓친 것 없이 케어)
+        function buildCareChecklist(data) {
+            const gaps = computeStudentGaps(data, currentStudentUid);
+            if (!gaps.length) {
+                return `<div class="care-check"><div class="care-check-head">🔎 케어 체크리스트</div><div class="cc-allgood">✅ 빠진 항목이 없어요. 모든 준비가 순조롭게 진행되고 있어요!</div></div>`;
+            }
+            const order = { red: 0, yellow: 1, gray: 2 };
+            const sorted = gaps.slice().sort((a, b) => (order[a.sev] || 3) - (order[b.sev] || 3));
+            const redN = gaps.filter(g => g.sev === 'red').length;
+            const countCls = redN ? 'gap-red' : 'gap-yellow';
+            const rows = sorted.map(g => `<div class="cc-row ${g.sev}"><span class="cc-ic">${g.icon}</span><span class="cc-txt">${esc(g.text)}</span></div>`).join('');
+            return `<div class="care-check"><div class="care-check-head">🔎 케어 체크리스트 <span class="cc-count ${countCls}">${gaps.length}건 확인 필요</span></div><div class="cc-list">${rows}</div></div>`;
         }
         function chatUnreadCount(d) {
             const seen = (d && d.chatSeen && d.chatSeen.teacher) || 0;
@@ -6556,8 +6912,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 markChatSeen('teacher');
                 const badge = cBtn ? cBtn.querySelector('.std-tab-badge') : null;
                 if (badge) badge.remove();
+            } else if (tab === 'profile') {
+                c.innerHTML = buildStudentProfile(data);
             } else {
-                c.innerHTML = (tab === 'profile') ? buildStudentProfile(data) : (buildStudentReport(data) + buildFeedbackPanel(data));
+                c.innerHTML = buildCareChecklist(data) + buildStudentReport(data) + buildFeedbackPanel(data);
             }
         }
         function onAdmitChange(uniId, sel) {
