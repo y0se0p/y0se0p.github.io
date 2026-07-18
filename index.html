@@ -6551,7 +6551,13 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     });
                     recordCohortSnapshot(teacherStudents);
                     refreshTeacherDashboard();
-                }, err => { if (list) list.innerHTML = `<div class="teacher-error">불러오기 실패: ${esc(err.message || err)}</div>`; });
+                }, err => {
+                    if (!list) return;
+                    const perm = /permission|insufficient/i.test((err && err.message) || '');
+                    list.innerHTML = perm
+                        ? `<div class="teacher-error">🔒 데이터 접근 권한이 없어요.<br>Firebase 콘솔 → Firestore Database → <b>규칙(Rules)</b> 탭에 보안 규칙을 붙여넣고 <b>게시(Publish)</b>했는지 확인해주세요.<br><span class="rp-dim">(새 프로젝트 기본값 <code>if false</code>는 모든 접근을 차단해요)</span></div>`
+                        : `<div class="teacher-error">불러오기 실패: ${esc(err.message || err)}</div>`;
+                });
         }
         // Pause/resume the cohort listener as the tab loses/gains visibility (free-tier friendly).
         document.addEventListener('visibilitychange', () => {
