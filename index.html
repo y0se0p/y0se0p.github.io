@@ -1030,7 +1030,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .fb-submit:hover { background: #4338ca; }
         .fb-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
         .fb-item { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; }
-        .fb-meta { font-size: 0.78rem; color: var(--text-faint); font-weight: 600; margin-bottom: 4px; }
+        .fb-meta { font-size: 0.78rem; color: var(--text-faint); font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .fb-hidebtn { margin-left: auto; background: transparent; border: none; cursor: pointer; font-size: 0.9rem; opacity: 0.5; padding: 2px 4px; border-radius: 6px; transition: opacity .15s, background .15s; }
+        .fb-hidebtn:hover { opacity: 1; background: var(--surface-3); }
+        .fb-hidebtn.restore { opacity: 0.85; font-size: 0.74rem; font-weight: 700; color: var(--accent); }
+        .fb-hidden-item { opacity: 0.6; border: 1px dashed var(--border); background: transparent; }
+        .fb-hidden-wrap { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+        .fb-toggle-hidden { align-self: flex-start; background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 700; cursor: pointer; padding: 4px 2px; }
+        .fb-toggle-hidden:hover { color: var(--text); }
+        .efb-item { position: relative; }
+        .efb-hidebtn { background: transparent; border: none; cursor: pointer; font-size: 0.82rem; opacity: 0.45; padding: 0 4px; margin-left: 6px; border-radius: 6px; }
+        .efb-hidebtn:hover { opacity: 1; background: var(--surface-3); }
         .fb-text { font-size: 0.92rem; color: var(--text); white-space: pre-wrap; }
 
         /* Per-essay cards with feedback + version history */
@@ -6628,7 +6638,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // ===== Teacher dashboard state =====
         let teacherStudents = [];
         let teacherStudentsUnsub = null;
-        let teacherState = { studentClasses: {}, feedbackTemplates: [], statsHistory: [], admitLevels: {} };
+        let teacherState = { studentClasses: {}, feedbackTemplates: [], statsHistory: [], admitLevels: {}, hiddenFeedback: {} };
+        let teacherShowHidden = false;
         let teacherFilter = { q: '', sort: 'risk', risk: 'all', cls: 'all', only: '' };
         const DEFAULT_FB_TEMPLATES = [
             '이번 주도 꾸준히 진행하고 있네요. 아주 좋아요! 👏',
@@ -6645,7 +6656,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     studentClasses: teacherState.studentClasses,
                     feedbackTemplates: teacherState.feedbackTemplates,
                     statsHistory: teacherState.statsHistory,
-                    admitLevels: teacherState.admitLevels || {}
+                    admitLevels: teacherState.admitLevels || {},
+                    hiddenFeedback: teacherState.hiddenFeedback || {}
                 }, { merge: true });
             } catch (e) { console.warn('teacher state save failed', e); }
         }
@@ -6710,9 +6722,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     studentClasses: td.studentClasses || {},
                     feedbackTemplates: (td.feedbackTemplates && td.feedbackTemplates.length) ? td.feedbackTemplates : DEFAULT_FB_TEMPLATES.slice(),
                     statsHistory: td.statsHistory || [],
-                    admitLevels: td.admitLevels || {}
+                    admitLevels: td.admitLevels || {},
+                    hiddenFeedback: td.hiddenFeedback || {}
                 };
-            } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {} }; }
+            } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {}, hiddenFeedback: {} }; }
             stopTeacherStudentsWatch();   // manual refresh → force a fresh subscription
             startCohortWatch();
         }
@@ -7349,21 +7362,51 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             </div>`;
         }
 
+        // Teacher-only "hide from my view" for feedback clutter. Hidden IDs live in the teacher's own
+        // state (users/{teacherUid}.hiddenFeedback) so the STUDENT always keeps seeing every feedback.
+        function isFeedbackHidden(id) { return !!(id && teacherState.hiddenFeedback && teacherState.hiddenFeedback[id]); }
+        async function hideTeacherFeedback(id) {
+            if (!id) return;
+            if (!teacherState.hiddenFeedback) teacherState.hiddenFeedback = {};
+            teacherState.hiddenFeedback[id] = true;
+            await saveTeacherState();
+            switchStudentTab('report');
+            toast('내 화면에서 가렸어요. (학생 화면엔 그대로 보여요)', 'success');
+        }
+        async function unhideTeacherFeedback(id) {
+            if (teacherState.hiddenFeedback) delete teacherState.hiddenFeedback[id];
+            await saveTeacherState();
+            switchStudentTab('report');
+        }
+        function toggleShowHiddenFeedback() { teacherShowHidden = !teacherShowHidden; switchStudentTab('report'); }
+
         function buildFeedbackPanel(data) {
             const fb = Array.isArray(data.feedback) ? data.feedback : [];
-            const items = fb.slice().reverse().map(f => {
+            const fbItemHtml = (f, hiddenMode) => {
                 const ack = f.ackAt
                     ? `<span class="fb-acked">✓ 학생 확인함 · ${new Date(f.ackAt).toLocaleDateString('ko-KR')}</span>`
                     : (f.id ? `<span class="fb-unacked">아직 확인 안 함</span>` : '');
-                return `<div class="fb-item"><div class="fb-meta">${esc(f.teacherName || f.teacherEmail || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')} ${ack}</div><div class="fb-text">${esc(f.text)}</div></div>`;
-            }).join('') || '<p class="rp-dim">아직 남긴 피드백이 없어요.</p>';
+                const btn = f.id ? (hiddenMode
+                    ? `<button class="fb-hidebtn restore" onclick="unhideTeacherFeedback('${f.id}')" title="내 화면에 다시 표시">↩️ 복원</button>`
+                    : `<button class="fb-hidebtn" onclick="hideTeacherFeedback('${f.id}')" title="내 화면에서 가리기 (학생에겐 그대로 보여요)">🗑️</button>`) : '';
+                return `<div class="fb-item${hiddenMode ? ' fb-hidden-item' : ''}"><div class="fb-meta">${esc(f.teacherName || f.teacherEmail || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')} ${ack}${btn}</div><div class="fb-text">${esc(f.text)}</div></div>`;
+            };
+            const visible = fb.filter(f => !isFeedbackHidden(f.id));
+            const items = visible.slice().reverse().map(f => fbItemHtml(f, false)).join('') || '<p class="rp-dim">표시할 피드백이 없어요.</p>';
+            // All hidden feedback (general + essay), so the teacher can restore any of it from one place
+            const allEssayFb = Object.values(data.essayFeedback || {}).flat();
+            const hidden = [...fb, ...allEssayFb].filter(f => f.id && isFeedbackHidden(f.id));
+            const hiddenBlock = hidden.length ? `<div class="fb-hidden-wrap">
+                <button type="button" class="fb-toggle-hidden" onclick="toggleShowHiddenFeedback()">${teacherShowHidden ? '🙈 가린 피드백 접기' : `👁️ 가린 피드백 ${hidden.length}개 보기`}</button>
+                ${teacherShowHidden ? hidden.slice().reverse().map(f => fbItemHtml(f, true)).join('') : ''}
+            </div>` : '';
             const tpls = (teacherState.feedbackTemplates || []).map((t, i) =>
                 `<button type="button" class="fb-tpl" onclick="insertFbTemplate(${i})" title="${esc(t)}">${esc(t.length > 22 ? t.slice(0, 22) + '…' : t)}</button>`).join('');
             return `<div class="report-section fb-section"><h4>💬 피드백 남기기</h4>
                 ${tpls ? `<div class="fb-tpl-row">${tpls}</div>` : ''}
                 <textarea id="fb-input" class="fb-textarea" rows="3" placeholder="학생에게 남길 피드백을 입력하세요 (학생이 로그인하면 홈에서 볼 수 있어요). 위 템플릿을 눌러 빠르게 시작할 수 있어요."></textarea>
                 <div><button class="fb-submit" onclick="submitFeedback()">피드백 저장</button></div>
-                <div class="fb-list">${items}</div></div>`;
+                <div class="fb-list">${items}${hiddenBlock}</div></div>`;
         }
         function insertFbTemplate(i) {
             const t = (teacherState.feedbackTemplates || [])[i];
@@ -7485,7 +7528,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const hist = Array.isArray(e.linkHistory) ? e.linkHistory : [];
                 const histChips = hist.slice().reverse().map(h => `<a class="ver-chip" href="${esc(h.link)}" target="_blank" rel="noopener">${verLabel(h.at)}</a>`).join('');
                 const fbList = essayFeedback[e.id] || [];
-                const fbItems = fbList.slice().reverse().map(f => `<div class="efb-item"><span class="efb-meta">${esc(f.teacherName || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</span> ${esc(f.text)}</div>`).join('') || '<span class="rp-dim">아직 이 문항에 남긴 피드백이 없어요.</span>';
+                const visibleFb = fbList.filter(f => !isFeedbackHidden(f.id));
+                const fbItems = visibleFb.slice().reverse().map(f => `<div class="efb-item"><span class="efb-meta">${esc(f.teacherName || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</span> ${esc(f.text)}${f.id ? `<button class="efb-hidebtn" onclick="hideTeacherFeedback('${f.id}')" title="내 화면에서 가리기 (학생에겐 그대로 보여요)">🗑️</button>` : ''}</div>`).join('') || '<span class="rp-dim">아직 이 문항에 남긴 피드백이 없어요.</span>';
                 const snip = e.prompt ? (e.prompt.length > 100 ? e.prompt.slice(0, 100) + '…' : e.prompt) : '';
                 const open = openEssayFbIds.has(e.id);
                 return `<div class="ecard">
@@ -7494,7 +7538,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                             <div><span class="ecard-uni">${esc(uni ? uni.nameEn : '—')}</span> <span class="ecard-stage">${esc(essayStageLabel(e.status))}</span></div>
                             ${snip ? `<div class="ecard-prompt">${esc(snip)}</div>` : ''}
                         </div>
-                        <button class="ecard-fb-btn ${fbList.length ? 'has' : ''}" onclick="toggleEssayFeedback('${e.id}')">💬${fbList.length ? ` ${fbList.length}` : ''}</button>
+                        <button class="ecard-fb-btn ${visibleFb.length ? 'has' : ''}" onclick="toggleEssayFeedback('${e.id}')">💬${visibleFb.length ? ` ${visibleFb.length}` : ''}</button>
                     </div>
                     ${(e.googleDocLink || histChips) ? `<div class="ecard-links">${e.googleDocLink ? `<a class="ver-chip cur" href="${esc(e.googleDocLink)}" target="_blank" rel="noopener">📄 현재본</a>` : ''}${histChips ? `<span class="ver-tag">🕒 버전:</span>${histChips}` : ''}</div>` : ''}
                     <div class="ecard-fb" id="ecard-fb-${e.id}" style="display:${open ? 'block' : 'none'};">
