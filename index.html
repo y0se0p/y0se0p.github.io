@@ -5823,7 +5823,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 </div>
                 <div class="chat-body" id="chat-body"></div>
                 <div class="chat-input-row">
-                    <textarea id="chat-input" class="chat-input" rows="1" placeholder="메시지를 입력하세요…" oninput="chatAutoGrow(this)" onkeydown="chatInputKey(event)"></textarea>
+                    <textarea id="chat-input" class="chat-input" rows="1" placeholder="메시지를 입력하세요…" oninput="chatAutoGrow(this)" oncompositionstart="chatComposeStart()" oncompositionend="chatComposeEnd()" onkeydown="chatInputKey(event)"></textarea>
                     <button class="chat-send" aria-label="보내기" onclick="sendStudentChat()">↑</button>
                 </div>`;
             document.body.appendChild(panel);
@@ -5842,7 +5842,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             }
         }
         function chatAutoGrow(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 110) + 'px'; }
-        function chatInputKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendStudentChat(); } }
+        // Korean/IME safe Enter: never send while the input method is still composing
+        let chatComposing = false;
+        function chatComposeStart() { chatComposing = true; }
+        function chatComposeEnd() { chatComposing = false; }
+        function chatInputKey(e) {
+            if (e.isComposing || e.keyCode === 229 || chatComposing) return;
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendStudentChat(); }
+        }
         function chatMsgHtml(m, myRole) {
             const mine = m.from === myRole;
             const t = new Date(m.at);
@@ -5889,7 +5896,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 await ref.update({ messages: firebase.firestore.FieldValue.arrayUnion(msg), 'chatSeen.student': Date.now() });
                 const snap = await ref.get();
                 if (snap.exists) renderStudentChat(snap.data());
-            } catch (e) { toast('메시지 전송 실패: ' + (e.message || e), 'error'); }
+            } catch (e) { input.value = text; chatAutoGrow(input); toast('메시지 전송 실패: ' + (e.message || e), 'error'); }
         }
         async function markChatSeen(role) {
             if (!currentUser || !fbDb) return;
@@ -5906,12 +5913,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             return `<div class="tchat">
                 <div class="tchat-body chat-body" id="tchat-body"></div>
                 <div class="chat-input-row">
-                    <textarea id="tchat-input" class="chat-input" rows="1" placeholder="답장을 입력하세요…" oninput="chatAutoGrow(this)" onkeydown="tchatInputKey(event)"></textarea>
+                    <textarea id="tchat-input" class="chat-input" rows="1" placeholder="답장을 입력하세요…" oninput="chatAutoGrow(this)" oncompositionstart="chatComposeStart()" oncompositionend="chatComposeEnd()" onkeydown="tchatInputKey(event)"></textarea>
                     <button class="chat-send" aria-label="보내기" onclick="sendTeacherChat()">↑</button>
                 </div>
             </div>`;
         }
-        function tchatInputKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTeacherChat(); } }
+        function tchatInputKey(e) {
+            if (e.isComposing || e.keyCode === 229 || chatComposing) return;
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTeacherChat(); }
+        }
         function renderTeacherChat(d) {
             const msgs = Array.isArray(d && d.messages) ? d.messages.slice().sort((a, b) => a.at - b.at) : [];
             renderChatMessages('tchat-body', msgs, 'teacher');
@@ -5936,7 +5946,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const msg = { id: generateUniqueId('msg-'), from: 'teacher', name: currentUser.displayName || currentUser.email, text, at: Date.now() };
             try {
                 await fbDb.collection('students').doc(currentStudentUid).update({ messages: firebase.firestore.FieldValue.arrayUnion(msg), 'chatSeen.teacher': Date.now() });
-            } catch (e) { toast('전송 실패: ' + (e.message || e), 'error'); }
+            } catch (e) {
+                input.value = text; chatAutoGrow(input); // restore the text so it isn't lost
+                const perm = /permission|insufficient/i.test(e.message || '');
+                toast(perm ? '전송 권한이 없어요. Firestore 보안 규칙에 messages·chatSeen 필드 쓰기를 허용해야 해요.' : ('전송 실패: ' + (e.message || e)), 'error');
+            }
         }
 
         // Student deletes a piece of teacher feedback from their record
