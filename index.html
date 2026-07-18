@@ -1414,6 +1414,28 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .uni-card-head { display: flex; align-items: center; gap: 14px; padding: 15px 20px; cursor: pointer; user-select: none; position: relative; }
         .uni-card-head:focus-visible { outline: 3px solid #0071e3; outline-offset: -3px; border-radius: 16px; }
         .uni-card-main { flex: 1 1 190px; min-width: 0; }
+        .uni-mono { width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; box-shadow: 0 2px 6px rgba(0,0,0,0.12); align-self: center; }
+        /* First-run empty hero */
+        .uni-empty-hero { text-align: center; padding: 48px 20px; }
+        .uni-empty-hero .ueh-emoji { font-size: 3rem; margin-bottom: 8px; }
+        .uni-empty-hero .ueh-title { font-size: 1.35rem; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+        .uni-empty-hero .ueh-sub { font-size: 0.95rem; color: var(--text-muted); max-width: 440px; margin: 0 auto 22px; line-height: 1.6; }
+        .uni-empty-hero .ueh-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .uni-empty-hero .ueh-btn { padding: 11px 22px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); cursor: pointer; transition: transform .15s, box-shadow .15s; }
+        .uni-empty-hero .ueh-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .uni-empty-hero .ueh-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+        /* Starter list modal */
+        .starter-modal-content { max-width: min(94vw, 640px); width: 94%; max-height: 84vh; overflow-y: auto; }
+        .starter-grid { display: flex; flex-direction: column; gap: 8px; }
+        .starter-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); }
+        .starter-mono { width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .starter-info { flex: 1; min-width: 0; }
+        .starter-name { font-weight: 700; color: var(--text); font-size: 0.95rem; }
+        .starter-ko { font-size: 0.8rem; color: var(--text-faint); font-weight: 600; }
+        .starter-meta { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+        .starter-add { flex-shrink: 0; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: filter .15s; }
+        .starter-add:hover { filter: brightness(1.08); }
+        .starter-add.added { background: var(--surface-3); color: var(--text-muted); border-color: var(--border); cursor: default; }
         .uni-card-name { font-size: 1.02rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .uni-card-nameko { font-size: 0.85rem; font-weight: 500; color: var(--text-faint); }
         .uni-card-meta { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2469,7 +2491,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <option value="Other">Other</option>
                     </select>
                 </div>
-                <button onclick="openUniversityModal()" class="ml-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 flex-shrink-0">
+                <button onclick="openStarterModal()" class="ml-auto mr-3 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 flex-shrink-0">
+                    🎓 인기 대학
+                </button>
+                <button onclick="openUniversityModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 flex-shrink-0">
                     + 대학 추가
                 </button>
             </div>
@@ -4051,6 +4076,66 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
         function closeEssayReuseModal() { const m = document.getElementById('reuse-modal'); if (m) m.classList.add('hidden'); document.body.style.overflow = ''; }
 
+        // ===== Starter list: one-click add popular US universities (values are approximate — verify after adding) =====
+        const STARTER_UNIS = [
+            { nameEn: 'Princeton University', nameKo: '프린스턴', location: 'Princeton, NJ', ranking: '#1', acceptanceRate: '4%', avgSat: '1520', tuition: '$59,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'MIT', nameKo: '매사추세츠공대', location: 'Cambridge, MA', ranking: '#2', acceptanceRate: '4%', avgSat: '1540', tuition: '$60,000', type: '사립', testPolicy: '필수' },
+            { nameEn: 'Harvard University', nameKo: '하버드', location: 'Cambridge, MA', ranking: '#3', acceptanceRate: '3%', avgSat: '1520', tuition: '$59,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Stanford University', nameKo: '스탠퍼드', location: 'Stanford, CA', ranking: '#4', acceptanceRate: '4%', avgSat: '1520', tuition: '$62,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Yale University', nameKo: '예일', location: 'New Haven, CT', ranking: '#5', acceptanceRate: '5%', avgSat: '1520', tuition: '$64,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'University of Pennsylvania', nameKo: '펜실베이니아', location: 'Philadelphia, PA', ranking: '#6', acceptanceRate: '6%', avgSat: '1520', tuition: '$66,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'University of Chicago', nameKo: '시카고', location: 'Chicago, IL', ranking: '#6', acceptanceRate: '5%', avgSat: '1540', tuition: '$64,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Duke University', nameKo: '듀크', location: 'Durham, NC', ranking: '#7', acceptanceRate: '6%', avgSat: '1520', tuition: '$63,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Northwestern University', nameKo: '노스웨스턴', location: 'Evanston, IL', ranking: '#9', acceptanceRate: '7%', avgSat: '1510', tuition: '$65,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Johns Hopkins University', nameKo: '존스홉킨스', location: 'Baltimore, MD', ranking: '#9', acceptanceRate: '7%', avgSat: '1530', tuition: '$62,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Columbia University', nameKo: '컬럼비아', location: 'New York, NY', ranking: '#12', acceptanceRate: '4%', avgSat: '1530', tuition: '$68,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Cornell University', nameKo: '코넬', location: 'Ithaca, NY', ranking: '#12', acceptanceRate: '7%', avgSat: '1500', tuition: '$66,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'UC Berkeley', nameKo: 'UC버클리', location: 'Berkeley, CA', ranking: '#15', acceptanceRate: '11%', avgSat: '1430', tuition: '$49,000', type: '주립', testPolicy: 'Test-Blind' },
+            { nameEn: 'UCLA', nameKo: 'UCLA', location: 'Los Angeles, CA', ranking: '#15', acceptanceRate: '9%', avgSat: '1430', tuition: '$47,000', type: '주립', testPolicy: 'Test-Blind' },
+            { nameEn: 'University of Michigan', nameKo: '미시간', location: 'Ann Arbor, MI', ranking: '#21', acceptanceRate: '18%', avgSat: '1440', tuition: '$58,000', type: '주립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Carnegie Mellon University', nameKo: '카네기멜론', location: 'Pittsburgh, PA', ranking: '#24', acceptanceRate: '11%', avgSat: '1520', tuition: '$62,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'New York University', nameKo: '뉴욕대(NYU)', location: 'New York, NY', ranking: '#30', acceptanceRate: '12%', avgSat: '1500', tuition: '$62,000', type: '사립', testPolicy: 'Test-Optional' },
+            { nameEn: 'Georgia Institute of Technology', nameKo: '조지아텍', location: 'Atlanta, GA', ranking: '#33', acceptanceRate: '16%', avgSat: '1450', tuition: '$32,000', type: '주립', testPolicy: '필수' },
+        ];
+        function uniMonogram(nameEn) { return (nameEn || '?').trim().charAt(0).toUpperCase(); }
+        function openStarterModal() {
+            const cards = STARTER_UNIS.map((s, i) => {
+                const added = universities.some(u => (u.nameEn || '').toLowerCase() === s.nameEn.toLowerCase());
+                const color = getSignatureColor(s);
+                return `<div class="starter-card">
+                    <div class="starter-mono" style="background:${esc(color)}">${esc(uniMonogram(s.nameEn))}</div>
+                    <div class="starter-info">
+                        <div class="starter-name">${esc(s.nameEn)}${s.nameKo ? ` <span class="starter-ko">${esc(s.nameKo)}</span>` : ''}</div>
+                        <div class="starter-meta">${esc(s.location)} · ${esc(s.ranking)} · 합격률 ${esc(s.acceptanceRate)}</div>
+                    </div>
+                    <button class="starter-add ${added ? 'added' : ''}" ${added ? 'disabled' : ''} onclick="addStarterUni(${i})">${added ? '✓ 추가됨' : '+ 추가'}</button>
+                </div>`;
+            }).join('');
+            let modal = document.getElementById('starter-modal');
+            if (!modal) { modal = document.createElement('div'); modal.id = 'starter-modal'; modal.className = 'modal hidden'; document.body.appendChild(modal); }
+            modal.innerHTML = `<div class="modal-content starter-modal-content">
+                <span class="close-button" onclick="closeStarterModal()">×</span>
+                <h2 class="text-2xl font-bold mb-1">🎓 인기 대학 빠른 추가</h2>
+                <p class="text-sm text-gray-500 mb-4">자주 지원하는 미국 대학을 클릭 한 번으로 추가해요. <b>수치는 참고용</b>이라 추가 후 최신 정보를 꼭 확인하세요.</p>
+                <div class="starter-grid">${cards}</div>
+            </div>`;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeStarterModal() { const m = document.getElementById('starter-modal'); if (m) m.classList.add('hidden'); document.body.style.overflow = ''; }
+        function addStarterUni(i) {
+            const s = STARTER_UNIS[i];
+            if (!s) return;
+            if (universities.some(u => (u.nameEn || '').toLowerCase() === s.nameEn.toLowerCase())) { toast('이미 추가된 대학이에요.', 'info'); return; }
+            universities.push({ ...s, id: generateUniqueId('uni-'), applicationStatus: 'Prospective', pros: [], cons: [] });
+            saveUniversities();
+            applyFiltersAndSort();
+            try { renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); } catch (e) {}
+            try { renderUpcomingDeadlines(); renderFavoriteUniversities(); renderProsConsCards(); } catch (e) {}
+            toast(`${s.nameEn} 추가됨 ✓`, 'success');
+            openStarterModal();
+        }
+
         function renderUniversities(dataToRender = universities) {
             const list = document.getElementById('university-card-list');
             const countEl = document.getElementById('uni-count');
@@ -4059,7 +4144,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             list.innerHTML = '';
 
             if (dataToRender.length === 0) {
-                list.innerHTML = `<div class="uni-empty">조건에 맞는 대학이 없어요.</div>`;
+                list.innerHTML = universities.length === 0
+                    ? `<div class="uni-empty-hero">
+                        <div class="ueh-emoji">🎓</div>
+                        <div class="ueh-title">첫 대학을 추가해볼까요?</div>
+                        <div class="ueh-sub">지원할 미국 대학을 등록하면 마감·에세이·재정·진행률까지 한 곳에서 관리돼요.</div>
+                        <div class="ueh-btns">
+                            <button class="ueh-btn primary" onclick="openStarterModal()">🎓 인기 대학에서 고르기</button>
+                            <button class="ueh-btn" onclick="openUniversityModal()">+ 직접 추가</button>
+                        </div>
+                    </div>`
+                    : `<div class="uni-empty">조건에 맞는 대학이 없어요.</div>`;
                 return;
             }
 
@@ -4136,6 +4231,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div class="uni-card-head" role="button" tabindex="0"
                          onclick="toggleUniCard('${uni.id}')"
                          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUniCard('${uni.id}');}">
+                        <div class="uni-mono" style="background:${esc(sigColor)}" aria-hidden="true">${esc(uniMonogram(uni.nameEn))}</div>
                         <div class="uni-card-main">
                             <div class="uni-card-name">${esc(uni.nameEn) || '(이름 없음)'}${uni.nameKo ? ` <span class="uni-card-nameko">${esc(uni.nameKo)}</span>` : ''}</div>
                             <div class="uni-card-meta">${[esc(uni.location), esc(uni.ranking)].filter(Boolean).join(' · ') || '-'}</div>
