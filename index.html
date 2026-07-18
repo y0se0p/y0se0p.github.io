@@ -1138,6 +1138,21 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .cost-budget-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.9rem; color: var(--text); font-weight: 600; }
         .cost-budget-input { border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 0.9rem; width: 160px; }
         .cost-budget-input:focus { outline: none; border-color: #0071e3; }
+        .fit-dist { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 14px; font-size: 0.86rem; font-weight: 700; }
+        .fit-dist .fit-safe { color: #15803d; } .fit-dist .fit-match { color: #b45309; } .fit-dist .fit-stretch { color: #b91c1c; }
+        .fit-dist .fit-warn { color: #b91c1c; font-weight: 700; font-size: 0.8rem; background: rgba(255,59,48,0.1); padding: 3px 10px; border-radius: 999px; }
+        .fit-hint { font-size: 0.85rem; color: var(--text-muted); background: rgba(0,113,227,0.06); border: 1px solid rgba(0,113,227,0.18); border-radius: 10px; padding: 9px 12px; margin-bottom: 14px; }
+        .cost-fit { font-size: 0.72rem; font-weight: 800; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+        .cost-fit.fit-safe { background: rgba(52,199,89,0.15); color: #15803d; }
+        .cost-fit.fit-match { background: rgba(255,149,0,0.16); color: #b45309; }
+        .cost-fit.fit-stretch { background: rgba(255,59,48,0.13); color: #b91c1c; }
+        .cost-aidnote { font-size: 0.72rem; font-weight: 700; color: #15803d; }
+        .cost-npc { font-size: 0.72rem; font-weight: 700; color: var(--accent); text-decoration: none; white-space: nowrap; }
+        .cost-npc:hover { text-decoration: underline; }
+        html[data-theme="dark"] .cost-fit.fit-safe { background: rgba(52,199,89,0.2); color: #4ade80; }
+        html[data-theme="dark"] .cost-fit.fit-match { background: rgba(255,149,0,0.2); color: #fbbf24; }
+        html[data-theme="dark"] .cost-fit.fit-stretch { background: rgba(255,59,48,0.2); color: #fca5a5; }
+        html[data-theme="dark"] .fit-dist .fit-safe { color: #4ade80; } html[data-theme="dark"] .fit-dist .fit-match { color: #fbbf24; } html[data-theme="dark"] .fit-dist .fit-stretch { color: #fca5a5; }
         .cost-summary { font-size: 0.85rem; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
         .cost-summary b { color: var(--text); font-variant-numeric: tabular-nums; }
         .cost-diff { font-size: 0.72rem; font-weight: 700; color: var(--text-faint); white-space: nowrap; }
@@ -2465,7 +2480,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <span id="uni-count" class="uni-count"></span>
                 <div class="uni-toolbar-right">
                     <button type="button" class="match-settings-btn" onclick="openMatchModal()">🎯 매칭 설정</button>
-                    <button type="button" class="match-settings-btn" onclick="openCostModal()">💰 예산 매칭</button>
+                    <button type="button" class="match-settings-btn" onclick="openCostModal()">💰 재정 적합도</button>
                     <button type="button" class="match-settings-btn" onclick="openCompareModal()">⚖️ 비교</button>
                     <div class="uni-sort">
                         <label for="uni-sort-select">정렬</label>
@@ -2728,8 +2743,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     <div id="cost-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-button" onclick="closeCostModal()">×</span>
-            <h2 class="text-2xl font-bold mb-2">💰 예산 매칭</h2>
-            <p class="text-sm text-gray-500 mb-4">각 대학의 연간 학비를 저렴한 순으로 비교하고, <b>가장 저렴한 학교 대비 차이</b>를 한눈에 확인하세요. 예산을 입력하면 초과 학교를 표시해요.</p>
+            <h2 class="text-2xl font-bold mb-2">💰 예산·재정 적합도</h2>
+            <p class="text-sm text-gray-500 mb-4">각 대학의 연간 비용(합격 시 <b>장학금 반영 순비용</b>)을 비교하고, 예산을 입력하면 <b>🟢 안정권 · 🟡 적정 · 🔴 부담</b>으로 자동 분류해요.</p>
             <div class="cost-budget-row">
                 <label>내 예산 (연간, USD):</label>
                 <input type="number" id="cost-budget" class="cost-budget-input" placeholder="예: 60000" oninput="renderCostComparison()">
@@ -5580,25 +5595,42 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const body = document.getElementById('cost-comparison-body');
             if (!body) return;
             const budget = parseFloat(document.getElementById('cost-budget').value) || 0;
-            const rows = universities.map(u => ({ name: u.nameEn || u.nameKo || '?', nameKo: u.nameEn ? u.nameKo : '', usd: parseTuition(u.tuition) })).filter(r => r.usd !== null);
+            // Net cost = sticker tuition − scholarship (aidAmount, only if admitted). Otherwise sticker.
+            const rows = universities.map(u => {
+                const t = parseTuition(u.tuition);
+                if (t === null) return null;
+                const aid = (u.result === '합격' && u.aidAmount) ? (parseFloat(String(u.aidAmount).replace(/[^0-9.]/g, '')) || 0) : 0;
+                return { name: u.nameEn || u.nameKo || '?', nameKo: u.nameEn ? u.nameKo : '', usd: Math.max(0, t - aid), aid };
+            }).filter(Boolean);
             if (!rows.length) { body.innerHTML = '<p class="rp-dim" style="padding:24px 0;">학비 정보가 있는 대학이 없어요. 대학 편집 창에서 Tuition을 입력하면 여기 비교돼요.</p>'; return; }
             rows.sort((a, b) => a.usd - b.usd);
             const max = Math.max(...rows.map(r => r.usd));
             const min = Math.min(...rows.map(r => r.usd));
             const avg = Math.round(rows.reduce((s, r) => s + r.usd, 0) / rows.length);
-            body.innerHTML = `<div class="cost-summary">최저 <b>$${min.toLocaleString()}</b> · 평균 <b>$${avg.toLocaleString()}</b> · 최고 <b>$${max.toLocaleString()}</b> · 편차 <b>$${(max - min).toLocaleString()}</b></div>`
-                + `<div class="cost-list">` + rows.map(r => {
+            // Financial fit vs budget: 안정권 ≤ 예산, 적정 ≤ 예산×1.15, 그 이상 부담
+            const fitOf = usd => {
+                if (!budget) return null;
+                if (usd <= budget) return { key: 'safe', label: '🟢 안정권', cls: 'fit-safe' };
+                if (usd <= budget * 1.15) return { key: 'match', label: '🟡 적정', cls: 'fit-match' };
+                return { key: 'stretch', label: '🔴 부담', cls: 'fit-stretch' };
+            };
+            const dist = { safe: 0, match: 0, stretch: 0 };
+            rows.forEach(r => { const f = fitOf(r.usd); if (f) dist[f.key]++; });
+            const summary = `<div class="cost-summary">최저 <b>$${min.toLocaleString()}</b> · 평균 <b>$${avg.toLocaleString()}</b> · 최고 <b>$${max.toLocaleString()}</b></div>`
+                + (budget
+                    ? `<div class="fit-dist"><span class="fit-safe">🟢 안정권 ${dist.safe}</span><span class="fit-match">🟡 적정 ${dist.match}</span><span class="fit-stretch">🔴 부담 ${dist.stretch}</span>${dist.safe === 0 ? '<span class="fit-warn">⚠️ 재정 안정권이 없어요 — 예산 내 학교를 추가하세요</span>' : ''}</div>`
+                    : `<div class="fit-hint">💡 위에 <b>연 예산</b>을 입력하면 각 대학을 🟢안정권 / 🟡적정 / 🔴부담으로 분류해줘요.</div>`);
+            body.innerHTML = summary + `<div class="cost-list">` + rows.map(r => {
                 const krw = Math.round(r.usd * USD_TO_KRW_RATE);
-                const over = budget && r.usd > budget;
                 const pct = max ? Math.round(r.usd / max * 100) : 0;
-                const diff = r.usd - min;
-                const diffTag = diff === 0
-                    ? '<span class="cost-diff min">🏆 최저</span>'
-                    : `<span class="cost-diff">최저 대비 +$${diff.toLocaleString()}</span>`;
+                const f = fitOf(r.usd);
+                const fitBadge = f ? `<span class="cost-fit ${f.cls}">${f.label}</span>` : '';
+                const aidNote = r.aid ? `<span class="cost-aidnote">🎁 장학금 -$${r.aid.toLocaleString()} 반영</span>` : '';
+                const npc = `<a class="cost-npc" href="https://www.google.com/search?q=${encodeURIComponent(r.name + ' net price calculator')}" target="_blank" rel="noopener" title="이 학교의 순비용 계산기 검색">🔗 순비용 계산기</a>`;
                 return `<div class="cost-row">
-                    <div class="cost-name">${esc(r.name)}${r.nameKo ? ` <span class="rp-ko">${esc(r.nameKo)}</span>` : ''}${over ? ' <span class="cost-over-tag">예산 초과</span>' : ''} ${diffTag}</div>
-                    <div class="cost-bar"><div class="cost-bar-fill ${over ? 'over' : ''}" style="width:${pct}%"></div></div>
-                    <div class="cost-amt">$${r.usd.toLocaleString()} <span class="cost-krw">₩${krw.toLocaleString()}</span></div>
+                    <div class="cost-name">${esc(r.name)}${r.nameKo ? ` <span class="rp-ko">${esc(r.nameKo)}</span>` : ''} ${fitBadge} ${aidNote}</div>
+                    <div class="cost-bar"><div class="cost-bar-fill ${f && f.key === 'stretch' ? 'over' : ''}" style="width:${pct}%"></div></div>
+                    <div class="cost-amt">$${r.usd.toLocaleString()} <span class="cost-krw">₩${krw.toLocaleString()}</span> ${npc}</div>
                 </div>`;
             }).join('') + `</div>`;
         }
