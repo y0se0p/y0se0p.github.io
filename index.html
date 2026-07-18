@@ -2655,6 +2655,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             </div>
             <div class="teacher-toolbar">
                 <button type="button" class="data-btn" onclick="loadTeacherStudents()">🔄 새로고침</button>
+                <button type="button" class="data-btn primary" onclick="copyTeacherInviteLink()">🔗 학생 초대 링크 복사</button>
             </div>
             <div id="teacher-view-list"></div>
             <div id="teacher-view-detail" style="display:none;"></div>
@@ -5818,6 +5819,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     await withTimeout(pullStudentData(user.uid), 10000).catch(() => {});
                     bindCloudAutoPush();
                     watchOwnStudentDoc(user.uid);
+                    await maybeAutoShareTeacher(); // invite-link (?t=email) → auto-connect to that teacher
                 }
                 hideOnboarding();
                 applyRoleView();
@@ -6335,6 +6337,45 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     { sharedWith: firebase.firestore.FieldValue.arrayUnion(email) }, { merge: true });
                 toast(`${email} 선생님께 공유했어요! 선생님이 로그인하면 내 진행상황을 볼 수 있어요.`, 'success');
             } catch (e) { toast('공유 실패: ' + e.message, 'error'); }
+        }
+
+        // ===== Teacher invite link — student clicks a link and is auto-connected to the teacher =====
+        function getTeacherLinkParam() {
+            try { const p = new URLSearchParams(location.search).get('t'); return p ? p.trim().toLowerCase() : ''; }
+            catch (e) { return ''; }
+        }
+        function cleanTeacherLinkParam() {
+            try {
+                const url = new URL(location.href);
+                url.searchParams.delete('t');
+                history.replaceState(null, '', url.pathname + (url.search || '') + (url.hash || ''));
+            } catch (e) {}
+        }
+        // Runs after a student signs in: if arrived via ?t=<teacher-email>, auto-add to sharedWith.
+        async function maybeAutoShareTeacher() {
+            const email = getTeacherLinkParam();
+            if (!email || !currentUser || !fbDb) return;
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { cleanTeacherLinkParam(); return; }
+            if (email === (currentUser.email || '').toLowerCase()) { cleanTeacherLinkParam(); return; } // don't self-share
+            try {
+                await fbDb.collection('students').doc(currentUser.uid).set(
+                    { sharedWith: firebase.firestore.FieldValue.arrayUnion(email) }, { merge: true });
+                toast(`${email} 선생님과 연결됐어요! 이제 선생님이 내 진행상황을 볼 수 있어요 ✓`, 'success');
+            } catch (e) { toast('선생님 연결에 실패했어요: ' + (e.message || e), 'error'); }
+            cleanTeacherLinkParam();
+        }
+        // Teacher copies their invite link to hand out to students.
+        function copyTeacherInviteLink() {
+            const email = (currentUser && currentUser.email || '').toLowerCase();
+            if (!email) { toast('로그인 정보를 불러오지 못했어요.', 'error'); return; }
+            const link = location.origin + location.pathname + '?t=' + encodeURIComponent(email);
+            const done = () => toast('학생 초대 링크를 복사했어요! 📋 학생들에게 공유하면 클릭 한 번으로 연결돼요.', 'success');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(done).catch(() => showTeacherInviteFallback(link));
+            } else { showTeacherInviteFallback(link); }
+        }
+        function showTeacherInviteFallback(link) {
+            showPrompt('학생 초대 링크', { message: '아래 링크를 복사해 학생들에게 공유하세요. 학생이 링크를 열고 로그인하면 자동으로 연결돼요.', defaultValue: link, confirmText: '확인', icon: '🔗' });
         }
 
         function closeTeacherModal() { const m = document.getElementById('teacher-modal'); if (m) m.classList.add('hidden'); }
