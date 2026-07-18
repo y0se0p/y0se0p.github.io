@@ -1031,6 +1031,22 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .fb-text { font-size: 0.92rem; color: var(--text); white-space: pre-wrap; }
 
         /* Per-essay cards with feedback + version history */
+        .eprog { border:1px solid var(--border); border-radius:14px; padding:16px 18px; background:var(--surface-2); margin-bottom:14px; }
+        .eprog-top { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+        .eprog-stats { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+        .eprog-big { font-size:1.9rem; font-weight:800; color:var(--text); line-height:1; }
+        .eprog-lbl { font-size:0.8rem; color:var(--text-faint); font-weight:600; }
+        .eprog-mid { font-size:0.9rem; color:var(--text-muted); font-weight:700; }
+        .eprog-mid.done { color:#15803d; }
+        html[data-theme="dark"] .eprog-mid.done { color:#86efac; }
+        .eprog-sep { color:var(--text-faint); }
+        .eprog-pctwrap { display:flex; flex-direction:column; align-items:flex-end; }
+        .eprog-pct { font-size:1.5rem; font-weight:800; color:var(--accent); line-height:1; }
+        .eprog-bar { height:8px; border-radius:999px; background:var(--surface-3); overflow:hidden; margin-bottom:12px; }
+        .eprog-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,#0071e3,#34c759); transition:width .4s ease; }
+        .eprog-chips { display:flex; flex-wrap:wrap; gap:6px; }
+        .eprog-chip { font-size:0.76rem; color:var(--text-muted); background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:4px 10px; }
+        .eprog-chip b { color:var(--text); }
         .ecard-list { display: flex; flex-direction: column; gap: 10px; }
         .ecard { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--surface); }
         .ecard-head { display: flex; align-items: flex-start; gap: 12px; }
@@ -1109,6 +1125,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .cost-budget-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.9rem; color: var(--text); font-weight: 600; }
         .cost-budget-input { border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 0.9rem; width: 160px; }
         .cost-budget-input:focus { outline: none; border-color: #0071e3; }
+        .cost-summary { font-size: 0.85rem; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; }
+        .cost-summary b { color: var(--text); font-variant-numeric: tabular-nums; }
+        .cost-diff { font-size: 0.72rem; font-weight: 700; color: var(--text-faint); white-space: nowrap; }
+        .cost-diff.min { color: #16a34a; }
+        html[data-theme="dark"] .cost-diff.min { color: #4ade80; }
         .cost-list { display: flex; flex-direction: column; gap: 10px; }
         .cost-row { display: grid; grid-template-columns: 180px 1fr 190px; align-items: center; gap: 12px; }
         .cost-name { font-size: 0.9rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1377,8 +1398,26 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .uni-dday.urgent { color: #e0331a; }
         .uni-dday.none { color: var(--text-faint); font-weight: 600; }
         .uni-dday-type { font-weight: 600; color: var(--text-faint); font-size: 0.72rem; }
-        .uni-card-status { flex-shrink: 0; }
+        .uni-card-status { flex-shrink: 0; display:flex; flex-direction:column; gap:6px; align-items:stretch; }
         .uni-card-status .status-select { max-width: 180px; }
+        .uni-result-btn { border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:0.78rem; font-weight:700; padding:6px 10px; border-radius:10px; cursor:pointer; white-space:nowrap; transition:background .15s, border-color .15s, transform .1s; }
+        .uni-result-btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+        .uni-result-btn:active { transform:scale(0.96); }
+        .result-badge { display:inline-flex; align-items:center; font-size:0.7rem; font-weight:800; padding:3px 9px; border-radius:999px; white-space:nowrap; letter-spacing:0.01em; }
+        .result-badge.res-acc { background:#dcfce7; color:#15803d; }
+        .result-badge.res-rej { background:#fee2e2; color:#b91c1c; }
+        .result-badge.res-wl  { background:#fef3c7; color:#b45309; }
+        .result-badge.res-def { background:#e0e7ff; color:#4338ca; }
+        html[data-theme="dark"] .result-badge.res-acc { background:rgba(21,128,61,0.35); color:#86efac; }
+        html[data-theme="dark"] .result-badge.res-rej { background:rgba(185,28,28,0.35); color:#fca5a5; }
+        html[data-theme="dark"] .result-badge.res-wl  { background:rgba(180,83,9,0.35); color:#fcd34d; }
+        html[data-theme="dark"] .result-badge.res-def { background:rgba(67,56,202,0.4); color:#c7d2fe; }
+        .result-letter-preview { margin-top:10px; }
+        .result-letter-img { max-width:100%; max-height:180px; border-radius:10px; border:1px solid var(--border); display:block; margin-bottom:6px; }
+        .result-letter-ok { font-size:0.82rem; color:var(--text-muted); font-weight:600; }
+        .result-letter-ok a { color:var(--accent); font-weight:700; }
+        .rp-dim { color:var(--text-faint); font-size:0.78rem; }
+        .rp-letter { font-size:0.74rem; font-weight:700; color:var(--accent); white-space:nowrap; }
         .uni-card-chevron { flex-shrink: 0; color: var(--text-faint); font-size: 1.2rem; line-height: 1; transition: transform 0.3s ease; }
         .uni-card.open .uni-card-chevron { transform: rotate(180deg); }
 
@@ -1903,9 +1942,88 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .fbc-check{ display:flex; align-items:flex-start; gap:10px; padding:13px 14px; background:rgba(255,59,48,0.06); border:1px solid rgba(255,59,48,0.25); border-radius:13px; cursor:pointer; margin-bottom:16px; }
         .fbc-check input{ width:20px; height:20px; margin-top:1px; accent-color:var(--accent); cursor:pointer; flex:0 0 auto; }
         .fbc-check span{ font-weight:700; color:var(--text); font-size:0.95rem; line-height:1.45; }
+        /* ----- Feedback one-at-a-time (vertical scroll + button) ----- */
+        .fbc-viewport{ max-height:52vh; overflow-y:auto; border-radius:14px; scroll-snap-type:y proximity; margin-bottom:14px; -webkit-overflow-scrolling:touch; }
+        .fbc-slide{ scroll-snap-align:start; padding:2px 2px 12px; }
+        .fbc-slide:last-child{ padding-bottom:2px; }
+        .fbc-slide-inner{ background:var(--surface-2); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:13px; padding:16px 16px 14px; display:flex; flex-direction:column; transition:border-color .2s, background .2s; }
+        .fbc-slide.checked .fbc-slide-inner{ border-left-color:#34c759; background:rgba(52,199,89,0.07); }
+        .fbc-slide-count{ align-self:flex-end; font-size:0.72rem; font-weight:800; color:var(--text-faint); background:var(--surface-3); padding:2px 9px; border-radius:999px; margin-bottom:8px; }
+        .fbc-slide .fbc-item-text{ margin-bottom:14px; }
+        .fbc-slide .fbc-check{ margin-bottom:0; }
+        .fbc-next-btn{ margin-top:12px; align-self:center; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); font-size:0.85rem; font-weight:700; padding:8px 18px; border-radius:999px; cursor:pointer; transition:background .15s, color .15s; }
+        .fbc-next-btn:hover{ background:var(--accent); color:#fff; border-color:var(--accent); }
+        .fbc-last-note{ margin-top:12px; font-size:0.82rem; color:var(--text-faint); text-align:center; line-height:1.5; }
+        .fbc-progress{ text-align:center; font-size:0.86rem; font-weight:700; color:var(--text-muted); margin-bottom:14px; }
         .fbc-done{ width:100%; padding:14px; border-radius:14px; background:var(--accent); color:#fff; font-size:1.05rem; font-weight:800; border:none; cursor:pointer; transition:filter .15s, opacity .15s; }
         .fbc-done:hover:not(:disabled){ filter:brightness(1.06); }
         .fbc-done:disabled{ opacity:0.45; cursor:not-allowed; }
+        /* ----- Calendar day → event detail popup ----- */
+        .cal-day.has-events, .has-events{ cursor:pointer; }
+        .has-events:hover{ background:var(--surface-2); border-radius:8px; }
+        .has-events:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; border-radius:8px; }
+        .dev-overlay{ position:fixed; inset:0; z-index:5850; background:rgba(0,0,0,0.5); backdrop-filter:saturate(140%) blur(6px); -webkit-backdrop-filter:saturate(140%) blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; transition:opacity .2s ease; }
+        html[data-theme="dark"] .dev-overlay{ background:rgba(0,0,0,0.68); }
+        .dev-overlay.show{ opacity:1; }
+        .dev-modal{ width:min(94vw,440px); max-height:86vh; overflow-y:auto; background:var(--surface); color:var(--text); border-radius:22px; padding:26px 24px 22px; box-shadow:0 24px 70px rgba(0,0,0,0.34); border:1px solid var(--border); position:relative; transform:translateY(10px) scale(0.97); transition:transform .22s cubic-bezier(.2,.8,.2,1); }
+        .dev-overlay.show .dev-modal{ transform:none; }
+        .dev-close{ position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.5rem; line-height:1; color:var(--text-faint); cursor:pointer; }
+        .dev-dday{ display:inline-block; background:var(--surface-3); color:var(--text-muted); font-size:0.78rem; font-weight:800; padding:4px 12px; border-radius:999px; margin-bottom:12px; }
+        .dev-dday.soon{ background:#ff3b30; color:#fff; }
+        .dev-title{ font-size:1.3rem; font-weight:850; letter-spacing:-0.02em; margin:0 0 4px; }
+        .dev-sub{ color:var(--text-muted); font-size:0.9rem; margin:0 0 16px; }
+        .dev-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+        .dev-item{ background:var(--surface-2); border:1px solid var(--border); border-radius:13px; padding:13px 14px; }
+        .dev-item-head{ display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+        .dev-ic{ font-size:1.1rem; }
+        .dev-label{ font-weight:750; color:var(--text); font-size:0.96rem; flex:1 1 auto; }
+        .dev-tag{ font-size:0.7rem; font-weight:800; padding:3px 9px; border-radius:999px; white-space:nowrap; }
+        .tl-k-mile{ background:#e0e7ff; color:#4338ca; }
+        .tl-k-soft{ background:#fef3c7; color:#b45309; }
+        .tl-k-dead{ background:#fee2e2; color:#b91c1c; }
+        .tl-k-admin{ background:#dcfce7; color:#15803d; }
+        html[data-theme="dark"] .tl-k-mile{ background:rgba(67,56,202,0.4); color:#c7d2fe; }
+        html[data-theme="dark"] .tl-k-soft{ background:rgba(180,83,9,0.4); color:#fcd34d; }
+        html[data-theme="dark"] .tl-k-dead{ background:rgba(185,28,28,0.4); color:#fca5a5; }
+        html[data-theme="dark"] .tl-k-admin{ background:rgba(21,128,61,0.4); color:#86efac; }
+        .dev-uni{ font-size:0.85rem; color:var(--text-muted); margin-bottom:6px; }
+        .dev-desc{ font-size:0.85rem; color:var(--text-faint); line-height:1.55; }
+        .dev-ok{ width:100%; padding:13px; border-radius:13px; background:var(--accent); color:#fff; font-size:1rem; font-weight:800; border:none; cursor:pointer; transition:filter .15s; }
+        .dev-ok:hover{ filter:brightness(1.06); }
+        /* ===== Student ↔ Teacher chat ===== */
+        .chat-fab{ position:fixed; right:22px; bottom:22px; z-index:5600; width:58px; height:58px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:1.5rem; cursor:pointer; box-shadow:0 8px 26px rgba(0,113,227,0.42); display:flex; align-items:center; justify-content:center; transition:transform .18s, box-shadow .18s; }
+        .chat-fab:hover{ transform:translateY(-2px) scale(1.04); }
+        .chat-fab.active{ transform:scale(0.94); }
+        .chat-fab-ic{ line-height:1; }
+        .chat-fab-badge{ position:absolute; top:-2px; right:-2px; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:#ff3b30; color:#fff; font-size:0.72rem; font-weight:800; display:flex; align-items:center; justify-content:center; border:2px solid var(--surface); }
+        .chat-fab.has-unread{ animation:chatPulse 2s ease-in-out infinite; }
+        @keyframes chatPulse{ 0%,100%{ box-shadow:0 8px 26px rgba(0,113,227,0.42); } 50%{ box-shadow:0 8px 30px rgba(255,59,48,0.5); } }
+        .chat-panel{ position:fixed; right:22px; bottom:92px; z-index:5600; width:min(92vw,380px); height:min(72vh,560px); background:var(--surface); border:1px solid var(--border); border-radius:22px; box-shadow:0 24px 70px rgba(0,0,0,0.3); display:flex; flex-direction:column; overflow:hidden; opacity:0; transform:translateY(16px) scale(0.96); pointer-events:none; transform-origin:bottom right; transition:opacity .22s ease, transform .22s cubic-bezier(.2,.8,.2,1); }
+        .chat-panel.open{ opacity:1; transform:none; pointer-events:auto; }
+        .chat-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid var(--border); flex:0 0 auto; }
+        .chat-head-title{ font-weight:800; font-size:1rem; color:var(--text); }
+        .chat-head-sub{ font-size:0.76rem; color:var(--text-faint); margin-top:2px; }
+        .chat-close{ background:none; border:none; font-size:1.5rem; line-height:1; color:var(--text-faint); cursor:pointer; }
+        .chat-body{ flex:1 1 auto; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; background:var(--bg); }
+        .chat-empty{ margin:auto; text-align:center; color:var(--text-faint); font-size:0.88rem; line-height:1.7; }
+        .chat-msg{ display:flex; flex-direction:column; max-width:78%; }
+        .chat-msg.mine{ align-self:flex-end; align-items:flex-end; }
+        .chat-msg.theirs{ align-self:flex-start; align-items:flex-start; }
+        .chat-msg-name{ font-size:0.72rem; color:var(--text-faint); font-weight:700; margin:0 0 3px 4px; }
+        .chat-bubble{ padding:9px 13px; border-radius:16px; font-size:0.92rem; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
+        .chat-msg.mine .chat-bubble{ background:var(--accent); color:#fff; border-bottom-right-radius:5px; }
+        .chat-msg.theirs .chat-bubble{ background:var(--surface); color:var(--text); border:1px solid var(--border); border-bottom-left-radius:5px; }
+        .chat-time{ font-size:0.66rem; color:var(--text-faint); margin:3px 4px 0; }
+        .chat-input-row{ display:flex; align-items:flex-end; gap:8px; padding:12px; border-top:1px solid var(--border); flex:0 0 auto; background:var(--surface); }
+        .chat-input{ flex:1 1 auto; resize:none; border:1px solid var(--border); border-radius:18px; padding:9px 14px; font-size:0.9rem; line-height:1.4; max-height:110px; background:var(--surface-2); color:var(--text); font-family:inherit; }
+        .chat-input:focus{ outline:none; border-color:var(--accent); }
+        .chat-send{ flex:0 0 auto; width:38px; height:38px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:1.2rem; font-weight:800; cursor:pointer; transition:filter .15s; }
+        .chat-send:hover{ filter:brightness(1.08); }
+        /* teacher chat tab panel */
+        .tchat{ display:flex; flex-direction:column; height:min(60vh,520px); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+        .tchat-body{ border-radius:0; }
+        .std-tab-badge{ display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; margin-left:6px; border-radius:999px; background:#ff3b30; color:#fff; font-size:0.7rem; font-weight:800; }
+        .tsc-chat-badge{ display:inline-flex; align-items:center; gap:2px; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:999px; background:#ff3b30; color:#fff; }
     </style>
     <script>
         (function(){
@@ -2195,7 +2313,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <span id="uni-count" class="uni-count"></span>
                 <div class="uni-toolbar-right">
                     <button type="button" class="match-settings-btn" onclick="openMatchModal()">🎯 매칭 설정</button>
-                    <button type="button" class="match-settings-btn" onclick="openCostModal()">💰 비용 비교</button>
+                    <button type="button" class="match-settings-btn" onclick="openCostModal()">💰 예산 매칭</button>
                     <div class="uni-sort">
                         <label for="uni-sort-select">정렬</label>
                         <select id="uni-sort-select">
@@ -2452,13 +2570,47 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     <div id="cost-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-button" onclick="closeCostModal()">×</span>
-            <h2 class="text-2xl font-bold mb-2">💰 대학 비용 비교</h2>
-            <p class="text-sm text-gray-500 mb-4">각 대학의 연간 학비를 한눈에 비교하세요. 예산을 입력하면 초과하는 학교를 표시해요.</p>
+            <h2 class="text-2xl font-bold mb-2">💰 예산 매칭</h2>
+            <p class="text-sm text-gray-500 mb-4">각 대학의 연간 학비를 저렴한 순으로 비교하고, <b>가장 저렴한 학교 대비 차이</b>를 한눈에 확인하세요. 예산을 입력하면 초과 학교를 표시해요.</p>
             <div class="cost-budget-row">
                 <label>내 예산 (연간, USD):</label>
                 <input type="number" id="cost-budget" class="cost-budget-input" placeholder="예: 60000" oninput="renderCostComparison()">
             </div>
             <div id="cost-comparison-body"></div>
+        </div>
+    </div>
+
+    <!-- Admission result / financial aid / acceptance letter modal -->
+    <div id="result-modal" class="modal hidden">
+        <div class="modal-content" style="max-width:480px;">
+            <span class="close-button" onclick="closeResultModal()">×</span>
+            <h2 class="text-2xl font-bold mb-1">🎓 합격 결과</h2>
+            <p class="text-sm text-gray-500 mb-5" id="result-uni-name"></p>
+            <input type="hidden" id="result-uni-id">
+            <div class="am-form">
+                <div class="am-field"><label>합격 결과 상태</label>
+                    <select id="result-status" onchange="onResultStatusChange()">
+                        <option value="">미정</option>
+                        <option value="합격">🎉 합격 (Accepted)</option>
+                        <option value="불합격">❌ 불합격 (Rejected)</option>
+                        <option value="대기">📋 대기 (Waitlist)</option>
+                        <option value="유예">↩️ 유예 (Deferred)</option>
+                    </select>
+                </div>
+                <div id="result-accept-fields">
+                    <div class="am-field"><label>1년 재정지원 · 장학금 (USD)</label><input type="number" id="result-aid" placeholder="예: 30000"></div>
+                    <div class="am-field">
+                        <label>합격 레터 업로드 <span style="color:#ff3b30;">*합격 시 필수</span></label>
+                        <p class="am-sub" style="margin:0 0 8px;">이미지(JPG/PNG) 또는 PDF. 이미지는 자동으로 압축돼요.</p>
+                        <input type="file" id="result-letter-file" accept="image/*,application/pdf" onchange="onLetterFileChange(event)">
+                        <div id="result-letter-preview" class="result-letter-preview"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" class="data-btn" onclick="closeResultModal()">취소</button>
+                <button type="button" class="data-btn primary" onclick="saveResult()">저장</button>
+            </div>
         </div>
     </div>
 
@@ -2611,6 +2763,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <input type="hidden" id="hon-id">
             <div class="am-form">
                 <div class="am-field"><label>수상명 (Title)</label><input type="text" id="hon-title" placeholder="예: 전국 수학경시대회 금상, AP Scholar"></div>
+                <div class="am-field"><label>수여 기관 (Organization)</label><input type="text" id="hon-org" placeholder="예: 한국수학올림피아드, College Board"></div>
                 <div class="am-row">
                     <div class="am-field"><label>수상 수준 (Level)</label>
                         <select id="hon-level">
@@ -3513,6 +3666,94 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             return out;
         }
 
+        // ---- Admission result / financial aid / acceptance letter ----
+        const RESULT_META = { '합격': ['res-acc', '🎉 합격'], '불합격': ['res-rej', '❌ 불합격'], '대기': ['res-wl', '📋 대기'], '유예': ['res-def', '↩️ 유예'] };
+        function resultBadge(uni) {
+            if (!uni || !uni.result) return '';
+            const [cls, label] = RESULT_META[uni.result] || ['res-def', uni.result];
+            const aid = (uni.result === '합격' && uni.aidAmount) ? ` · $${Number(uni.aidAmount).toLocaleString()}` : '';
+            return `<span class="result-badge ${cls}" title="합격 결과">${label}${aid}</span>`;
+        }
+        let pendingLetter = null; // { dataUrl, name }
+        function openResultModal(uniId) {
+            const uni = universities.find(u => u.id === uniId); if (!uni) return;
+            pendingLetter = null;
+            document.getElementById('result-uni-id').value = uniId;
+            document.getElementById('result-uni-name').textContent = (uni.nameEn || uni.nameKo || '') + (uni.nameKo && uni.nameEn ? ` (${uni.nameKo})` : '');
+            document.getElementById('result-status').value = uni.result || '';
+            document.getElementById('result-aid').value = uni.aidAmount || '';
+            document.getElementById('result-letter-file').value = '';
+            const prev = document.getElementById('result-letter-preview');
+            prev.innerHTML = uni.acceptLetter
+                ? `<div class="result-letter-ok">📎 저장된 합격레터 있음 · <a href="${uni.acceptLetter}" target="_blank" rel="noopener">보기</a> <span class="rp-dim">(다시 올리면 교체돼요)</span></div>`
+                : '';
+            onResultStatusChange();
+            document.getElementById('result-modal').classList.remove('hidden');
+        }
+        function closeResultModal() { document.getElementById('result-modal').classList.add('hidden'); pendingLetter = null; }
+        function onResultStatusChange() {
+            const status = document.getElementById('result-status').value;
+            document.getElementById('result-accept-fields').style.display = (status === '합격') ? 'block' : 'none';
+        }
+        function compressImageToDataUrl(file, maxDim, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width, h = img.height;
+                        if (w > maxDim || h > maxDim) { const s = maxDim / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        async function onLetterFileChange(event) {
+            const file = event.target.files && event.target.files[0]; if (!file) return;
+            const prev = document.getElementById('result-letter-preview');
+            if (file.type.startsWith('image/')) {
+                try {
+                    let dataUrl = await compressImageToDataUrl(file, 1100, 0.62);
+                    if (dataUrl.length > 900000) dataUrl = await compressImageToDataUrl(file, 800, 0.5);
+                    if (dataUrl.length > 900000) { toast('이미지가 너무 커요. 더 작은 이미지를 사용해주세요.', 'error'); return; }
+                    pendingLetter = { dataUrl, name: file.name };
+                    prev.innerHTML = `<img src="${dataUrl}" class="result-letter-img"><div class="result-letter-ok">✓ ${esc(file.name)}</div>`;
+                } catch (e) { toast('이미지 처리에 실패했어요.', 'error'); }
+            } else if (file.type === 'application/pdf') {
+                if (file.size > 700000) { toast('PDF가 700KB를 넘어요. 캡처 이미지로 올리면 자동 압축돼요.', 'error'); return; }
+                const reader = new FileReader();
+                reader.onload = e => { pendingLetter = { dataUrl: e.target.result, name: file.name }; prev.innerHTML = `<div class="result-letter-ok">📄 ${esc(file.name)} 첨부됨 ✓</div>`; };
+                reader.readAsDataURL(file);
+            } else { toast('이미지 또는 PDF만 올릴 수 있어요.', 'error'); }
+        }
+        function saveResult() {
+            const uniId = document.getElementById('result-uni-id').value;
+            const uni = universities.find(u => u.id === uniId); if (!uni) return;
+            const status = document.getElementById('result-status').value;
+            const aid = document.getElementById('result-aid').value.trim();
+            const letter = pendingLetter ? pendingLetter.dataUrl : (uni.acceptLetter || '');
+            const letterName = pendingLetter ? pendingLetter.name : (uni.acceptLetterName || '');
+            if (status === '합격' && !letter) { toast('합격은 합격 레터 업로드가 필수예요.', 'error'); return; }
+            uni.result = status;
+            uni.aidAmount = status === '합격' ? aid : '';
+            uni.acceptLetter = status === '합격' ? letter : '';
+            uni.acceptLetterName = status === '합격' ? letterName : '';
+            // Keep the application-status dropdown in sync with the decision
+            const statusMap = { '합격': 'Accepted', '불합격': 'Rejected', '대기': 'Waitlist', '유예': 'Deferred' };
+            if (statusMap[status]) uni.applicationStatus = statusMap[status];
+            saveUniversities();
+            applyFiltersAndSort();
+            closeResultModal();
+            toast('합격 결과가 저장됐어요 ✓', 'success');
+        }
+
         function renderUniversities(dataToRender = universities) {
             const list = document.getElementById('university-card-list');
             const countEl = document.getElementById('uni-count');
@@ -3597,8 +3838,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                             <div class="uni-card-name">${esc(uni.nameEn) || '(이름 없음)'}${uni.nameKo ? ` <span class="uni-card-nameko">${esc(uni.nameKo)}</span>` : ''}</div>
                             <div class="uni-card-meta">${[esc(uni.location), esc(uni.ranking)].filter(Boolean).join(' · ') || '-'}</div>
                         </div>
-                        <div class="uni-card-tags">${matchBadge}${catBadge}${finAidChips(uni)}${ddayHtml}</div>
+                        <div class="uni-card-tags">${matchBadge}${catBadge}${finAidChips(uni)}${resultBadge(uni)}${ddayHtml}</div>
                         <div class="uni-card-status" onclick="event.stopPropagation()">
+                            <button type="button" class="uni-result-btn" onclick="openResultModal('${uni.id}')" title="합격 결과·재정지원·합격레터 입력">🎓 결과</button>
                             <div class="status-cell-wrapper ${statusClass}">
                                 <select onchange="updateApplicationStatus(this, '${uni.id}')" class="status-select">${uniStatusOptionsHtml(uni.applicationStatus)}</select>
                             </div>
@@ -4495,6 +4737,62 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const uniShort = top.uniName.split(' ')[0];
             label.innerHTML = `${top.icon}<span class="cal-uni">${uniShort}</span>${dayEvents.length > 1 ? `<span class="cal-more">+${dayEvents.length - 1}</span>` : ''}`;
             dayElement.appendChild(label);
+
+            // Make the day block open a detail popup describing what's due and what to do
+            dayElement.classList.add('has-events');
+            dayElement.setAttribute('role', 'button');
+            dayElement.tabIndex = 0;
+            dayElement.setAttribute('aria-label', `${dayNum}일 일정 ${dayEvents.length}건 보기`);
+            dayElement.addEventListener('click', () => showDayEventsModal(dayEvents));
+            dayElement.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showDayEventsModal(dayEvents); } });
+        }
+
+        const TL_KIND_DESC = {
+            milestone: '준비 마일스톤 — 이 시점부터 시작하면 마감까지 여유 있게 도착해요.',
+            soft: '소프트 데드라인 — 실제 마감 며칠 전이에요. 이때까지 제출을 마무리하는 걸 권장해요.',
+            deadline: '실제 원서 마감일 — 반드시 이 날짜(대학 현지 시간)까지 제출해야 해요.',
+            admin: '행정 체크리스트 할 일 — 이 날짜까지 완료하세요.'
+        };
+        const TL_KIND_TAG = { milestone: ['준비 단계', 'tl-k-mile'], soft: ['권장 마감', 'tl-k-soft'], deadline: ['최종 마감', 'tl-k-dead'], admin: ['행정', 'tl-k-admin'] };
+        function showDayEventsModal(events) {
+            if (!events || !events.length) return;
+            const priority = { deadline: 4, admin: 3, soft: 2, milestone: 1 };
+            const sorted = events.slice().sort((a, b) => priority[b.kind] - priority[a.kind]);
+            const date = sorted[0].date;
+            const dstr = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${['일', '월', '화', '수', '목', '금', '토'][date.getDay()]})`;
+            const dd = daysUntil(date);
+            const ddLabel = dd === 0 ? '오늘' : (dd > 0 ? `D-${dd}` : `${-dd}일 지남`);
+            const rows = sorted.map(e => {
+                const [tagLabel, tagCls] = TL_KIND_TAG[e.kind] || ['일정', 'tl-k-mile'];
+                const uniLine = e.kind === 'admin'
+                    ? esc(e.uniName)
+                    : `${esc(e.uniName)}${e.uniNameKo ? ` (${esc(e.uniNameKo)})` : ''} · <b>${esc(e.deadlineType)}</b> 마감 대비`;
+                return `<div class="dev-item">
+                    <div class="dev-item-head"><span class="dev-ic">${e.icon}</span><span class="dev-label">${esc(e.label)}</span><span class="dev-tag ${tagCls}">${tagLabel}</span></div>
+                    <div class="dev-uni">${uniLine}</div>
+                    <div class="dev-desc">${TL_KIND_DESC[e.kind] || ''}</div>
+                </div>`;
+            }).join('');
+            const overlay = document.createElement('div');
+            overlay.className = 'dev-overlay';
+            overlay.innerHTML = `
+                <div class="dev-modal" role="dialog" aria-modal="true" aria-labelledby="dev-title">
+                    <button class="dev-close" aria-label="닫기" onclick="closeDayEventsModal(this)">×</button>
+                    <div class="dev-dday ${dd <= 3 && dd >= 0 ? 'soon' : ''}">${ddLabel}</div>
+                    <h3 class="dev-title" id="dev-title">${dstr}</h3>
+                    <p class="dev-sub">이 날 예정된 일정 ${sorted.length}건이에요.</p>
+                    <div class="dev-list">${rows}</div>
+                    <button class="dev-ok" onclick="closeDayEventsModal(this)">확인</button>
+                </div>`;
+            overlay.addEventListener('click', e => { if (e.target === overlay) closeDayEventsModal(overlay); });
+            document.body.appendChild(overlay);
+            requestAnimationFrame(() => overlay.classList.add('show'));
+        }
+        function closeDayEventsModal(el) {
+            const overlay = el.classList && el.classList.contains('dev-overlay') ? el : el.closest('.dev-overlay');
+            if (!overlay) return;
+            overlay.classList.remove('show');
+            setTimeout(() => overlay.remove(), 200);
         }
 
         /**
@@ -4958,12 +5256,19 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (!rows.length) { body.innerHTML = '<p class="rp-dim" style="padding:24px 0;">학비 정보가 있는 대학이 없어요. 대학 편집 창에서 Tuition을 입력하면 여기 비교돼요.</p>'; return; }
             rows.sort((a, b) => a.usd - b.usd);
             const max = Math.max(...rows.map(r => r.usd));
-            body.innerHTML = `<div class="cost-list">` + rows.map(r => {
+            const min = Math.min(...rows.map(r => r.usd));
+            const avg = Math.round(rows.reduce((s, r) => s + r.usd, 0) / rows.length);
+            body.innerHTML = `<div class="cost-summary">최저 <b>$${min.toLocaleString()}</b> · 평균 <b>$${avg.toLocaleString()}</b> · 최고 <b>$${max.toLocaleString()}</b> · 편차 <b>$${(max - min).toLocaleString()}</b></div>`
+                + `<div class="cost-list">` + rows.map(r => {
                 const krw = Math.round(r.usd * USD_TO_KRW_RATE);
                 const over = budget && r.usd > budget;
                 const pct = max ? Math.round(r.usd / max * 100) : 0;
+                const diff = r.usd - min;
+                const diffTag = diff === 0
+                    ? '<span class="cost-diff min">🏆 최저</span>'
+                    : `<span class="cost-diff">최저 대비 +$${diff.toLocaleString()}</span>`;
                 return `<div class="cost-row">
-                    <div class="cost-name">${esc(r.name)}${r.nameKo ? ` <span class="rp-ko">${esc(r.nameKo)}</span>` : ''}${over ? ' <span class="cost-over-tag">예산 초과</span>' : ''}</div>
+                    <div class="cost-name">${esc(r.name)}${r.nameKo ? ` <span class="rp-ko">${esc(r.nameKo)}</span>` : ''}${over ? ' <span class="cost-over-tag">예산 초과</span>' : ''} ${diffTag}</div>
                     <div class="cost-bar"><div class="cost-bar-fill ${over ? 'over' : ''}" style="width:${pct}%"></div></div>
                     <div class="cost-amt">$${r.usd.toLocaleString()} <span class="cost-krw">₩${krw.toLocaleString()}</span></div>
                 </div>`;
@@ -5122,6 +5427,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     if (!d) return;
                     // Teacher left new feedback → update the home panel and pop the double-check modal in real time
                     renderStudentFeedback(d);
+                    renderStudentChat(d);
                     maybeShowFeedbackConfirm(d);
                     // Data changed from another device → warn (non-destructive)
                     if (d.lastDevice && d.lastDevice !== getDeviceId() && !conflictWarned) {
@@ -5386,6 +5692,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const enterApp = async (role) => {
                 currentRole = role;
                 if (role === 'student') {
+                    initStudentChat();
                     await withTimeout(pullStudentData(user.uid), 10000).catch(() => {});
                     bindCloudAutoPush();
                     watchOwnStudentDoc(user.uid);
@@ -5460,7 +5767,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 if (!hasCloudData) {
                     await pushStudentData(); // brand-new account → seed cloud with the fresh (empty) state
                 }
-                if (d) { renderStudentFeedback(d); maybeShowFeedbackConfirm(d); }
+                if (d) { renderStudentFeedback(d); renderStudentChat(d); maybeShowFeedbackConfirm(d); }
             } catch (e) { console.warn('pull failed', e); }
         }
 
@@ -5489,6 +5796,147 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 return `<div class="sfb-item"><div class="sfb-top"><div class="sfb-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div>${delBtn}</div><div class="sfb-text">${esc(f.text)}</div>${ackRow}</div>`;
             }).join('');
             el.innerHTML = `<div class="sfb-card"><div class="sfb-head">💬 선생님 피드백 (${all.length})</div>${items}</div>`;
+        }
+
+        // ============================================================
+        // Student ↔ Teacher chat  (stored on students/{uid}.messages [])
+        // Both sides read/write the same array; chatSeen{student,teacher}
+        // tracks unread counts. Realtime via each side's onSnapshot.
+        // ============================================================
+        let studentChatOpen = false, teacherChatUnsub = null;
+        function initStudentChat() {
+            if (document.getElementById('chat-fab')) return;
+            const fab = document.createElement('button');
+            fab.id = 'chat-fab';
+            fab.className = 'chat-fab';
+            fab.setAttribute('aria-label', '선생님께 메시지');
+            fab.innerHTML = `<span class="chat-fab-ic">💬</span><span class="chat-fab-badge" id="chat-fab-badge" style="display:none;">0</span>`;
+            fab.onclick = toggleStudentChat;
+            document.body.appendChild(fab);
+            const panel = document.createElement('div');
+            panel.id = 'chat-panel';
+            panel.className = 'chat-panel';
+            panel.innerHTML = `
+                <div class="chat-head">
+                    <div><div class="chat-head-title">💬 선생님과의 대화</div><div class="chat-head-sub">질문·문의를 자유롭게 남겨보세요</div></div>
+                    <button class="chat-close" aria-label="닫기" onclick="toggleStudentChat()">×</button>
+                </div>
+                <div class="chat-body" id="chat-body"></div>
+                <div class="chat-input-row">
+                    <textarea id="chat-input" class="chat-input" rows="1" placeholder="메시지를 입력하세요…" oninput="chatAutoGrow(this)" onkeydown="chatInputKey(event)"></textarea>
+                    <button class="chat-send" aria-label="보내기" onclick="sendStudentChat()">↑</button>
+                </div>`;
+            document.body.appendChild(panel);
+        }
+        function toggleStudentChat() {
+            const panel = document.getElementById('chat-panel');
+            if (!panel) return;
+            studentChatOpen = !panel.classList.contains('open');
+            panel.classList.toggle('open', studentChatOpen);
+            const fab = document.getElementById('chat-fab');
+            if (fab) fab.classList.toggle('active', studentChatOpen);
+            if (studentChatOpen) {
+                markChatSeen('student');
+                scrollChatToBottom('chat-body');
+                setTimeout(() => { const i = document.getElementById('chat-input'); if (i) i.focus(); }, 120);
+            }
+        }
+        function chatAutoGrow(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 110) + 'px'; }
+        function chatInputKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendStudentChat(); } }
+        function chatMsgHtml(m, myRole) {
+            const mine = m.from === myRole;
+            const t = new Date(m.at);
+            const time = `${t.getMonth() + 1}/${t.getDate()} ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+            return `<div class="chat-msg ${mine ? 'mine' : 'theirs'}">
+                ${!mine ? `<div class="chat-msg-name">${esc(m.name || (m.from === 'teacher' ? '선생님' : '학생'))}</div>` : ''}
+                <div class="chat-bubble">${esc(m.text)}</div>
+                <div class="chat-time">${time}</div>
+            </div>`;
+        }
+        function renderChatMessages(containerId, msgs, myRole) {
+            const body = document.getElementById(containerId);
+            if (!body) return;
+            if (!msgs.length) { body.innerHTML = `<div class="chat-empty">아직 대화가 없어요.<br>${myRole === 'student' ? '선생님께 궁금한 점을 먼저 물어보세요' : '학생에게 먼저 말을 걸어보세요'} 👋</div>`; return; }
+            body.innerHTML = msgs.map(m => chatMsgHtml(m, myRole)).join('');
+        }
+        function scrollChatToBottom(id) { const b = document.getElementById(id); if (b) setTimeout(() => { b.scrollTop = b.scrollHeight; }, 45); }
+        function renderStudentChat(d) {
+            const msgs = Array.isArray(d && d.messages) ? d.messages.slice().sort((a, b) => a.at - b.at) : [];
+            renderChatMessages('chat-body', msgs, 'student');
+            if (studentChatOpen) { scrollChatToBottom('chat-body'); markChatSeen('student'); }
+            updateStudentChatBadge(d);
+        }
+        function updateStudentChatBadge(d) {
+            const badge = document.getElementById('chat-fab-badge');
+            if (!badge) return;
+            const seen = (d && d.chatSeen && d.chatSeen.student) || 0;
+            const msgs = Array.isArray(d && d.messages) ? d.messages : [];
+            const unread = studentChatOpen ? 0 : msgs.filter(m => m.from === 'teacher' && m.at > seen).length;
+            badge.style.display = unread ? 'flex' : 'none';
+            badge.textContent = unread > 9 ? '9+' : String(unread);
+            const fab = document.getElementById('chat-fab');
+            if (fab) fab.classList.toggle('has-unread', !!unread);
+        }
+        async function sendStudentChat() {
+            const input = document.getElementById('chat-input');
+            if (!input || !currentUser || !fbDb) return;
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = ''; input.style.height = 'auto';
+            const msg = { id: generateUniqueId('msg-'), from: 'student', name: currentUser.displayName || currentUser.email, text, at: Date.now() };
+            try {
+                const ref = fbDb.collection('students').doc(currentUser.uid);
+                await ref.update({ messages: firebase.firestore.FieldValue.arrayUnion(msg), 'chatSeen.student': Date.now() });
+                const snap = await ref.get();
+                if (snap.exists) renderStudentChat(snap.data());
+            } catch (e) { toast('메시지 전송 실패: ' + (e.message || e), 'error'); }
+        }
+        async function markChatSeen(role) {
+            if (!currentUser || !fbDb) return;
+            const uid = role === 'student' ? currentUser.uid : currentStudentUid;
+            if (!uid) return;
+            if (role === 'student') {
+                const b = document.getElementById('chat-fab-badge'); if (b) b.style.display = 'none';
+                const f = document.getElementById('chat-fab'); if (f) f.classList.remove('has-unread');
+            }
+            try { await fbDb.collection('students').doc(uid).update({ ['chatSeen.' + role]: Date.now() }); } catch (e) {}
+        }
+        // ---- Teacher side (inside student detail "메시지" tab) ----
+        function buildStudentChatPanel() {
+            return `<div class="tchat">
+                <div class="tchat-body chat-body" id="tchat-body"></div>
+                <div class="chat-input-row">
+                    <textarea id="tchat-input" class="chat-input" rows="1" placeholder="답장을 입력하세요…" oninput="chatAutoGrow(this)" onkeydown="tchatInputKey(event)"></textarea>
+                    <button class="chat-send" aria-label="보내기" onclick="sendTeacherChat()">↑</button>
+                </div>
+            </div>`;
+        }
+        function tchatInputKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTeacherChat(); } }
+        function renderTeacherChat(d) {
+            const msgs = Array.isArray(d && d.messages) ? d.messages.slice().sort((a, b) => a.at - b.at) : [];
+            renderChatMessages('tchat-body', msgs, 'teacher');
+            scrollChatToBottom('tchat-body');
+        }
+        function watchStudentChat() {
+            stopWatchStudentChat();
+            if (!fbDb || !currentStudentUid) return;
+            teacherChatUnsub = fbDb.collection('students').doc(currentStudentUid).onSnapshot(snap => {
+                if (!snap.exists) return;
+                currentStudentData = snap.data();
+                if (document.getElementById('tchat-body')) renderTeacherChat(currentStudentData);
+            }, () => {});
+        }
+        function stopWatchStudentChat() { if (teacherChatUnsub) { try { teacherChatUnsub(); } catch (e) {} teacherChatUnsub = null; } }
+        async function sendTeacherChat() {
+            const input = document.getElementById('tchat-input');
+            if (!input || !currentUser || !fbDb || !currentStudentUid) return;
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = ''; input.style.height = 'auto';
+            const msg = { id: generateUniqueId('msg-'), from: 'teacher', name: currentUser.displayName || currentUser.email, text, at: Date.now() };
+            try {
+                await fbDb.collection('students').doc(currentStudentUid).update({ messages: firebase.firestore.FieldValue.arrayUnion(msg), 'chatSeen.teacher': Date.now() });
+            } catch (e) { toast('전송 실패: ' + (e.message || e), 'error'); }
         }
 
         // Student deletes a piece of teacher feedback from their record
@@ -5564,28 +6012,53 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (!items.length) return;
             showFeedbackConfirmModal(items);
         }
+        let fbcChecked = [];
+        function fbcSlideCount() { return pendingFeedbackItems.length; }
         function showFeedbackConfirmModal(items) {
             feedbackConfirmOpen = true;
             pendingFeedbackItems = items;
-            const list = items.map(f => `
-                <div class="fbc-item">
-                    <div class="fbc-item-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div>
-                    <div class="fbc-item-text">${esc(f.text)}</div>
+            fbcChecked = items.map(() => false);
+            const n = items.length;
+            const slides = items.map((f, i) => `
+                <div class="fbc-slide" data-idx="${i}" id="fbc-slide-${i}">
+                    <div class="fbc-slide-inner">
+                        <div class="fbc-slide-count">${i + 1} / ${n}</div>
+                        <div class="fbc-item-meta">${esc(f.teacherName || '선생님')} · <b>${esc(f.ctx)}</b> · ${new Date(f.at).toLocaleDateString('ko-KR')}</div>
+                        <div class="fbc-item-text">${esc(f.text)}</div>
+                        <label class="fbc-check"><input type="checkbox" onchange="fbcToggleCheck(${i}, this.checked)"><span>이 피드백을 확인했고, 수정에 반영할게요.</span></label>
+                        ${i < n - 1 ? `<button class="fbc-next-btn" onclick="fbcScrollTo(${i + 1})">다음 피드백 ↓</button>` : `<div class="fbc-last-note">✅ 마지막 피드백이에요. 모두 체크했다면 아래 완료 버튼을 눌러주세요.</div>`}
+                    </div>
                 </div>`).join('');
             const overlay = document.createElement('div');
             overlay.className = 'fbc-overlay';
             overlay.innerHTML = `
                 <div class="fbc-modal" role="dialog" aria-modal="true" aria-labelledby="fbc-title">
-                    <div class="fbc-badge">⚠️ 확인 필요 · ${items.length}건</div>
+                    <div class="fbc-badge">⚠️ 확인 필요 · ${n}건</div>
                     <h3 class="fbc-title" id="fbc-title">선생님 피드백이 도착했어요</h3>
-                    <p class="fbc-sub">아래 내용을 꼼꼼히 확인한 뒤, 반영을 약속하고 완료 버튼을 눌러주세요. 확인 전에는 닫히지 않아요.</p>
-                    <div class="fbc-list">${list}</div>
-                    <label class="fbc-check"><input type="checkbox" id="fbc-agree" onchange="document.getElementById('fbc-done').disabled = !this.checked"><span>내용을 확인했으며, 수정에 반영하겠습니다.</span></label>
-                    <button class="fbc-done" id="fbc-done" disabled onclick="confirmFeedbackRead()">확인 완료 ✓</button>
+                    <p class="fbc-sub">${n > 1 ? '아래로 스크롤하거나 “다음 피드백” 버튼으로' : '내용을'} 하나씩 확인하고 체크해주세요. 모두 확인해야 닫혀요.</p>
+                    <div class="fbc-viewport" id="fbc-viewport">${slides}</div>
+                    <div class="fbc-progress" id="fbc-progress">0 / ${n} 확인함</div>
+                    <button class="fbc-done" id="fbc-done" disabled onclick="confirmFeedbackRead()">모두 확인 완료 ✓</button>
                 </div>`;
             document.body.appendChild(overlay);
             document.body.style.overflow = 'hidden';
             requestAnimationFrame(() => overlay.classList.add('show'));
+        }
+        function fbcScrollTo(i) {
+            const slide = document.getElementById('fbc-slide-' + i);
+            if (slide) slide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        function fbcToggleCheck(i, val) {
+            fbcChecked[i] = val;
+            const done = fbcChecked.filter(Boolean).length;
+            const prog = document.getElementById('fbc-progress');
+            if (prog) prog.textContent = `${done} / ${fbcSlideCount()} 확인함`;
+            const btn = document.getElementById('fbc-done');
+            if (btn) btn.disabled = done !== fbcSlideCount();
+            const slide = document.getElementById('fbc-slide-' + i);
+            if (slide) slide.classList.toggle('checked', val);
+            // Checking a box gently reveals the next one
+            if (val && i < fbcSlideCount() - 1) setTimeout(() => fbcScrollTo(i + 1), 300);
         }
         function closeFeedbackConfirmModal() {
             document.querySelectorAll('.fbc-overlay').forEach(o => { o.classList.remove('show'); setTimeout(() => o.remove(), 220); });
@@ -5594,7 +6067,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             pendingFeedbackItems = [];
         }
         async function confirmFeedbackRead() {
-            if (!document.getElementById('fbc-agree') || !document.getElementById('fbc-agree').checked) return;
+            if (fbcChecked.length !== pendingFeedbackItems.length || !fbcChecked.every(Boolean)) return;
             const items = pendingFeedbackItems;
             const btn = document.getElementById('fbc-done');
             if (btn) { btn.disabled = true; btn.textContent = '처리 중…'; }
@@ -5982,8 +6455,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const p = s.d.profile || {};
             const cls = teacherState.studentClasses[s.id] || '';
             const sub = [p.grade ? p.grade + '학년' : '', p.major || ''].filter(Boolean).join(' · ') || (s.d.email || '');
+            const chatUnread = chatUnreadCount(s.d);
             return `<div class="tstudent-card">
-                <div class="tsc-top">${riskBadge(s.risk.level)}${cls ? `<span class="tsc-class">${esc(cls)}</span>` : ''}</div>
+                <div class="tsc-top">${riskBadge(s.risk.level)}${cls ? `<span class="tsc-class">${esc(cls)}</span>` : ''}${chatUnread ? `<span class="tsc-chat-badge">💬 ${chatUnread}</span>` : ''}</div>
                 <div class="tsc-name">${esc(s.d.name || s.d.email)}</div>
                 <div class="tsc-email">${esc(sub)}</div>
                 <div class="tsc-stats"><span>🏫 ${s.stats.uniCount}개</span><span>✍️ ${s.stats.essayInProg}/${s.stats.essayTotal}</span><span>✅ ${s.stats.adminPct}%</span></div>
@@ -6006,6 +6480,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
 
         function showTeacherList() {
+            stopWatchStudentChat();
             const detail = document.getElementById('teacher-view-detail');
             const list = document.getElementById('teacher-view-list');
             if (detail) detail.style.display = 'none';
@@ -6041,18 +6516,35 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div class="std-tabs">
                         <button class="std-tab" id="std-tab-report" onclick="switchStudentTab('report')">📊 진행 현황</button>
                         <button class="std-tab" id="std-tab-profile" onclick="switchStudentTab('profile')">🎓 프로필</button>
+                        <button class="std-tab" id="std-tab-chat" onclick="switchStudentTab('chat')">💬 메시지${chatUnreadCount(data) ? `<span class="std-tab-badge">${chatUnreadCount(data)}</span>` : ''}</button>
                     </div>
                     <div id="std-tab-content"></div>`;
                 switchStudentTab('report');
             } catch (e) { detail.innerHTML = `<div class="teacher-error">${esc(e.message)}</div>`; }
         }
+        function chatUnreadCount(d) {
+            const seen = (d && d.chatSeen && d.chatSeen.teacher) || 0;
+            const msgs = Array.isArray(d && d.messages) ? d.messages : [];
+            return msgs.filter(m => m.from === 'student' && m.at > seen).length;
+        }
         function switchStudentTab(tab) {
             const data = currentStudentData; if (!data) return;
-            const rBtn = document.getElementById('std-tab-report'), pBtn = document.getElementById('std-tab-profile');
+            const rBtn = document.getElementById('std-tab-report'), pBtn = document.getElementById('std-tab-profile'), cBtn = document.getElementById('std-tab-chat');
             if (rBtn) rBtn.classList.toggle('active', tab === 'report');
             if (pBtn) pBtn.classList.toggle('active', tab === 'profile');
+            if (cBtn) cBtn.classList.toggle('active', tab === 'chat');
             const c = document.getElementById('std-tab-content'); if (!c) return;
-            c.innerHTML = (tab === 'profile') ? buildStudentProfile(data) : (buildStudentReport(data) + buildFeedbackPanel(data));
+            if (tab !== 'chat') stopWatchStudentChat();
+            if (tab === 'chat') {
+                c.innerHTML = buildStudentChatPanel();
+                renderTeacherChat(data);
+                watchStudentChat();
+                markChatSeen('teacher');
+                const badge = cBtn ? cBtn.querySelector('.std-tab-badge') : null;
+                if (badge) badge.remove();
+            } else {
+                c.innerHTML = (tab === 'profile') ? buildStudentProfile(data) : (buildStudentReport(data) + buildFeedbackPanel(data));
+            }
         }
         function onAdmitChange(uniId, sel) {
             setAdmitLevel(currentStudentUid, uniId, sel.value);
@@ -6124,9 +6616,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 blocks.push(`<div class="rep-sec"><div class="rep-h">Key Activities</div>${items}</div>`);
             }
             if (reportSections.honors && hons.length) {
-                const hrows = hons.map(hh => `<tr><td class="rep-u-name">${esc(hh.title || '')}</td><td>${esc(hh.level || 'School')}</td><td>${esc(hh.year || '–')}</td></tr>`).join('');
+                const hrows = hons.map(hh => `<tr><td class="rep-u-name">${esc(hh.title || '')}</td><td>${esc(hh.org || '–')}</td><td>${esc(hh.level || 'School')}</td><td>${esc(hh.year || '–')}</td></tr>`).join('');
                 blocks.push(`<div class="rep-sec"><div class="rep-h">Honors (${hons.length})</div>
-                    <table class="rep-table"><thead><tr><th>수상명</th><th>수준</th><th>연도</th></tr></thead><tbody>${hrows}</tbody></table></div>`);
+                    <table class="rep-table"><thead><tr><th>수상명</th><th>기관</th><th>수준</th><th>연도</th></tr></thead><tbody>${hrows}</tbody></table></div>`);
             }
             if (reportSections.universities && unis.length) {
                 const rows = unis.map(u => {
@@ -6234,7 +6726,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     ${timing ? `<div class="pv-act-timing">🕒 ${timing}</div>` : ''}
                 </div>`;
             }).join('') : '<span class="rp-dim">등록된 활동이 없어요.</span>';
-            const honRows = hons.length ? hons.map(h => `<tr><td class="hon-title">${esc(h.title || '')}</td><td><span class="hon-level ${HONOR_LEVEL_CLASS[h.level] || 'hl-sch'}">${esc(h.level || 'School')}</span></td><td class="hon-year">${esc(h.year || '–')}</td></tr>`).join('') : '';
+            const honRows = hons.length ? hons.map(h => `<tr><td class="hon-title">${esc(h.title || '')}</td><td>${esc(h.org || '–')}</td><td><span class="hon-level ${HONOR_LEVEL_CLASS[h.level] || 'hl-sch'}">${esc(h.level || 'School')}</span></td><td class="hon-year">${esc(h.year || '–')}</td></tr>`).join('') : '';
             return `<div class="pv-wrap">
                 <div class="pv-section">
                     <h4>📊 Academics</h4>
@@ -6250,7 +6742,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 </div>
                 <div class="pv-section">
                     <h4>🏆 Honors (${hons.length})</h4>
-                    ${honRows ? `<div class="hon-wrap"><table class="hon-table"><thead><tr><th style="text-align:left;">수상명</th><th>수준</th><th>연도</th></tr></thead><tbody>${honRows}</tbody></table></div>` : '<span class="rp-dim">등록된 수상이 없어요.</span>'}
+                    ${honRows ? `<div class="hon-wrap"><table class="hon-table"><thead><tr><th style="text-align:left;">수상명</th><th>기관</th><th>수준</th><th>연도</th></tr></thead><tbody>${honRows}</tbody></table></div>` : '<span class="rp-dim">등록된 수상이 없어요.</span>'}
                 </div>
             </div>`;
         }
@@ -6377,7 +6869,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <option value="Match" ${admitCur === 'Match' ? 'selected' : ''}>Match</option>
                     <option value="Reach" ${admitCur === 'Reach' ? 'selected' : ''}>Reach</option>
                 </select>`;
-                return `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''} ${finAidChips(u)}</td><td>${admitSel}</td><td>${esc(uniStatusLabel(u.applicationStatus))}</td><td class="rp-dim">${esc(u.deadline || '-')} ${ddayBadge}</td></tr>`;
+                const resBadge = resultBadge(u);
+                const letterLink = (u.result === '합격' && u.acceptLetter) ? ` <a class="rp-letter" href="${u.acceptLetter}" target="_blank" rel="noopener">📎 합격레터</a>` : '';
+                const resCell = resBadge ? `${resBadge}${letterLink}` : esc(uniStatusLabel(u.applicationStatus));
+                return `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''} ${finAidChips(u)}</td><td>${admitSel}</td><td>${resCell}</td><td class="rp-dim">${esc(u.deadline || '-')} ${ddayBadge}</td></tr>`;
             }).join('');
             const essayFeedback = data.essayFeedback || {};
             const verLabel = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} 버전`; };
@@ -6404,6 +6899,39 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     </div>
                 </div>`;
             }).join('');
+            // ---- Essay progress overview (how many written + how far along) ----
+            const STAGE_ORDER = ['Brainstorming', 'First Draft', 'Review', 'Revision', 'Final Polish', 'Done'];
+            const stageCount = {}; STAGE_ORDER.forEach(s => stageCount[s] = 0);
+            let progSum = 0, withDraft = 0, doneCount = 0;
+            essays.forEach(e => {
+                const st = normalizeEssayStatus(e.status) || 'Brainstorming';
+                if (stageCount[st] === undefined) stageCount[st] = 0;
+                stageCount[st]++;
+                const idx = Math.max(0, STAGE_ORDER.indexOf(st));
+                progSum += idx / (STAGE_ORDER.length - 1);
+                if (idx >= 1) withDraft++;
+                if (st === 'Done') doneCount++;
+            });
+            const overallPct = essays.length ? Math.round(progSum / essays.length * 100) : 0;
+            const stageChips = STAGE_ORDER.filter(s => stageCount[s] > 0).map(s => {
+                const o = ESSAY_STATUS_OPTIONS.find(x => x.value === s);
+                return `<span class="eprog-chip"><b>${stageCount[s]}</b> ${esc(o ? o.label.replace(/\s*\(.*\)/, '') : s)}</span>`;
+            }).join('');
+            const essayOverview = essays.length ? `
+                <div class="eprog">
+                    <div class="eprog-top">
+                        <div class="eprog-stats">
+                            <span class="eprog-big">${essays.length}</span><span class="eprog-lbl">개 작성 중</span>
+                            <span class="eprog-sep">·</span>
+                            <span class="eprog-mid">초안 이상 ${withDraft}</span>
+                            <span class="eprog-sep">·</span>
+                            <span class="eprog-mid done">완료 ${doneCount}</span>
+                        </div>
+                        <div class="eprog-pctwrap"><span class="eprog-pct">${overallPct}%</span><span class="eprog-lbl">전체 진행도</span></div>
+                    </div>
+                    <div class="eprog-bar"><div class="eprog-bar-fill" style="width:${overallPct}%"></div></div>
+                    <div class="eprog-chips">${stageChips}</div>
+                </div>` : '';
             return `
                 <h3 class="report-name">${esc(data.name || data.email)}</h3>
                 <div class="report-email">${esc(data.email || '')}</div>
@@ -6411,7 +6939,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <div class="report-section"><h4>🏫 대학 (${unis.length})</h4>
                     ${unis.length ? `<table class="report-table"><thead><tr><th>대학</th><th>합격 레벨</th><th>진행 상태</th><th>마감</th></tr></thead><tbody>${uniRows}</tbody></table>` : '<p class="rp-dim">등록된 대학 없음</p>'}
                 </div>
-                <div class="report-section"><h4>✍️ 에세이 (${essays.length}) · 문항별 피드백</h4>
+                <div class="report-section"><h4>✍️ 에세이 (${essays.length}) · 진행도 &amp; 문항별 피드백</h4>
+                    ${essayOverview}
                     ${essays.length ? `<div class="ecard-list">${essayCards}</div>` : '<p class="rp-dim">등록된 에세이 없음</p>'}
                 </div>
                 <div class="report-section"><h4>✅ 행정 체크리스트 · ${adminDone}/${adminTotal} 완료</h4>
@@ -6727,6 +7256,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const rows = honors.map(h => `
                 <tr>
                     <td class="hon-title">${esc(h.title || '')}</td>
+                    <td>${esc(h.org || '-')}</td>
                     <td><span class="hon-level ${HONOR_LEVEL_CLASS[h.level] || 'hl-sch'}">${esc(h.level || 'School')}</span></td>
                     <td class="hon-year">${esc(h.year || '-')}</td>
                     <td class="hon-act">
@@ -6734,7 +7264,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <button class="am-icon-btn" onclick="deleteHonor('${h.id}')" title="삭제">🗑️</button>
                     </td>
                 </tr>`).join('');
-            el.innerHTML = `<div class="hon-wrap"><table class="hon-table"><thead><tr><th style="text-align:left;">수상명</th><th>수준</th><th>연도</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            el.innerHTML = `<div class="hon-wrap"><table class="hon-table"><thead><tr><th style="text-align:left;">수상명</th><th>기관</th><th>수준</th><th>연도</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
         }
         function populateHonorYears() {
             const sel = document.getElementById('hon-year'); if (!sel || sel.options.length > 1) return;
@@ -6745,6 +7275,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const h = id ? honors.find(x => x.id === id) : null;
             document.getElementById('hon-id').value = h ? h.id : '';
             document.getElementById('hon-title').value = h ? (h.title || '') : '';
+            document.getElementById('hon-org').value = h ? (h.org || '') : '';
             document.getElementById('hon-level').value = h ? (h.level || 'School') : 'School';
             document.getElementById('hon-year').value = h ? (h.year || '') : '';
             document.getElementById('honor-modal').classList.remove('hidden');
@@ -6754,7 +7285,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const id = document.getElementById('hon-id').value;
             const title = document.getElementById('hon-title').value.trim();
             if (!title) { toast('수상명을 입력해주세요.', 'error'); return; }
-            const data = { title, level: document.getElementById('hon-level').value, year: document.getElementById('hon-year').value };
+            const data = { title, org: document.getElementById('hon-org').value.trim(), level: document.getElementById('hon-level').value, year: document.getElementById('hon-year').value };
             if (id) { const h = honors.find(x => x.id === id); if (h) Object.assign(h, data); }
             else { honors.push({ id: generateUniqueId('hon-'), ...data }); }
             saveHonors(); renderHonors(); closeHonorModal(); toast('수상 저장됨 ✓', 'success');
