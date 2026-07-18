@@ -481,6 +481,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>University Explorer · 미국 대학 지원 관리</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
     <!-- PWA: installable app -->
     <meta name="theme-color" content="#0071e3">
     <meta name="mobile-web-app-capable" content="yes">
@@ -501,7 +503,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
         /* Base body styles for font and background */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
             background-color: var(--surface-3); /* Light gray background for a clean look */
             color: var(--text); /* Dark gray text for readability */
         }
@@ -937,8 +939,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
            Apple-style minimal dashboard (Home) + global polish
            ======================================================================= */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
             background-color: var(--bg); /* Apple soft gray */
+            letter-spacing: -0.011em;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
