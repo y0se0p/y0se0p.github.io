@@ -1447,6 +1447,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .starter-tabs { display: flex; gap: 6px; margin-bottom: 14px; background: var(--surface-3); padding: 4px; border-radius: 12px; }
         .starter-tab { flex: 1; padding: 9px 12px; border: none; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 0.88rem; border-radius: 9px; cursor: pointer; transition: background .15s, color .15s; }
         .starter-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .starter-search { width: 100%; padding: 11px 14px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface-2); color: var(--text); font-size: 0.92rem; font-family: inherit; outline: none; box-sizing: border-box; }
+        .starter-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.15); }
         html[data-theme="dark"] .starter-addedtag { background: rgba(52,199,89,0.2); color: #4ade80; }
         .uni-card-name { font-size: 1.02rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .uni-card-nameko { font-size: 0.85rem; font-weight: 500; color: var(--text-faint); }
@@ -4086,184 +4088,193 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
         // ===== Starter list: one-click add popular US universities (values are approximate — verify after adding) =====
         const STARTER_UNIS = [
-            // ===== National Universities (US News 근사 순위, 수치는 참고용) =====
-            { cat: 'national', nameEn: 'Princeton University', nameKo: '프린스턴', location: 'Princeton, NJ', ranking: '#1', acceptanceRate: '4%', avgSat: '1520', tuition: '$59,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'SCEA: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'MIT', nameKo: 'MIT', location: 'Cambridge, MA', ranking: '#2', acceptanceRate: '4%', avgSat: '1540', tuition: '$60,000', type: 'Private', testPolicy: '필수', deadline: 'EA: 11/1, RD: 1/4', commonApp: 'No', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Harvard University', nameKo: '하버드', location: 'Cambridge, MA', ranking: '#3', acceptanceRate: '3%', avgSat: '1520', tuition: '$59,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'REA: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Stanford University', nameKo: '스탠퍼드', location: 'Stanford, CA', ranking: '#3', acceptanceRate: '4%', avgSat: '1520', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'REA: 11/1, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Yale University', nameKo: '예일', location: 'New Haven, CT', ranking: '#5', acceptanceRate: '5%', avgSat: '1520', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'SCEA: 11/1, RD: 1/2', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'California Institute of Technology', nameKo: '칼텍', location: 'Pasadena, CA', ranking: '#7', acceptanceRate: '3%', avgSat: '1560', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Blind', deadline: 'EA: 11/1, RD: 1/3', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Duke University', nameKo: '듀크', location: 'Durham, NC', ranking: '#7', acceptanceRate: '6%', avgSat: '1520', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/2', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Johns Hopkins University', nameKo: '존스홉킨스', location: 'Baltimore, MD', ranking: '#7', acceptanceRate: '7%', avgSat: '1530', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/2', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Northwestern University', nameKo: '노스웨스턴', location: 'Evanston, IL', ranking: '#9', acceptanceRate: '7%', avgSat: '1510', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/2', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Pennsylvania', nameKo: '펜실베이니아', location: 'Philadelphia, PA', ranking: '#10', acceptanceRate: '6%', avgSat: '1520', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Cornell University', nameKo: '코넬', location: 'Ithaca, NY', ranking: '#12', acceptanceRate: '7%', avgSat: '1500', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/2', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Chicago', nameKo: '시카고', location: 'Chicago, IL', ranking: '#12', acceptanceRate: '5%', avgSat: '1540', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1/EA: 11/1, RD: 1/2', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Brown University', nameKo: '브라운', location: 'Providence, RI', ranking: '#13', acceptanceRate: '5%', avgSat: '1520', tuition: '$68,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/3', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Columbia University', nameKo: '컬럼비아', location: 'New York, NY', ranking: '#12', acceptanceRate: '4%', avgSat: '1530', tuition: '$68,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Dartmouth College', nameKo: '다트머스', location: 'Hanover, NH', ranking: '#15', acceptanceRate: '6%', avgSat: '1500', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/3', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of California, Los Angeles', nameKo: 'UCLA', location: 'Los Angeles, CA', ranking: '#15', acceptanceRate: '9%', avgSat: '1430', tuition: '$47,000', type: 'Public', testPolicy: 'Test-Blind', deadline: 'RD: 11/30', commonApp: 'No' },
-            { cat: 'national', nameEn: 'University of California, Berkeley', nameKo: 'UC버클리', location: 'Berkeley, CA', ranking: '#15', acceptanceRate: '11%', avgSat: '1430', tuition: '$49,000', type: 'Public', testPolicy: 'Test-Blind', deadline: 'RD: 11/30', commonApp: 'No' },
-            { cat: 'national', nameEn: 'Rice University', nameKo: '라이스', location: 'Houston, TX', ranking: '#17', acceptanceRate: '9%', avgSat: '1530', tuition: '$58,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/4', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Notre Dame', nameKo: '노트르담', location: 'Notre Dame, IN', ranking: '#18', acceptanceRate: '13%', avgSat: '1490', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'REA: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Vanderbilt University', nameKo: '밴더빌트', location: 'Nashville, TN', ranking: '#18', acceptanceRate: '7%', avgSat: '1520', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Carnegie Mellon University', nameKo: '카네기멜론', location: 'Pittsburgh, PA', ranking: '#21', acceptanceRate: '11%', avgSat: '1520', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/3', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Michigan', nameKo: '미시간', location: 'Ann Arbor, MI', ranking: '#21', acceptanceRate: '18%', avgSat: '1440', tuition: '$58,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 2/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Emory University', nameKo: '에모리', location: 'Atlanta, GA', ranking: '#24', acceptanceRate: '13%', avgSat: '1480', tuition: '$60,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Georgetown University', nameKo: '조지타운', location: 'Washington, DC', ranking: '#22', acceptanceRate: '12%', avgSat: '1480', tuition: '$64,000', type: 'Private', testPolicy: '필수', deadline: 'REA: 11/1, RD: 1/10', commonApp: 'No', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Virginia', nameKo: '버지니아', location: 'Charlottesville, VA', ranking: '#24', acceptanceRate: '17%', avgSat: '1440', tuition: '$56,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/5', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Washington University in St. Louis', nameKo: '워싱턴대(WashU)', location: 'St. Louis, MO', ranking: '#24', acceptanceRate: '12%', avgSat: '1530', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/2', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of North Carolina at Chapel Hill', nameKo: 'UNC 채플힐', location: 'Chapel Hill, NC', ranking: '#22', acceptanceRate: '19%', avgSat: '1400', tuition: '$37,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 10/15, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Southern California', nameKo: 'USC', location: 'Los Angeles, CA', ranking: '#28', acceptanceRate: '12%', avgSat: '1450', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of California, San Diego', nameKo: 'UC샌디에이고', location: 'La Jolla, CA', ranking: '#28', acceptanceRate: '25%', avgSat: '1370', tuition: '$46,000', type: 'Public', testPolicy: 'Test-Blind', deadline: 'RD: 11/30', commonApp: 'No' },
-            { cat: 'national', nameEn: 'New York University', nameKo: '뉴욕대(NYU)', location: 'New York, NY', ranking: '#30', acceptanceRate: '12%', avgSat: '1500', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Florida', nameKo: '플로리다', location: 'Gainesville, FL', ranking: '#28', acceptanceRate: '23%', avgSat: '1370', tuition: '$28,000', type: 'Public', testPolicy: '필수', deadline: 'RD: 11/1', commonApp: 'No' },
-            { cat: 'national', nameEn: 'University of Texas at Austin', nameKo: '텍사스 오스틴', location: 'Austin, TX', ranking: '#30', acceptanceRate: '31%', avgSat: '1370', tuition: '$40,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 12/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Georgia Institute of Technology', nameKo: '조지아텍', location: 'Atlanta, GA', ranking: '#33', acceptanceRate: '16%', avgSat: '1450', tuition: '$32,000', type: 'Public', testPolicy: '필수', deadline: 'EA1: 10/15, RD: 1/4', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of California, Davis', nameKo: 'UC데이비스', location: 'Davis, CA', ranking: '#28', acceptanceRate: '37%', avgSat: '1280', tuition: '$46,000', type: 'Public', testPolicy: 'Test-Blind', deadline: 'RD: 11/30', commonApp: 'No' },
-            { cat: 'national', nameEn: 'University of California, Irvine', nameKo: 'UC어바인', location: 'Irvine, CA', ranking: '#33', acceptanceRate: '21%', avgSat: '1310', tuition: '$46,000', type: 'Public', testPolicy: 'Test-Blind', deadline: 'RD: 11/30', commonApp: 'No' },
-            { cat: 'national', nameEn: 'University of Illinois Urbana-Champaign', nameKo: '일리노이 UIUC', location: 'Champaign, IL', ranking: '#35', acceptanceRate: '45%', avgSat: '1450', tuition: '$36,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 1/5', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Wisconsin-Madison', nameKo: '위스콘신', location: 'Madison, WI', ranking: '#35', acceptanceRate: '49%', avgSat: '1400', tuition: '$41,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 2/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Boston College', nameKo: '보스턴칼리지', location: 'Chestnut Hill, MA', ranking: '#39', acceptanceRate: '15%', avgSat: '1460', tuition: '$67,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Tufts University', nameKo: '터프츠', location: 'Medford, MA', ranking: '#40', acceptanceRate: '10%', avgSat: '1490', tuition: '$68,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/4', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of California, Santa Barbara', nameKo: 'UC샌타바버라', location: 'Santa Barbara, CA', ranking: '#39', acceptanceRate: '26%', avgSat: '1360', tuition: '$45,000', type: 'Public', testPolicy: 'Test-Blind', deadline: 'RD: 11/30', commonApp: 'No' },
-            { cat: 'national', nameEn: 'University of Rochester', nameKo: '로체스터', location: 'Rochester, NY', ranking: '#47', acceptanceRate: '36%', avgSat: '1450', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Boston University', nameKo: '보스턴대(BU)', location: 'Boston, MA', ranking: '#43', acceptanceRate: '14%', avgSat: '1450', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/4', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Maryland, College Park', nameKo: '메릴랜드', location: 'College Park, MD', ranking: '#46', acceptanceRate: '45%', avgSat: '1420', tuition: '$40,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Case Western Reserve University', nameKo: '케이스웨스턴', location: 'Cleveland, OH', ranking: '#53', acceptanceRate: '30%', avgSat: '1480', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Wake Forest University', nameKo: '웨이크포레스트', location: 'Winston-Salem, NC', ranking: '#47', acceptanceRate: '21%', avgSat: '1400', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Northeastern University', nameKo: '노스이스턴', location: 'Boston, MA', ranking: '#53', acceptanceRate: '7%', avgSat: '1480', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Lehigh University', nameKo: '리하이', location: 'Bethlehem, PA', ranking: '#47', acceptanceRate: '29%', avgSat: '1400', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Purdue University', nameKo: '퍼듀', location: 'West Lafayette, IN', ranking: '#43', acceptanceRate: '50%', avgSat: '1330', tuition: '$28,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Georgia', nameKo: '조지아', location: 'Athens, GA', ranking: '#47', acceptanceRate: '40%', avgSat: '1360', tuition: '$31,000', type: 'Public', testPolicy: '필수', deadline: 'EA: 10/15, RD: 1/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Washington', nameKo: '워싱턴대(UW)', location: 'Seattle, WA', ranking: '#40', acceptanceRate: '48%', avgSat: '1350', tuition: '$40,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 11/15', commonApp: 'No' },
-            { cat: 'national', nameEn: 'Texas A&M University', nameKo: '텍사스 A&M', location: 'College Station, TX', ranking: '#47', acceptanceRate: '63%', avgSat: '1300', tuition: '$40,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 12/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Miami', nameKo: '마이애미', location: 'Coral Gables, FL', ranking: '#67', acceptanceRate: '19%', avgSat: '1400', tuition: '$59,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Ohio State University', nameKo: '오하이오 주립', location: 'Columbus, OH', ranking: '#43', acceptanceRate: '53%', avgSat: '1370', tuition: '$36,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 2/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Minnesota Twin Cities', nameKo: '미네소타', location: 'Minneapolis, MN', ranking: '#53', acceptanceRate: '73%', avgSat: '1370', tuition: '$35,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 1/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Virginia Tech', nameKo: '버지니아텍', location: 'Blacksburg, VA', ranking: '#47', acceptanceRate: '57%', avgSat: '1300', tuition: '$34,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Florida State University', nameKo: '플로리다 주립', location: 'Tallahassee, FL', ranking: '#53', acceptanceRate: '25%', avgSat: '1320', tuition: '$21,000', type: 'Public', testPolicy: '필수', deadline: 'RD: 3/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'William & Mary', nameKo: '윌리엄앤메리', location: 'Williamsburg, VA', ranking: '#53', acceptanceRate: '33%', avgSat: '1440', tuition: '$47,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Brandeis University', nameKo: '브랜다이스', location: 'Waltham, MA', ranking: '#63', acceptanceRate: '35%', avgSat: '1440', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Rensselaer Polytechnic Institute', nameKo: 'RPI', location: 'Troy, NY', ranking: '#67', acceptanceRate: '65%', avgSat: '1420', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Connecticut', nameKo: '코네티컷', location: 'Storrs, CT', ranking: '#58', acceptanceRate: '54%', avgSat: '1300', tuition: '$43,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Rutgers University-New Brunswick', nameKo: '럿거스', location: 'New Brunswick, NJ', ranking: '#40', acceptanceRate: '66%', avgSat: '1350', tuition: '$33,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 12/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Massachusetts Amherst', nameKo: 'UMass 애머스트', location: 'Amherst, MA', ranking: '#67', acceptanceRate: '58%', avgSat: '1330', tuition: '$37,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Syracuse University', nameKo: '시러큐스', location: 'Syracuse, NY', ranking: '#67', acceptanceRate: '52%', avgSat: '1300', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Pepperdine University', nameKo: '페퍼다인', location: 'Malibu, CA', ranking: '#76', acceptanceRate: '49%', avgSat: '1360', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Pittsburgh', nameKo: '피츠버그', location: 'Pittsburgh, PA', ranking: '#67', acceptanceRate: '49%', avgSat: '1360', tuition: '$38,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'Rolling', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Indiana University Bloomington', nameKo: '인디애나', location: 'Bloomington, IN', ranking: '#76', acceptanceRate: '82%', avgSat: '1270', tuition: '$39,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 2/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Michigan State University', nameKo: '미시간 주립', location: 'East Lansing, MI', ranking: '#76', acceptanceRate: '88%', avgSat: '1230', tuition: '$42,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 2/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Stevens Institute of Technology', nameKo: '스티븐스공대', location: 'Hoboken, NJ', ranking: '#76', acceptanceRate: '46%', avgSat: '1420', tuition: '$60,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Tulane University', nameKo: '툴레인', location: 'New Orleans, LA', ranking: '#73', acceptanceRate: '11%', avgSat: '1450', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of California, Santa Cruz', nameKo: 'UC샌타크루즈', location: 'Santa Cruz, CA', ranking: '#82', acceptanceRate: '47%', avgSat: '1280', tuition: '$46,000', type: 'Public', testPolicy: 'Test-Blind', deadline: 'RD: 11/30', commonApp: 'No' },
-            { cat: 'national', nameEn: 'University of California, Riverside', nameKo: 'UC리버사이드', location: 'Riverside, CA', ranking: '#76', acceptanceRate: '69%', avgSat: '1200', tuition: '$45,000', type: 'Public', testPolicy: 'Test-Blind', deadline: 'RD: 11/30', commonApp: 'No' },
-            { cat: 'national', nameEn: 'Villanova University', nameKo: '빌라노바', location: 'Villanova, PA', ranking: '#67', acceptanceRate: '25%', avgSat: '1440', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Southern Methodist University', nameKo: 'SMU', location: 'Dallas, TX', ranking: '#89', acceptanceRate: '52%', avgSat: '1390', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Colorado Boulder', nameKo: '콜로라도 볼더', location: 'Boulder, CO', ranking: '#105', acceptanceRate: '80%', avgSat: '1250', tuition: '$41,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/15, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Fordham University', nameKo: '포덤', location: 'New York, NY', ranking: '#89', acceptanceRate: '54%', avgSat: '1370', tuition: '$60,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Baylor University', nameKo: '베일러', location: 'Waco, TX', ranking: '#93', acceptanceRate: '46%', avgSat: '1300', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'RD: 11/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Arizona', nameKo: '애리조나', location: 'Tucson, AZ', ranking: '#105', acceptanceRate: '87%', avgSat: '1230', tuition: '$39,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'Rolling', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'American University', nameKo: '아메리칸', location: 'Washington, DC', ranking: '#105', acceptanceRate: '65%', avgSat: '1300', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Clemson University', nameKo: '클렘슨', location: 'Clemson, SC', ranking: '#86', acceptanceRate: '43%', avgSat: '1320', tuition: '$39,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 12/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Worcester Polytechnic Institute', nameKo: 'WPI', location: 'Worcester, MA', ranking: '#82', acceptanceRate: '58%', avgSat: '1400', tuition: '$60,000', type: 'Private', testPolicy: 'Test-Blind', deadline: 'ED1: 11/1, RD: 2/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Delaware', nameKo: '델라웨어', location: 'Newark, DE', ranking: '#89', acceptanceRate: '66%', avgSat: '1250', tuition: '$38,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Gonzaga University', nameKo: '곤자가', location: 'Spokane, WA', ranking: '#105', acceptanceRate: '77%', avgSat: '1290', tuition: '$52,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'RD: 2/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Texas Christian University', nameKo: 'TCU', location: 'Fort Worth, TX', ranking: '#105', acceptanceRate: '48%', avgSat: '1290', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 2/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'North Carolina State University', nameKo: 'NC 주립', location: 'Raleigh, NC', ranking: '#60', acceptanceRate: '40%', avgSat: '1340', tuition: '$30,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 10/15, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Iowa', nameKo: '아이오와', location: 'Iowa City, IA', ranking: '#93', acceptanceRate: '86%', avgSat: '1250', tuition: '$32,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'Rolling', commonApp: 'No' },
-            { cat: 'national', nameEn: 'Marquette University', nameKo: '마켓', location: 'Milwaukee, WI', ranking: '#89', acceptanceRate: '89%', avgSat: '1250', tuition: '$48,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'Rolling', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Vermont', nameKo: '버몬트', location: 'Burlington, VT', ranking: '#105', acceptanceRate: '68%', avgSat: '1290', tuition: '$44,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Loyola Marymount University', nameKo: 'LMU', location: 'Los Angeles, CA', ranking: '#105', acceptanceRate: '44%', avgSat: '1330', tuition: '$57,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Auburn University', nameKo: '오번', location: 'Auburn, AL', ranking: '#93', acceptanceRate: '44%', avgSat: '1270', tuition: '$33,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 2/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Denver', nameKo: '덴버', location: 'Denver, CO', ranking: '#105', acceptanceRate: '78%', avgSat: '1290', tuition: '$58,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of San Diego', nameKo: '샌디에이고대', location: 'San Diego, CA', ranking: '#105', acceptanceRate: '53%', avgSat: '1300', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Drexel University', nameKo: '드렉셀', location: 'Philadelphia, PA', ranking: '#105', acceptanceRate: '80%', avgSat: '1290', tuition: '$60,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'University of Tennessee', nameKo: '테네시', location: 'Knoxville, TN', ranking: '#115', acceptanceRate: '68%', avgSat: '1250', tuition: '$33,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 12/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Oregon', nameKo: '오리건', location: 'Eugene, OR', ranking: '#98', acceptanceRate: '86%', avgSat: '1210', tuition: '$41,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of South Carolina', nameKo: '사우스캐롤라이나', location: 'Columbia, SC', ranking: '#115', acceptanceRate: '64%', avgSat: '1250', tuition: '$34,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 12/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Colorado School of Mines', nameKo: '콜로라도 광산대', location: 'Golden, CO', ranking: '#82', acceptanceRate: '60%', avgSat: '1400', tuition: '$44,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 1/15', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Kansas', nameKo: '캔자스', location: 'Lawrence, KS', ranking: '#115', acceptanceRate: '88%', avgSat: '1220', tuition: '$28,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'Rolling', commonApp: 'No' },
-            { cat: 'national', nameEn: 'Illinois Institute of Technology', nameKo: '일리노이공대', location: 'Chicago, IL', ranking: '#105', acceptanceRate: '60%', avgSat: '1350', tuition: '$52,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'RD: 12/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Arizona State University', nameKo: '애리조나 주립', location: 'Tempe, AZ', ranking: '#105', acceptanceRate: '90%', avgSat: '1230', tuition: '$32,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'Rolling', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'University of Utah', nameKo: '유타', location: 'Salt Lake City, UT', ranking: '#115', acceptanceRate: '89%', avgSat: '1250', tuition: '$30,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 12/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Miami University (Ohio)', nameKo: '마이애미(오하이오)', location: 'Oxford, OH', ranking: '#105', acceptanceRate: '85%', avgSat: '1280', tuition: '$37,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'EA: 11/1, RD: 2/1', commonApp: 'Yes' },
-            { cat: 'national', nameEn: 'Howard University', nameKo: '하워드', location: 'Washington, DC', ranking: '#86', acceptanceRate: '35%', avgSat: '1210', tuition: '$32,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 2/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Yeshiva University', nameKo: '예시바', location: 'New York, NY', ranking: '#98', acceptanceRate: '62%', avgSat: '1320', tuition: '$49,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'RD: 2/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'national', nameEn: 'Iowa State University', nameKo: '아이오와 주립', location: 'Ames, IA', ranking: '#115', acceptanceRate: '90%', avgSat: '1200', tuition: '$26,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'Rolling', commonApp: 'No' },
-            { cat: 'national', nameEn: 'University of Alabama', nameKo: '앨라배마', location: 'Tuscaloosa, AL', ranking: '#137', acceptanceRate: '80%', avgSat: '1230', tuition: '$32,000', type: 'Public', testPolicy: 'Test-Optional', deadline: 'RD: 2/1', commonApp: 'No' },
-
-            // ===== Liberal Arts Colleges (US News LAC 근사 순위, 수치는 참고용) =====
-            { cat: 'lac', nameEn: 'Williams College', nameKo: '윌리엄스', location: 'Williamstown, MA', ranking: 'LAC #1', acceptanceRate: '9%', avgSat: '1490', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/15, RD: 1/8', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Amherst College', nameKo: '애머스트', location: 'Amherst, MA', ranking: 'LAC #2', acceptanceRate: '9%', avgSat: '1490', tuition: '$67,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Swarthmore College', nameKo: '스와스모어', location: 'Swarthmore, PA', ranking: 'LAC #3', acceptanceRate: '7%', avgSat: '1490', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Pomona College', nameKo: '포모나', location: 'Claremont, CA', ranking: 'LAC #4', acceptanceRate: '7%', avgSat: '1490', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/8', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Wellesley College', nameKo: '웰즐리', location: 'Wellesley, MA', ranking: 'LAC #4', acceptanceRate: '13%', avgSat: '1450', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/8', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Bowdoin College', nameKo: '보든', location: 'Brunswick, ME', ranking: 'LAC #6', acceptanceRate: '9%', avgSat: '1470', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Carleton College', nameKo: '칼턴', location: 'Northfield, MN', ranking: 'LAC #6', acceptanceRate: '17%', avgSat: '1450', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Claremont McKenna College', nameKo: 'CMC', location: 'Claremont, CA', ranking: 'LAC #8', acceptanceRate: '10%', avgSat: '1470', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/10', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Middlebury College', nameKo: '미들베리', location: 'Middlebury, VT', ranking: 'LAC #9', acceptanceRate: '13%', avgSat: '1440', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/3', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Haverford College', nameKo: '해버포드', location: 'Haverford, PA', ranking: 'LAC #11', acceptanceRate: '14%', avgSat: '1450', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Grinnell College', nameKo: '그리넬', location: 'Grinnell, IA', ranking: 'LAC #11', acceptanceRate: '11%', avgSat: '1440', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Vassar College', nameKo: '바사', location: 'Poughkeepsie, NY', ranking: 'LAC #13', acceptanceRate: '19%', avgSat: '1440', tuition: '$67,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Hamilton College', nameKo: '해밀턴', location: 'Clinton, NY', ranking: 'LAC #13', acceptanceRate: '12%', avgSat: '1450', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/3', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Colby College', nameKo: '콜비', location: 'Waterville, ME', ranking: 'LAC #15', acceptanceRate: '8%', avgSat: '1450', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Davidson College', nameKo: '데이비슨', location: 'Davidson, NC', ranking: 'LAC #16', acceptanceRate: '17%', avgSat: '1420', tuition: '$60,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/2', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Smith College', nameKo: '스미스', location: 'Northampton, MA', ranking: 'LAC #16', acceptanceRate: '23%', avgSat: '1420', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Wesleyan University', nameKo: '웨슬리언', location: 'Middletown, CT', ranking: 'LAC #18', acceptanceRate: '14%', avgSat: '1450', tuition: '$67,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Colgate University', nameKo: '콜게이트', location: 'Hamilton, NY', ranking: 'LAC #18', acceptanceRate: '12%', avgSat: '1440', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Barnard College', nameKo: '바너드', location: 'New York, NY', ranking: 'LAC #18', acceptanceRate: '9%', avgSat: '1450', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Harvey Mudd College', nameKo: '하비머드', location: 'Claremont, CA', ranking: 'LAC #21', acceptanceRate: '10%', avgSat: '1530', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/5', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Bates College', nameKo: '베이츠', location: 'Lewiston, ME', ranking: 'LAC #21', acceptanceRate: '14%', avgSat: '1420', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Colorado College', nameKo: '콜로라도 칼리지', location: 'Colorado Springs, CO', ranking: 'LAC #23', acceptanceRate: '14%', avgSat: '1400', tuition: '$67,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Macalester College', nameKo: '매칼레스터', location: 'St. Paul, MN', ranking: 'LAC #23', acceptanceRate: '30%', avgSat: '1400', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Kenyon College', nameKo: '케니언', location: 'Gambier, OH', ranking: 'LAC #25', acceptanceRate: '34%', avgSat: '1390', tuition: '$68,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Scripps College', nameKo: '스크립스', location: 'Claremont, CA', ranking: 'LAC #25', acceptanceRate: '30%', avgSat: '1400', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Bryn Mawr College', nameKo: '브린모어', location: 'Bryn Mawr, PA', ranking: 'LAC #27', acceptanceRate: '33%', avgSat: '1400', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Pitzer College', nameKo: '피처', location: 'Claremont, CA', ranking: 'LAC #27', acceptanceRate: '17%', avgSat: '1370', tuition: '$64,000', type: 'Private', testPolicy: 'Test-Blind', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'University of Richmond', nameKo: '리치먼드', location: 'Richmond, VA', ranking: 'LAC #27', acceptanceRate: '25%', avgSat: '1420', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Berea College', nameKo: '베레아', location: 'Berea, KY', ranking: 'LAC #30', acceptanceRate: '32%', avgSat: '1150', tuition: '$0 (전액지원)', type: 'Private', testPolicy: 'Test-Optional', deadline: 'RD: 1/30', commonApp: 'No', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Soka University of America', nameKo: '소카', location: 'Aliso Viejo, CA', ranking: 'LAC #30', acceptanceRate: '43%', avgSat: '1250', tuition: '$36,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Franklin & Marshall College', nameKo: '프랭클린앤마셜', location: 'Lancaster, PA', ranking: 'LAC #32', acceptanceRate: '32%', avgSat: '1380', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Mount Holyoke College', nameKo: '마운트홀리요크', location: 'South Hadley, MA', ranking: 'LAC #32', acceptanceRate: '38%', avgSat: '1400', tuition: '$61,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Bucknell University', nameKo: '버크넬', location: 'Lewisburg, PA', ranking: 'LAC #32', acceptanceRate: '33%', avgSat: '1370', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Lafayette College', nameKo: '라파예트', location: 'Easton, PA', ranking: 'LAC #35', acceptanceRate: '30%', avgSat: '1370', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Occidental College', nameKo: '옥시덴탈', location: 'Los Angeles, CA', ranking: 'LAC #35', acceptanceRate: '36%', avgSat: '1360', tuition: '$63,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/10', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Skidmore College', nameKo: '스키드모어', location: 'Saratoga Springs, NY', ranking: 'LAC #38', acceptanceRate: '27%', avgSat: '1330', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Trinity College', nameKo: '트리니티', location: 'Hartford, CT', ranking: 'LAC #38', acceptanceRate: '30%', avgSat: '1360', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Whitman College', nameKo: '휘트먼', location: 'Walla Walla, WA', ranking: 'LAC #38', acceptanceRate: '56%', avgSat: '1370', tuition: '$62,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Dickinson College', nameKo: '디킨슨', location: 'Carlisle, PA', ranking: 'LAC #41', acceptanceRate: '40%', avgSat: '1340', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'DePauw University', nameKo: '드포', location: 'Greencastle, IN', ranking: 'LAC #44', acceptanceRate: '62%', avgSat: '1250', tuition: '$59,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 2/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Union College', nameKo: '유니언', location: 'Schenectady, NY', ranking: 'LAC #44', acceptanceRate: '43%', avgSat: '1350', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Gettysburg College', nameKo: '게티스버그', location: 'Gettysburg, PA', ranking: 'LAC #44', acceptanceRate: '52%', avgSat: '1320', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Denison University', nameKo: '데니슨', location: 'Granville, OH', ranking: 'LAC #44', acceptanceRate: '29%', avgSat: '1340', tuition: '$65,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Oberlin College', nameKo: '오벌린', location: 'Oberlin, OH', ranking: 'LAC #37', acceptanceRate: '35%', avgSat: '1420', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Connecticut College', nameKo: '코네티컷 칼리지', location: 'New London, CT', ranking: 'LAC #44', acceptanceRate: '38%', avgSat: '1340', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Furman University', nameKo: '퍼먼', location: 'Greenville, SC', ranking: 'LAC #44', acceptanceRate: '61%', avgSat: '1300', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Sewanee: The University of the South', nameKo: '수와니', location: 'Sewanee, TN', ranking: 'LAC #44', acceptanceRate: '58%', avgSat: '1290', tuition: '$54,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Rhodes College', nameKo: '로즈', location: 'Memphis, TN', ranking: 'LAC #54', acceptanceRate: '46%', avgSat: '1320', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Reed College', nameKo: '리드', location: 'Portland, OR', ranking: 'LAC #54', acceptanceRate: '31%', avgSat: '1430', tuition: '$66,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'St. Olaf College', nameKo: '세인트올라프', location: 'Northfield, MN', ranking: 'LAC #54', acceptanceRate: '48%', avgSat: '1330', tuition: '$55,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Wheaton College (IL)', nameKo: '휘튼', location: 'Wheaton, IL', ranking: 'LAC #54', acceptanceRate: '83%', avgSat: '1330', tuition: '$44,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/10', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Lawrence University', nameKo: '로렌스', location: 'Appleton, WI', ranking: 'LAC #54', acceptanceRate: '64%', avgSat: '1330', tuition: '$59,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED1: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Kalamazoo College', nameKo: '칼라마주', location: 'Kalamazoo, MI', ranking: 'LAC #60', acceptanceRate: '76%', avgSat: '1300', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Spelman College', nameKo: '스펠먼', location: 'Atlanta, GA', ranking: 'LAC #39', acceptanceRate: '39%', avgSat: '1170', tuition: '$30,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 2/1', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Agnes Scott College', nameKo: '아그네스 스콧', location: 'Decatur, GA', ranking: 'LAC #60', acceptanceRate: '65%', avgSat: '1230', tuition: '$47,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Beloit College', nameKo: '벨로이트', location: 'Beloit, WI', ranking: 'LAC #64', acceptanceRate: '62%', avgSat: '1280', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'College of Wooster', nameKo: '우스터', location: 'Wooster, OH', ranking: 'LAC #64', acceptanceRate: '57%', avgSat: '1280', tuition: '$60,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 2/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Earlham College', nameKo: '얼햄', location: 'Richmond, IN', ranking: 'LAC #64', acceptanceRate: '68%', avgSat: '1250', tuition: '$56,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Hillsdale College', nameKo: '힐스데일', location: 'Hillsdale, MI', ranking: 'LAC #54', acceptanceRate: '36%', avgSat: '1350', tuition: '$31,000', type: 'Private', testPolicy: '필수', deadline: 'RD: 1/15', commonApp: 'No', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Centre College', nameKo: '센터', location: 'Danville, KY', ranking: 'LAC #54', acceptanceRate: '73%', avgSat: '1250', tuition: '$52,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Wabash College', nameKo: '워바시', location: 'Crawfordsville, IN', ranking: 'LAC #60', acceptanceRate: '65%', avgSat: '1200', tuition: '$50,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/15, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Willamette University', nameKo: '윌래밋', location: 'Salem, OR', ranking: 'LAC #64', acceptanceRate: '80%', avgSat: '1280', tuition: '$59,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'ED: 11/1, RD: 1/15', commonApp: 'Yes', finAid: { css: true } },
-            { cat: 'lac', nameEn: 'Hope College', nameKo: '호프', location: 'Holland, MI', ranking: 'LAC #64', acceptanceRate: '84%', avgSat: '1250', tuition: '$40,000', type: 'Private', testPolicy: 'Test-Optional', deadline: 'RD: Rolling', commonApp: 'Yes', finAid: { css: true } },
+            // ===== National Universities (US News 근사 순위) =====
+            { cat: 'national', nameEn: 'Princeton University', nameKo: '프린스턴', location: 'Princeton, NJ', ranking: '#1', type: 'Private' },
+            { cat: 'national', nameEn: 'MIT', nameKo: 'MIT', location: 'Cambridge, MA', ranking: '#2', type: 'Private' },
+            { cat: 'national', nameEn: 'Harvard University', nameKo: '하버드', location: 'Cambridge, MA', ranking: '#3', type: 'Private' },
+            { cat: 'national', nameEn: 'Stanford University', nameKo: '스탠퍼드', location: 'Stanford, CA', ranking: '#3', type: 'Private' },
+            { cat: 'national', nameEn: 'Yale University', nameKo: '예일', location: 'New Haven, CT', ranking: '#5', type: 'Private' },
+            { cat: 'national', nameEn: 'California Institute of Technology', nameKo: '칼텍', location: 'Pasadena, CA', ranking: '#7', type: 'Private' },
+            { cat: 'national', nameEn: 'Duke University', nameKo: '듀크', location: 'Durham, NC', ranking: '#7', type: 'Private' },
+            { cat: 'national', nameEn: 'Johns Hopkins University', nameKo: '존스홉킨스', location: 'Baltimore, MD', ranking: '#7', type: 'Private' },
+            { cat: 'national', nameEn: 'Northwestern University', nameKo: '노스웨스턴', location: 'Evanston, IL', ranking: '#9', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Pennsylvania', nameKo: '펜실베이니아', location: 'Philadelphia, PA', ranking: '#10', type: 'Private' },
+            { cat: 'national', nameEn: 'Cornell University', nameKo: '코넬', location: 'Ithaca, NY', ranking: '#12', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Chicago', nameKo: '시카고', location: 'Chicago, IL', ranking: '#12', type: 'Private' },
+            { cat: 'national', nameEn: 'Brown University', nameKo: '브라운', location: 'Providence, RI', ranking: '#13', type: 'Private' },
+            { cat: 'national', nameEn: 'Columbia University', nameKo: '컬럼비아', location: 'New York, NY', ranking: '#12', type: 'Private' },
+            { cat: 'national', nameEn: 'Dartmouth College', nameKo: '다트머스', location: 'Hanover, NH', ranking: '#15', type: 'Private' },
+            { cat: 'national', nameEn: 'University of California, Los Angeles', nameKo: 'UCLA', location: 'Los Angeles, CA', ranking: '#15', type: 'Public' },
+            { cat: 'national', nameEn: 'University of California, Berkeley', nameKo: 'UC버클리', location: 'Berkeley, CA', ranking: '#15', type: 'Public' },
+            { cat: 'national', nameEn: 'Rice University', nameKo: '라이스', location: 'Houston, TX', ranking: '#17', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Notre Dame', nameKo: '노트르담', location: 'Notre Dame, IN', ranking: '#18', type: 'Private' },
+            { cat: 'national', nameEn: 'Vanderbilt University', nameKo: '밴더빌트', location: 'Nashville, TN', ranking: '#18', type: 'Private' },
+            { cat: 'national', nameEn: 'Carnegie Mellon University', nameKo: '카네기멜론', location: 'Pittsburgh, PA', ranking: '#21', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Michigan', nameKo: '미시간', location: 'Ann Arbor, MI', ranking: '#21', type: 'Public' },
+            { cat: 'national', nameEn: 'Emory University', nameKo: '에모리', location: 'Atlanta, GA', ranking: '#24', type: 'Private' },
+            { cat: 'national', nameEn: 'Georgetown University', nameKo: '조지타운', location: 'Washington, DC', ranking: '#22', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Virginia', nameKo: '버지니아', location: 'Charlottesville, VA', ranking: '#24', type: 'Public' },
+            { cat: 'national', nameEn: 'Washington University in St. Louis', nameKo: '워싱턴대(WashU)', location: 'St. Louis, MO', ranking: '#24', type: 'Private' },
+            { cat: 'national', nameEn: 'University of North Carolina at Chapel Hill', nameKo: 'UNC 채플힐', location: 'Chapel Hill, NC', ranking: '#22', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Southern California', nameKo: 'USC', location: 'Los Angeles, CA', ranking: '#28', type: 'Private' },
+            { cat: 'national', nameEn: 'University of California, San Diego', nameKo: 'UC샌디에이고', location: 'La Jolla, CA', ranking: '#28', type: 'Public' },
+            { cat: 'national', nameEn: 'New York University', nameKo: '뉴욕대(NYU)', location: 'New York, NY', ranking: '#30', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Florida', nameKo: '플로리다', location: 'Gainesville, FL', ranking: '#28', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Texas at Austin', nameKo: '텍사스 오스틴', location: 'Austin, TX', ranking: '#30', type: 'Public' },
+            { cat: 'national', nameEn: 'Georgia Institute of Technology', nameKo: '조지아텍', location: 'Atlanta, GA', ranking: '#33', type: 'Public' },
+            { cat: 'national', nameEn: 'University of California, Davis', nameKo: 'UC데이비스', location: 'Davis, CA', ranking: '#28', type: 'Public' },
+            { cat: 'national', nameEn: 'University of California, Irvine', nameKo: 'UC어바인', location: 'Irvine, CA', ranking: '#33', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Illinois Urbana-Champaign', nameKo: '일리노이 UIUC', location: 'Champaign, IL', ranking: '#35', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Wisconsin-Madison', nameKo: '위스콘신', location: 'Madison, WI', ranking: '#35', type: 'Public' },
+            { cat: 'national', nameEn: 'Boston College', nameKo: '보스턴칼리지', location: 'Chestnut Hill, MA', ranking: '#39', type: 'Private' },
+            { cat: 'national', nameEn: 'Tufts University', nameKo: '터프츠', location: 'Medford, MA', ranking: '#40', type: 'Private' },
+            { cat: 'national', nameEn: 'University of California, Santa Barbara', nameKo: 'UC샌타바버라', location: 'Santa Barbara, CA', ranking: '#39', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Rochester', nameKo: '로체스터', location: 'Rochester, NY', ranking: '#47', type: 'Private' },
+            { cat: 'national', nameEn: 'Boston University', nameKo: '보스턴대(BU)', location: 'Boston, MA', ranking: '#43', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Maryland, College Park', nameKo: '메릴랜드', location: 'College Park, MD', ranking: '#46', type: 'Public' },
+            { cat: 'national', nameEn: 'Case Western Reserve University', nameKo: '케이스웨스턴', location: 'Cleveland, OH', ranking: '#53', type: 'Private' },
+            { cat: 'national', nameEn: 'Wake Forest University', nameKo: '웨이크포레스트', location: 'Winston-Salem, NC', ranking: '#47', type: 'Private' },
+            { cat: 'national', nameEn: 'Northeastern University', nameKo: '노스이스턴', location: 'Boston, MA', ranking: '#53', type: 'Private' },
+            { cat: 'national', nameEn: 'Lehigh University', nameKo: '리하이', location: 'Bethlehem, PA', ranking: '#47', type: 'Private' },
+            { cat: 'national', nameEn: 'Purdue University', nameKo: '퍼듀', location: 'West Lafayette, IN', ranking: '#43', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Georgia', nameKo: '조지아', location: 'Athens, GA', ranking: '#47', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Washington', nameKo: '워싱턴대(UW)', location: 'Seattle, WA', ranking: '#40', type: 'Public' },
+            { cat: 'national', nameEn: 'Texas A&M University', nameKo: '텍사스 A&M', location: 'College Station, TX', ranking: '#47', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Miami', nameKo: '마이애미', location: 'Coral Gables, FL', ranking: '#67', type: 'Private' },
+            { cat: 'national', nameEn: 'Ohio State University', nameKo: '오하이오 주립', location: 'Columbus, OH', ranking: '#43', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Minnesota Twin Cities', nameKo: '미네소타', location: 'Minneapolis, MN', ranking: '#53', type: 'Public' },
+            { cat: 'national', nameEn: 'Virginia Tech', nameKo: '버지니아텍', location: 'Blacksburg, VA', ranking: '#47', type: 'Public' },
+            { cat: 'national', nameEn: 'Florida State University', nameKo: '플로리다 주립', location: 'Tallahassee, FL', ranking: '#53', type: 'Public' },
+            { cat: 'national', nameEn: 'William & Mary', nameKo: '윌리엄앤메리', location: 'Williamsburg, VA', ranking: '#53', type: 'Public' },
+            { cat: 'national', nameEn: 'Brandeis University', nameKo: '브랜다이스', location: 'Waltham, MA', ranking: '#63', type: 'Private' },
+            { cat: 'national', nameEn: 'Rensselaer Polytechnic Institute', nameKo: 'RPI', location: 'Troy, NY', ranking: '#67', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Connecticut', nameKo: '코네티컷', location: 'Storrs, CT', ranking: '#58', type: 'Public' },
+            { cat: 'national', nameEn: 'Rutgers University-New Brunswick', nameKo: '럿거스', location: 'New Brunswick, NJ', ranking: '#40', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Massachusetts Amherst', nameKo: 'UMass 애머스트', location: 'Amherst, MA', ranking: '#67', type: 'Public' },
+            { cat: 'national', nameEn: 'Syracuse University', nameKo: '시러큐스', location: 'Syracuse, NY', ranking: '#67', type: 'Private' },
+            { cat: 'national', nameEn: 'Pepperdine University', nameKo: '페퍼다인', location: 'Malibu, CA', ranking: '#76', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Pittsburgh', nameKo: '피츠버그', location: 'Pittsburgh, PA', ranking: '#67', type: 'Public' },
+            { cat: 'national', nameEn: 'Indiana University Bloomington', nameKo: '인디애나', location: 'Bloomington, IN', ranking: '#76', type: 'Public' },
+            { cat: 'national', nameEn: 'Michigan State University', nameKo: '미시간 주립', location: 'East Lansing, MI', ranking: '#76', type: 'Public' },
+            { cat: 'national', nameEn: 'Stevens Institute of Technology', nameKo: '스티븐스공대', location: 'Hoboken, NJ', ranking: '#76', type: 'Private' },
+            { cat: 'national', nameEn: 'Tulane University', nameKo: '툴레인', location: 'New Orleans, LA', ranking: '#73', type: 'Private' },
+            { cat: 'national', nameEn: 'University of California, Santa Cruz', nameKo: 'UC샌타크루즈', location: 'Santa Cruz, CA', ranking: '#82', type: 'Public' },
+            { cat: 'national', nameEn: 'University of California, Riverside', nameKo: 'UC리버사이드', location: 'Riverside, CA', ranking: '#76', type: 'Public' },
+            { cat: 'national', nameEn: 'Villanova University', nameKo: '빌라노바', location: 'Villanova, PA', ranking: '#67', type: 'Private' },
+            { cat: 'national', nameEn: 'Southern Methodist University', nameKo: 'SMU', location: 'Dallas, TX', ranking: '#89', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Colorado Boulder', nameKo: '콜로라도 볼더', location: 'Boulder, CO', ranking: '#105', type: 'Public' },
+            { cat: 'national', nameEn: 'Fordham University', nameKo: '포덤', location: 'New York, NY', ranking: '#89', type: 'Private' },
+            { cat: 'national', nameEn: 'Baylor University', nameKo: '베일러', location: 'Waco, TX', ranking: '#93', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Arizona', nameKo: '애리조나', location: 'Tucson, AZ', ranking: '#105', type: 'Public' },
+            { cat: 'national', nameEn: 'American University', nameKo: '아메리칸', location: 'Washington, DC', ranking: '#105', type: 'Private' },
+            { cat: 'national', nameEn: 'Clemson University', nameKo: '클렘슨', location: 'Clemson, SC', ranking: '#86', type: 'Public' },
+            { cat: 'national', nameEn: 'Worcester Polytechnic Institute', nameKo: 'WPI', location: 'Worcester, MA', ranking: '#82', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Delaware', nameKo: '델라웨어', location: 'Newark, DE', ranking: '#89', type: 'Public' },
+            { cat: 'national', nameEn: 'Gonzaga University', nameKo: '곤자가', location: 'Spokane, WA', ranking: '#105', type: 'Private' },
+            { cat: 'national', nameEn: 'Texas Christian University', nameKo: 'TCU', location: 'Fort Worth, TX', ranking: '#105', type: 'Private' },
+            { cat: 'national', nameEn: 'North Carolina State University', nameKo: 'NC 주립', location: 'Raleigh, NC', ranking: '#60', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Iowa', nameKo: '아이오와', location: 'Iowa City, IA', ranking: '#93', type: 'Public' },
+            { cat: 'national', nameEn: 'Marquette University', nameKo: '마켓', location: 'Milwaukee, WI', ranking: '#89', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Vermont', nameKo: '버몬트', location: 'Burlington, VT', ranking: '#105', type: 'Public' },
+            { cat: 'national', nameEn: 'Loyola Marymount University', nameKo: 'LMU', location: 'Los Angeles, CA', ranking: '#105', type: 'Private' },
+            { cat: 'national', nameEn: 'Auburn University', nameKo: '오번', location: 'Auburn, AL', ranking: '#93', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Denver', nameKo: '덴버', location: 'Denver, CO', ranking: '#105', type: 'Private' },
+            { cat: 'national', nameEn: 'University of San Diego', nameKo: '샌디에이고대', location: 'San Diego, CA', ranking: '#105', type: 'Private' },
+            { cat: 'national', nameEn: 'Drexel University', nameKo: '드렉셀', location: 'Philadelphia, PA', ranking: '#105', type: 'Private' },
+            { cat: 'national', nameEn: 'University of Tennessee', nameKo: '테네시', location: 'Knoxville, TN', ranking: '#115', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Oregon', nameKo: '오리건', location: 'Eugene, OR', ranking: '#98', type: 'Public' },
+            { cat: 'national', nameEn: 'University of South Carolina', nameKo: '사우스캐롤라이나', location: 'Columbia, SC', ranking: '#115', type: 'Public' },
+            { cat: 'national', nameEn: 'Colorado School of Mines', nameKo: '콜로라도 광산대', location: 'Golden, CO', ranking: '#82', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Kansas', nameKo: '캔자스', location: 'Lawrence, KS', ranking: '#115', type: 'Public' },
+            { cat: 'national', nameEn: 'Illinois Institute of Technology', nameKo: '일리노이공대', location: 'Chicago, IL', ranking: '#105', type: 'Private' },
+            { cat: 'national', nameEn: 'Arizona State University', nameKo: '애리조나 주립', location: 'Tempe, AZ', ranking: '#105', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Utah', nameKo: '유타', location: 'Salt Lake City, UT', ranking: '#115', type: 'Public' },
+            { cat: 'national', nameEn: 'Miami University (Ohio)', nameKo: '마이애미(오하이오)', location: 'Oxford, OH', ranking: '#105', type: 'Public' },
+            { cat: 'national', nameEn: 'Howard University', nameKo: '하워드', location: 'Washington, DC', ranking: '#86', type: 'Private' },
+            { cat: 'national', nameEn: 'Yeshiva University', nameKo: '예시바', location: 'New York, NY', ranking: '#98', type: 'Private' },
+            { cat: 'national', nameEn: 'Iowa State University', nameKo: '아이오와 주립', location: 'Ames, IA', ranking: '#115', type: 'Public' },
+            { cat: 'national', nameEn: 'University of Alabama', nameKo: '앨라배마', location: 'Tuscaloosa, AL', ranking: '#137', type: 'Public' },
+            // ===== Liberal Arts Colleges (US News LAC 근사 순위) =====
+            { cat: 'lac', nameEn: 'Williams College', nameKo: '윌리엄스', location: 'Williamstown, MA', ranking: 'LAC #1', type: 'Private' },
+            { cat: 'lac', nameEn: 'Amherst College', nameKo: '애머스트', location: 'Amherst, MA', ranking: 'LAC #2', type: 'Private' },
+            { cat: 'lac', nameEn: 'Swarthmore College', nameKo: '스와스모어', location: 'Swarthmore, PA', ranking: 'LAC #3', type: 'Private' },
+            { cat: 'lac', nameEn: 'Pomona College', nameKo: '포모나', location: 'Claremont, CA', ranking: 'LAC #4', type: 'Private' },
+            { cat: 'lac', nameEn: 'Wellesley College', nameKo: '웰즐리', location: 'Wellesley, MA', ranking: 'LAC #4', type: 'Private' },
+            { cat: 'lac', nameEn: 'Bowdoin College', nameKo: '보든', location: 'Brunswick, ME', ranking: 'LAC #6', type: 'Private' },
+            { cat: 'lac', nameEn: 'Carleton College', nameKo: '칼턴', location: 'Northfield, MN', ranking: 'LAC #6', type: 'Private' },
+            { cat: 'lac', nameEn: 'Claremont McKenna College', nameKo: 'CMC', location: 'Claremont, CA', ranking: 'LAC #8', type: 'Private' },
+            { cat: 'lac', nameEn: 'Middlebury College', nameKo: '미들베리', location: 'Middlebury, VT', ranking: 'LAC #9', type: 'Private' },
+            { cat: 'lac', nameEn: 'Haverford College', nameKo: '해버포드', location: 'Haverford, PA', ranking: 'LAC #11', type: 'Private' },
+            { cat: 'lac', nameEn: 'Grinnell College', nameKo: '그리넬', location: 'Grinnell, IA', ranking: 'LAC #11', type: 'Private' },
+            { cat: 'lac', nameEn: 'Vassar College', nameKo: '바사', location: 'Poughkeepsie, NY', ranking: 'LAC #13', type: 'Private' },
+            { cat: 'lac', nameEn: 'Hamilton College', nameKo: '해밀턴', location: 'Clinton, NY', ranking: 'LAC #13', type: 'Private' },
+            { cat: 'lac', nameEn: 'Colby College', nameKo: '콜비', location: 'Waterville, ME', ranking: 'LAC #15', type: 'Private' },
+            { cat: 'lac', nameEn: 'Davidson College', nameKo: '데이비슨', location: 'Davidson, NC', ranking: 'LAC #16', type: 'Private' },
+            { cat: 'lac', nameEn: 'Smith College', nameKo: '스미스', location: 'Northampton, MA', ranking: 'LAC #16', type: 'Private' },
+            { cat: 'lac', nameEn: 'Wesleyan University', nameKo: '웨슬리언', location: 'Middletown, CT', ranking: 'LAC #18', type: 'Private' },
+            { cat: 'lac', nameEn: 'Colgate University', nameKo: '콜게이트', location: 'Hamilton, NY', ranking: 'LAC #18', type: 'Private' },
+            { cat: 'lac', nameEn: 'Barnard College', nameKo: '바너드', location: 'New York, NY', ranking: 'LAC #18', type: 'Private' },
+            { cat: 'lac', nameEn: 'Harvey Mudd College', nameKo: '하비머드', location: 'Claremont, CA', ranking: 'LAC #21', type: 'Private' },
+            { cat: 'lac', nameEn: 'Bates College', nameKo: '베이츠', location: 'Lewiston, ME', ranking: 'LAC #21', type: 'Private' },
+            { cat: 'lac', nameEn: 'Colorado College', nameKo: '콜로라도 칼리지', location: 'Colorado Springs, CO', ranking: 'LAC #23', type: 'Private' },
+            { cat: 'lac', nameEn: 'Macalester College', nameKo: '매칼레스터', location: 'St. Paul, MN', ranking: 'LAC #23', type: 'Private' },
+            { cat: 'lac', nameEn: 'Kenyon College', nameKo: '케니언', location: 'Gambier, OH', ranking: 'LAC #25', type: 'Private' },
+            { cat: 'lac', nameEn: 'Scripps College', nameKo: '스크립스', location: 'Claremont, CA', ranking: 'LAC #25', type: 'Private' },
+            { cat: 'lac', nameEn: 'Bryn Mawr College', nameKo: '브린모어', location: 'Bryn Mawr, PA', ranking: 'LAC #27', type: 'Private' },
+            { cat: 'lac', nameEn: 'Pitzer College', nameKo: '피처', location: 'Claremont, CA', ranking: 'LAC #27', type: 'Private' },
+            { cat: 'lac', nameEn: 'University of Richmond', nameKo: '리치먼드', location: 'Richmond, VA', ranking: 'LAC #27', type: 'Private' },
+            { cat: 'lac', nameEn: 'Berea College', nameKo: '베레아', location: 'Berea, KY', ranking: 'LAC #30', type: 'Private' },
+            { cat: 'lac', nameEn: 'Soka University of America', nameKo: '소카', location: 'Aliso Viejo, CA', ranking: 'LAC #30', type: 'Private' },
+            { cat: 'lac', nameEn: 'Franklin & Marshall College', nameKo: '프랭클린앤마셜', location: 'Lancaster, PA', ranking: 'LAC #32', type: 'Private' },
+            { cat: 'lac', nameEn: 'Mount Holyoke College', nameKo: '마운트홀리요크', location: 'South Hadley, MA', ranking: 'LAC #32', type: 'Private' },
+            { cat: 'lac', nameEn: 'Bucknell University', nameKo: '버크넬', location: 'Lewisburg, PA', ranking: 'LAC #32', type: 'Private' },
+            { cat: 'lac', nameEn: 'Lafayette College', nameKo: '라파예트', location: 'Easton, PA', ranking: 'LAC #35', type: 'Private' },
+            { cat: 'lac', nameEn: 'Occidental College', nameKo: '옥시덴탈', location: 'Los Angeles, CA', ranking: 'LAC #35', type: 'Private' },
+            { cat: 'lac', nameEn: 'Skidmore College', nameKo: '스키드모어', location: 'Saratoga Springs, NY', ranking: 'LAC #38', type: 'Private' },
+            { cat: 'lac', nameEn: 'Trinity College', nameKo: '트리니티', location: 'Hartford, CT', ranking: 'LAC #38', type: 'Private' },
+            { cat: 'lac', nameEn: 'Whitman College', nameKo: '휘트먼', location: 'Walla Walla, WA', ranking: 'LAC #38', type: 'Private' },
+            { cat: 'lac', nameEn: 'Dickinson College', nameKo: '디킨슨', location: 'Carlisle, PA', ranking: 'LAC #41', type: 'Private' },
+            { cat: 'lac', nameEn: 'DePauw University', nameKo: '드포', location: 'Greencastle, IN', ranking: 'LAC #44', type: 'Private' },
+            { cat: 'lac', nameEn: 'Union College', nameKo: '유니언', location: 'Schenectady, NY', ranking: 'LAC #44', type: 'Private' },
+            { cat: 'lac', nameEn: 'Gettysburg College', nameKo: '게티스버그', location: 'Gettysburg, PA', ranking: 'LAC #44', type: 'Private' },
+            { cat: 'lac', nameEn: 'Denison University', nameKo: '데니슨', location: 'Granville, OH', ranking: 'LAC #44', type: 'Private' },
+            { cat: 'lac', nameEn: 'Oberlin College', nameKo: '오벌린', location: 'Oberlin, OH', ranking: 'LAC #37', type: 'Private' },
+            { cat: 'lac', nameEn: 'Connecticut College', nameKo: '코네티컷 칼리지', location: 'New London, CT', ranking: 'LAC #44', type: 'Private' },
+            { cat: 'lac', nameEn: 'Furman University', nameKo: '퍼먼', location: 'Greenville, SC', ranking: 'LAC #44', type: 'Private' },
+            { cat: 'lac', nameEn: 'Sewanee: The University of the South', nameKo: '수와니', location: 'Sewanee, TN', ranking: 'LAC #44', type: 'Private' },
+            { cat: 'lac', nameEn: 'Rhodes College', nameKo: '로즈', location: 'Memphis, TN', ranking: 'LAC #54', type: 'Private' },
+            { cat: 'lac', nameEn: 'Reed College', nameKo: '리드', location: 'Portland, OR', ranking: 'LAC #54', type: 'Private' },
+            { cat: 'lac', nameEn: 'St. Olaf College', nameKo: '세인트올라프', location: 'Northfield, MN', ranking: 'LAC #54', type: 'Private' },
+            { cat: 'lac', nameEn: 'Wheaton College (IL)', nameKo: '휘튼', location: 'Wheaton, IL', ranking: 'LAC #54', type: 'Private' },
+            { cat: 'lac', nameEn: 'Lawrence University', nameKo: '로렌스', location: 'Appleton, WI', ranking: 'LAC #54', type: 'Private' },
+            { cat: 'lac', nameEn: 'Kalamazoo College', nameKo: '칼라마주', location: 'Kalamazoo, MI', ranking: 'LAC #60', type: 'Private' },
+            { cat: 'lac', nameEn: 'Spelman College', nameKo: '스펠먼', location: 'Atlanta, GA', ranking: 'LAC #39', type: 'Private' },
+            { cat: 'lac', nameEn: 'Agnes Scott College', nameKo: '아그네스 스콧', location: 'Decatur, GA', ranking: 'LAC #60', type: 'Private' },
+            { cat: 'lac', nameEn: 'Beloit College', nameKo: '벨로이트', location: 'Beloit, WI', ranking: 'LAC #64', type: 'Private' },
+            { cat: 'lac', nameEn: 'College of Wooster', nameKo: '우스터', location: 'Wooster, OH', ranking: 'LAC #64', type: 'Private' },
+            { cat: 'lac', nameEn: 'Earlham College', nameKo: '얼햄', location: 'Richmond, IN', ranking: 'LAC #64', type: 'Private' },
+            { cat: 'lac', nameEn: 'Hillsdale College', nameKo: '힐스데일', location: 'Hillsdale, MI', ranking: 'LAC #54', type: 'Private' },
+            { cat: 'lac', nameEn: 'Centre College', nameKo: '센터', location: 'Danville, KY', ranking: 'LAC #54', type: 'Private' },
+            { cat: 'lac', nameEn: 'Wabash College', nameKo: '워바시', location: 'Crawfordsville, IN', ranking: 'LAC #60', type: 'Private' },
+            { cat: 'lac', nameEn: 'Willamette University', nameKo: '윌래밋', location: 'Salem, OR', ranking: 'LAC #64', type: 'Private' },
+            { cat: 'lac', nameEn: 'Hope College', nameKo: '호프', location: 'Holland, MI', ranking: 'LAC #64', type: 'Private' },
         ];
         let starterTab = 'national';
-        function setStarterTab(t) { starterTab = t; openStarterModal(); }
+        let starterSearch = '';
         function uniMonogram(nameEn) { return (nameEn || '?').trim().charAt(0).toUpperCase(); }
-        function openStarterModal() {
-            const list = STARTER_UNIS.map((s, i) => ({ s, i })).filter(x => x.s.cat === starterTab);
-            const cards = list.map(({ s, i }) => {
+        function starterTypeLabel(t) { return t === 'Private' ? '사립' : t === 'Public' ? '주립' : (t || ''); }
+        function setStarterTab(t) {
+            starterTab = t;
+            document.querySelectorAll('.starter-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === t));
+            renderStarterGrid();
+        }
+        function onStarterSearch(v) { starterSearch = v; renderStarterGrid(); }
+        function renderStarterGrid() {
+            const grid = document.getElementById('starter-grid'); if (!grid) return;
+            const q = (starterSearch || '').trim().toLowerCase();
+            const list = STARTER_UNIS.map((s, i) => ({ s, i })).filter(x => x.s.cat === starterTab && (!q || (x.s.nameEn + ' ' + (x.s.nameKo || '')).toLowerCase().includes(q)));
+            if (!list.length) { grid.innerHTML = `<p class="rp-dim" style="padding:24px;text-align:center;">"${esc(starterSearch)}" 검색 결과가 없어요.</p>`; return; }
+            grid.innerHTML = list.map(({ s, i }) => {
                 const added = universities.some(u => (u.nameEn || '').toLowerCase() === s.nameEn.toLowerCase());
                 const color = getSignatureColor(s);
                 const btn = added
@@ -4273,47 +4284,53 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div class="starter-mono" style="background:${esc(color)}">${esc(uniMonogram(s.nameEn))}</div>
                     <div class="starter-info">
                         <div class="starter-name">${esc(s.nameEn)}${s.nameKo ? ` <span class="starter-ko">${esc(s.nameKo)}</span>` : ''}${added ? '<span class="starter-addedtag">추가됨</span>' : ''}</div>
-                        <div class="starter-meta">${esc(s.location)} · ${esc(s.ranking)} · 합격률 ${esc(s.acceptanceRate)}</div>
+                        <div class="starter-meta">${esc(s.location)} · ${esc(s.ranking)} · ${esc(starterTypeLabel(s.type))}</div>
                     </div>
                     ${btn}
                 </div>`;
             }).join('');
+        }
+        function openStarterModal() {
             let modal = document.getElementById('starter-modal');
             if (!modal) { modal = document.createElement('div'); modal.id = 'starter-modal'; modal.className = 'modal hidden'; document.body.appendChild(modal); }
             modal.innerHTML = `<div class="modal-content starter-modal-content">
                 <span class="close-button" onclick="closeStarterModal()">×</span>
-                <h2 class="text-2xl font-bold mb-1">🎓 인기 대학 빠른 추가</h2>
-                <p class="text-sm text-gray-500 mb-3">클릭 한 번으로 추가/제거해요. <b>마감·수치는 예시 템플릿</b>이라 추가 후 공식 사이트에서 꼭 확인하세요.</p>
+                <h2 class="text-2xl font-bold mb-1">🎓 대학 찾아 추가하기</h2>
+                <p class="text-sm text-gray-500 mb-3">기본 정보(<b>대학명·위치·US News 랭킹·유형</b>)만 채워드려요. 합격률·마감·에세이 등 나머지는 직접 조사하며 채워보세요 📚</p>
                 <div class="starter-tabs">
-                    <button class="starter-tab ${starterTab === 'national' ? 'active' : ''}" onclick="setStarterTab('national')">🏛️ 종합대학 (National)</button>
-                    <button class="starter-tab ${starterTab === 'lac' ? 'active' : ''}" onclick="setStarterTab('lac')">🎓 리버럴아츠 (LAC)</button>
+                    <button class="starter-tab ${starterTab === 'national' ? 'active' : ''}" data-tab="national" onclick="setStarterTab('national')">🏛️ 종합대학 (National)</button>
+                    <button class="starter-tab ${starterTab === 'lac' ? 'active' : ''}" data-tab="lac" onclick="setStarterTab('lac')">🎓 리버럴아츠 (LAC)</button>
                 </div>
-                <div class="starter-grid">${cards}</div>
+                <input type="text" id="starter-search" class="starter-search" placeholder="🔍 대학 이름 검색 (영문·한글)" value="${esc(starterSearch)}" oninput="onStarterSearch(this.value)">
+                <div class="starter-grid" id="starter-grid"></div>
             </div>`;
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            renderStarterGrid();
+            const si = document.getElementById('starter-search');
+            if (si && starterSearch) { si.focus(); const n = si.value.length; si.setSelectionRange(n, n); }
         }
         function closeStarterModal() { const m = document.getElementById('starter-modal'); if (m) m.classList.add('hidden'); document.body.style.overflow = ''; }
         function addStarterUni(i) {
             const s = STARTER_UNIS[i];
             if (!s) return;
             if (universities.some(u => (u.nameEn || '').toLowerCase() === s.nameEn.toLowerCase())) { toast('이미 추가된 대학이에요.', 'info'); return; }
-            const { cat, ...data } = s; // don't store the starter-only category tag
+            const { cat, ...data } = s; // 기본 정보만 (나머지는 학생이 조사하며 채움)
             universities.push({ ...data, id: generateUniqueId('uni-'), applicationStatus: 'Prospective', pros: [], cons: [] });
             saveUniversities();
             applyFiltersAndSort();
             try { renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); } catch (e) {}
             try { renderUpcomingDeadlines(); renderFavoriteUniversities(); renderProsConsCards(); } catch (e) {}
-            toast(`${s.nameEn} 추가됨 ✓`, 'success');
-            openStarterModal();
+            toast(`${s.nameEn} 추가됨 ✓ 나머지 정보는 '✏️ 수정'에서 직접 채워보세요`, 'success');
+            renderStarterGrid();
         }
         async function removeStarterUni(i) {
             const s = STARTER_UNIS[i];
             if (!s) return;
             const u = universities.find(x => (x.nameEn || '').toLowerCase() === s.nameEn.toLowerCase());
-            if (!u) { openStarterModal(); return; }
+            if (!u) { renderStarterGrid(); return; }
             await deleteUniversity(u.id); // shared confirm + full re-render (keeps linked essays)
-            openStarterModal();
+            renderStarterGrid();
         }
 
         function renderUniversities(dataToRender = universities) {
