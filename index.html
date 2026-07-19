@@ -966,6 +966,35 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .digest-send { background: #0071e3; color: #fff; border: none; border-radius: 9999px; padding: 9px 18px; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
         .digest-send:disabled { opacity: .6; cursor: default; }
         .digest-dismiss { background: transparent; border: none; color: var(--text-faint); font-size: 1.05rem; cursor: pointer; padding: 4px 8px; }
+        /* 파이널 체크리스트 위젯 */
+        .bento-sub { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); margin-left: 6px; }
+        .fcl-top { display: flex; align-items: center; gap: 12px; margin: 4px 0 14px; }
+        .fcl-pct { font-size: 1.1rem; font-weight: 800; color: #0071e3; font-variant-numeric: tabular-nums; }
+        .fcl-bar { flex: 1 1 auto; height: 8px; background: var(--surface-3); border-radius: 9999px; overflow: hidden; }
+        .fcl-bar > i { display: block; height: 100%; border-radius: 9999px; background: #0071e3; transition: width .3s; }
+        .fcl-items { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .fcl-item { display: flex; align-items: center; gap: 10px; padding: 13px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); cursor: pointer; text-align: left; transition: border-color .15s, background .15s; }
+        .fcl-item:hover { border-color: #0071e3; }
+        .fcl-item.done { background: linear-gradient(135deg, #f0fdf4, var(--surface)); border-color: #bbf7d0; }
+        html[data-theme="dark"] .fcl-item.done { background: #0e2417; border-color: #1f5133; }
+        .fcl-box { flex: 0 0 auto; width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 13px; }
+        .fcl-item.done .fcl-box { background: #16a34a; border-color: #16a34a; }
+        .fcl-label { font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+        .fcl-item.done .fcl-label { color: var(--text-muted); }
+        .fcl-allgood { grid-column: 1 / -1; margin-top: 12px; text-align: center; font-size: 0.92rem; font-weight: 700; color: #16a34a; }
+        /* 선생님: 매트릭스 파이널 셀 + 상세 패널 */
+        .tm-final { font-size: 0.76rem; font-weight: 800; padding: 2px 8px; border-radius: 9999px; font-variant-numeric: tabular-nums; }
+        .tm-final-full { background: #dcfce7; color: #15803d; } .tm-final-part { background: #fef3c7; color: #b45309; } .tm-final-none { background: var(--surface-3); color: var(--text-faint); }
+        html[data-theme="dark"] .tm-final-full { background: #0e2417; } html[data-theme="dark"] .tm-final-part { background: #3a2a08; }
+        .sfcl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .sfcl-item { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); }
+        .sfcl-item.done { border-color: #bbf7d0; }
+        html[data-theme="dark"] .sfcl-item.done { border-color: #1f5133; }
+        .sfcl-label { font-size: 0.86rem; font-weight: 600; color: var(--text); }
+        .sfcl-item.done .sfcl-label { color: var(--text-muted); }
+        @media (max-width: 640px) { .sfcl-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 860px) { .fcl-items { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 480px) { .fcl-items { grid-template-columns: 1fr; } }
         /* 네비 검색 버튼 */
         .nav-search-btn { background: none; border: none; font-size: 1.05rem; cursor: pointer; padding: 4px 8px; border-radius: 8px; opacity: .8; }
         .nav-search-btn:hover { opacity: 1; background: rgba(0,0,0,.05); }
@@ -2802,6 +2831,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <div id="student-feedback"></div>
             <div id="digest-banner"></div>
             <div class="dash-grid">
+                <!-- Final checklist (self-certified, full width, top) -->
+                <div class="bento span-4 fcl-bento">
+                    <div class="bento-label">🎯 파이널 체크리스트 <span class="bento-sub">지원 마무리 4단계 — 완료했으면 체크하세요</span></div>
+                    <div id="final-checklist-body"></div>
+                </div>
+
                 <!-- Row 1: quick stats -->
                 <a class="bento" href="#my-essays" onclick="showSection('my-essays')">
                     <div class="bento-label">✍️ 에세이 <span class="bento-arrow">→</span></div>
@@ -6618,8 +6653,51 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             </div>`;
         }
 
+        // ===== 파이널 체크리스트 (학생 자기 확인 · 체크 시 확인 팝업) =====
+        const FINAL_CHECKLIST_ITEMS = [
+            { key: 'mainEssay', icon: '📝', label: '커먼앱 메인 에세이 완성' },
+            { key: 'suppEssays', icon: '🏫', label: '대학별 서플 에세이 완성' },
+            { key: 'commonApp', icon: '📋', label: '커먼앱 지원서 완성' },
+            { key: 'finAid', icon: '💰', label: '재정 지원서 완성' }
+        ];
+        let finalChecklist = {};
+        function loadFinalChecklist() {
+            try { finalChecklist = JSON.parse(localStorage.getItem('myFinalChecklist') || '{}') || {}; } catch (e) { finalChecklist = {}; }
+            if (!finalChecklist || typeof finalChecklist !== 'object') finalChecklist = {};
+        }
+        function saveFinalChecklist() { localStorage.setItem('myFinalChecklist', JSON.stringify(finalChecklist)); }
+        function finalChecklistDone(state) { const st = state || finalChecklist; return FINAL_CHECKLIST_ITEMS.filter(i => st[i.key]).length; }
+        async function toggleFinalCheck(key) {
+            const item = FINAL_CHECKLIST_ITEMS.find(i => i.key === key); if (!item) return;
+            if (finalChecklist[key]) { // 이미 완료 → 해제는 바로
+                delete finalChecklist[key]; saveFinalChecklist(); renderFinalChecklist();
+                return;
+            }
+            // 완료로 체크할 때 → 정말 다 했는지 한 번 더 확인
+            const ok = await showConfirm('정말 다 하셨나요?', `"${item.label}"을(를) 정말 모두 마쳤나요?\n\n체크하기 전에 빠뜨린 부분은 없는지 한 번 더 확인해주세요. 완료로 표시하면 선생님께도 완료로 보여요.`, { icon: '✅', confirmText: '네, 완료했어요', cancelText: '아직 확인할게요' });
+            if (!ok) return;
+            finalChecklist[key] = true; saveFinalChecklist(); renderFinalChecklist();
+        }
+        function renderFinalChecklist() {
+            const el = document.getElementById('final-checklist-body'); if (!el) return;
+            const done = finalChecklistDone(), total = FINAL_CHECKLIST_ITEMS.length;
+            const pct = Math.round(done / total * 100);
+            const items = FINAL_CHECKLIST_ITEMS.map(i => {
+                const d = !!finalChecklist[i.key];
+                return `<button type="button" class="fcl-item ${d ? 'done' : ''}" onclick="event.stopPropagation(); toggleFinalCheck('${i.key}')">
+                    <span class="fcl-box">${d ? '✓' : ''}</span>
+                    <span class="fcl-label">${i.icon} ${esc(i.label)}</span>
+                </button>`;
+            }).join('');
+            el.innerHTML = `
+                <div class="fcl-top"><span class="fcl-pct">${done}/${total}</span><span class="fcl-bar"><i style="width:${pct}%"></i></span></div>
+                <div class="fcl-items">${items}</div>
+                ${done === total ? '<div class="fcl-allgood">🎉 모든 지원 준비를 마쳤어요! 정말 수고했어요.</div>' : ''}`;
+        }
+
         function renderDashboard() {
             renderDigestBanner();
+            renderFinalChecklist();
             // Greeting date
             const dateEl = document.getElementById('dash-greeting-date');
             if (dateEl) {
@@ -7151,7 +7229,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             setTimeout(() => location.reload(), 900);
         }
 
-        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors', 'myUniTodos', 'myCommonApp', 'myDecision', 'digestMeta', 'myMainEssay'];
+        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors', 'myUniTodos', 'myCommonApp', 'myDecision', 'digestMeta', 'myMainEssay', 'myFinalChecklist'];
 
         function triggerDownload(filename, content, mime) {
             const blob = new Blob([content], { type: mime });
@@ -8019,7 +8097,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Re-run every load + render after cloud data lands in localStorage
         function refreshAppFromStorage() {
             loadUniversities(); loadMatchWeights(); loadAdminTasks(); loadSupplementalEssays(); loadMainEssay();
-            loadMotivationStatement(); loadFavoriteUniversities(); loadUniTodos(); loadCommonApp(); loadDecision();
+            loadMotivationStatement(); loadFavoriteUniversities(); loadUniTodos(); loadCommonApp(); loadDecision(); loadFinalChecklist();
             applyFiltersAndSort(); renderSupplementalEssays(); renderMainEssay(); renderFavoriteUniversities();
             renderProsConsCards(); renderAdminBoard(); renderUniTodoBoard(); renderCommonApp(); renderDecision(); renderDashboard();
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
@@ -8606,7 +8684,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (!view.length) { wrap.innerHTML = '<p class="rp-dim" style="padding:16px 4px;">조건에 맞는 학생이 없어요.</p>'; return; }
             const head = `<thead><tr>
                 <th class="tm-stick">학생 (${view.length}명)</th>
-                <th>🎯 지망</th><th>🏫 대학</th><th>✍️ 에세이</th><th>⏰ 마감</th><th>📄 요구</th><th>📮 추천</th><th>💰 재정</th><th>📈 성적</th><th>✅ 행정</th><th>💬</th><th>⚠️ 갭</th>
+                <th>🎯 지망</th><th>🏫 대학</th><th>✍️ 에세이</th><th>⏰ 마감</th><th>📄 요구</th><th>📮 추천</th><th>💰 재정</th><th>📈 성적</th><th>✅ 행정</th><th>🏁 파이널</th><th>💬</th><th>⚠️ 갭</th>
             </tr></thead>`;
             wrap.innerHTML = `<div class="tmatrix-scroll"><table class="tmatrix">${head}<tbody>${view.map(matrixRow).join('')}</tbody></table></div>`;
         }
@@ -8663,6 +8741,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             // ✅ 행정
             const adminItems = (safeParse(ad.myAdminTasks, []) || []).reduce((a, c) => a + ((c.items || []).length), 0);
             const adminCell = pctPill(s.stats.adminPct, adminItems > 0);
+            // 🏁 파이널 체크리스트 (학생 자기확인 n/4)
+            const fcl = safeParse(ad.myFinalChecklist, {}) || {};
+            const fclDone = FINAL_CHECKLIST_ITEMS.filter(i => fcl[i.key]).length;
+            const fclCls = fclDone === 4 ? 'full' : (fclDone ? 'part' : 'none');
+            const finalCell = `<span class="tm-final tm-final-${fclCls}" title="파이널 체크리스트 ${fclDone}/4">${fclDone}/4</span>`;
             // 💬 안읽은 메시지
             const unread = chatUnreadCount(s.d);
             const msgCell = unread ? `<span class="tm-msgbadge">${unread}</span>` : `<span class="tm-dim">·</span>`;
@@ -8681,6 +8764,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <td>${finCell}</td>
                 <td>${gradeCell}</td>
                 <td>${adminCell}</td>
+                <td>${finalCell}</td>
                 <td>${msgCell}</td>
                 <td>${gapCell}</td>
             </tr>`;
@@ -8761,6 +8845,19 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             el.outerHTML = buildStudentReviewNotice(currentStudentData);
         }
 
+        // 선생님 읽기전용: 학생의 파이널 체크리스트 (지원 마무리 4단계)
+        function buildStudentFinalChecklist(data) {
+            const fcl = safeParse((data.appData || {}).myFinalChecklist, {}) || {};
+            const done = FINAL_CHECKLIST_ITEMS.filter(i => fcl[i.key]).length;
+            const items = FINAL_CHECKLIST_ITEMS.map(i => {
+                const d = !!fcl[i.key];
+                return `<div class="sfcl-item ${d ? 'done' : ''}"><span class="sfcl-mark">${d ? '✅' : '⬜'}</span><span class="sfcl-label">${i.icon} ${esc(i.label)}</span></div>`;
+            }).join('');
+            const col = done === 4 ? '#16a34a' : done ? '#f59e0b' : '#9ca3af';
+            return `<div class="care-check"><div class="care-check-head">🏁 파이널 체크리스트 <span class="cc-count" style="background:${col}1a;color:${col}">${done}/4 완료</span></div>
+                <div class="sfcl-grid">${items}</div></div>`;
+        }
+
         // Care checklist — surfaces exactly what this student is missing (놓친 것 없이 케어)
         function buildCareChecklist(data) {
             const gaps = computeStudentGaps(data, currentStudentUid);
@@ -8800,7 +8897,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             } else if (tab === 'notes') {
                 c.innerHTML = buildCounselorNotes(currentStudentUid);
             } else {
-                c.innerHTML = buildStudentReviewNotice(data) + buildCareChecklist(data) + buildStudentReport(data) + buildStudentCommonApp(data) + buildStudentUniTodos(data) + buildFeedbackPanel(data);
+                c.innerHTML = buildStudentReviewNotice(data) + buildStudentFinalChecklist(data) + buildCareChecklist(data) + buildStudentReport(data) + buildStudentCommonApp(data) + buildStudentUniTodos(data) + buildFeedbackPanel(data);
             }
         }
         function onAdmitChange(uniId, sel) {
@@ -10060,6 +10157,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             loadFavoriteUniversities();
             loadCommonApp();
             loadDecision();
+            loadFinalChecklist();
 
             // 전체 검색 단축키: ⌘K / Ctrl+K 로 열고 ESC 로 닫기
             document.addEventListener('keydown', (e) => {
