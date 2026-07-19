@@ -507,9 +507,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             background-color: var(--surface-3); /* Light gray background for a clean look */
             color: var(--text); /* Dark gray text for readability */
         }
-        /* Container for content, centered with max-width */
+        /* Container for content — wide, Apple-style full-bleed feel.
+           !important overrides Tailwind's .container (which caps max-width at 1280/1536 per breakpoint). */
         .container {
-            max-width: 1200px;
+            max-width: 1680px !important;
+            width: 100%;
+        }
+        /* Roomier side gutters on large screens (premium spacing without wasting the width) */
+        @media (min-width: 1280px) {
+            main.container { padding-left: 40px; padding-right: 40px; }
         }
         /* Styling for section titles with an underline effect */
         .section-title {
@@ -2267,6 +2273,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .cc-ic{ flex:0 0 auto; font-size:1rem; line-height:1.4; }
         .cc-txt{ flex:1; font-size:0.88rem; color:var(--text); font-weight:600; line-height:1.4; }
         .cc-allgood{ display:flex; align-items:center; gap:8px; color:#15803d; font-weight:700; font-size:0.92rem; }
+        /* Teacher view of student's per-university to-dos */
+        .sut-uni { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; background: var(--surface-2); }
+        .sut-uni-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .sut-uni-name { font-weight: 700; color: var(--text); font-size: 0.95rem; flex: 0 0 auto; }
+        .sut-bar { flex: 1; height: 7px; background: var(--surface-3); border-radius: 999px; overflow: hidden; }
+        .sut-bar i { display: block; height: 100%; border-radius: 999px; }
+        .sut-count { font-weight: 800; font-size: 0.82rem; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+        .sut-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+        .sut-item { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--text); }
+        .sut-item.done .sut-text { color: var(--text-faint); text-decoration: line-through; }
+        .sut-text { flex: 1; min-width: 0; }
+        .sut-due { font-size: 0.74rem; color: var(--text-muted); flex: 0 0 auto; }
         html[data-theme="dark"] .pqueue{ background:rgba(180,83,9,0.14); border-color:rgba(251,146,60,0.32); }
         html[data-theme="dark"] .pqueue-head{ color:#fdba74; }
         html[data-theme="dark"] .pqueue-ok{ background:rgba(5,150,105,0.14); border-color:rgba(16,185,129,0.32); color:#6ee7b7; }
@@ -7830,7 +7848,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             } else if (tab === 'profile') {
                 c.innerHTML = buildStudentProfile(data);
             } else {
-                c.innerHTML = buildCareChecklist(data) + buildStudentReport(data) + buildFeedbackPanel(data);
+                c.innerHTML = buildCareChecklist(data) + buildStudentReport(data) + buildStudentUniTodos(data) + buildFeedbackPanel(data);
             }
         }
         function onAdmitChange(uniId, sel) {
@@ -8164,6 +8182,30 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 sendFeedbackEmail('essay');
                 openStudentDetail(currentStudentUid);
             } catch (e) { toast('피드백 저장 실패: ' + e.message, 'error'); }
+        }
+
+        // Teacher's read-only view of the student's per-university to-do progress
+        function buildStudentUniTodos(data) {
+            const ad = data.appData || {};
+            const todos = safeParse(ad.myUniTodos, {}) || {};
+            const unis = safeParse(ad.myUniversities, []) || [];
+            const uniNameOf = id => { const u = unis.find(x => x.id === id); return u ? (u.nameEn || u.nameKo || '대학') : '(대학)'; };
+            const ids = Object.keys(todos).filter(id => Array.isArray(todos[id]) && todos[id].length);
+            if (!ids.length) return `<div class="report-section"><h4>🎯 대학별 할 일 진행</h4><p class="rp-dim">학생이 아직 대학별 할 일을 추가하지 않았어요.</p></div>`;
+            const rate = id => { const l = todos[id]; return l.filter(t => t.done).length / l.length; };
+            ids.sort((a, b) => rate(a) - rate(b)); // least-done first (needs attention)
+            const cards = ids.map(id => {
+                const list = todos[id].slice().sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
+                const done = list.filter(t => t.done).length, total = list.length;
+                const pct = total ? Math.round(done / total * 100) : 0;
+                const col = pct >= 80 ? '#34c759' : pct >= 40 ? '#f59e0b' : '#ff3b30';
+                const items = list.map(t => `<li class="sut-item ${t.done ? 'done' : ''}"><span class="sut-check">${t.done ? '✅' : '⬜'}</span><span class="sut-text">${esc(t.text)}</span>${t.due ? `<span class="sut-due">📅 ${esc(t.due)}</span>` : ''}</li>`).join('');
+                return `<div class="sut-uni">
+                    <div class="sut-uni-head"><span class="sut-uni-name">${esc(uniNameOf(id))}</span><span class="sut-bar"><i style="width:${pct}%;background:${col}"></i></span><span class="sut-count" style="color:${col}">${done}/${total}</span></div>
+                    <ul class="sut-list">${items}</ul>
+                </div>`;
+            }).join('');
+            return `<div class="report-section"><h4>🎯 대학별 할 일 진행 <span class="rp-dim" style="font-weight:600;font-size:0.8rem;">(학생이 관리 중)</span></h4>${cards}</div>`;
         }
 
         function buildStudentReport(data) {
