@@ -1317,6 +1317,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .todo-preview { color: var(--text); font-size: 0.95rem; line-height: 1.65; white-space: pre-wrap; overflow: hidden; }
 
         .dash-empty { color: var(--text-faint); font-size: 0.95rem; margin-top: auto; }
+        .dash-utrow { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+        .dash-utname { flex: 1; min-width: 0; font-size: 0.9rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dash-utbar { flex: 0 0 70px; height: 6px; background: var(--surface-3); border-radius: 999px; overflow: hidden; }
+        .dash-utbar i { display: block; height: 100%; border-radius: 999px; transition: width .3s ease; }
+        .dash-utpct { flex: 0 0 auto; font-size: 0.78rem; font-weight: 800; font-variant-numeric: tabular-nums; min-width: 34px; text-align: right; }
 
         /* Responsive bento reflow */
         @media (max-width: 960px) {
@@ -2459,13 +2464,19 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div id="dash-uni-body" style="display:flex; flex-direction:column; flex:1;"></div>
                 </a>
 
-                <!-- This week's deadlines -->
-                <a class="bento span-2" href="#university-list" onclick="showSection('university-list')">
-                    <div class="bento-label">🔥 이번 주 마감 임박 <span class="bento-arrow">→</span></div>
-                    <div id="dash-week-body" style="display:flex; flex-direction:column; flex:1;"></div>
+                <!-- Application timeline (upcoming deadlines + soft + my to-dos) -->
+                <a class="bento span-2" href="#my-notes" onclick="showSection('my-notes')">
+                    <div class="bento-label">🗓️ 다가오는 일정 (타임라인) <span class="bento-arrow">→</span></div>
+                    <div id="dash-timeline-body" style="display:flex; flex-direction:column; flex:1;"></div>
                 </a>
 
-                <!-- To-Do & notes preview -->
+                <!-- Per-university readiness -->
+                <a class="bento span-2" href="#my-notes" onclick="showSection('my-notes')">
+                    <div class="bento-label">🎯 대학별 준비 현황 <span class="bento-arrow">→</span></div>
+                    <div id="dash-unitodo-body" style="display:flex; flex-direction:column; flex:1;"></div>
+                </a>
+
+                <!-- Admin checklist preview -->
                 <a class="bento span-4" href="#my-notes" onclick="showSection('my-notes')">
                     <div class="bento-label">✅ 행정 체크리스트 <span class="bento-arrow">→</span></div>
                     <div id="dash-todo-body" class="todo-preview"></div>
@@ -5789,18 +5800,37 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div style="margin-top:12px;">${rows || '<div class="dash-empty">등록된 대학이 없어요.</div>'}</div>`;
             }
 
-            // This week's deadlines (0–7 days away)
-            const weekBody = document.getElementById('dash-week-body');
-            if (weekBody) {
-                const soon = collectSortedDeadlines().filter(d => { const n = daysUntil(d.date); return n >= 0 && n <= 7; });
-                if (soon.length === 0) {
-                    weekBody.innerHTML = `<div class="dash-empty">이번 주 마감 예정이 없어요 ✓</div>`;
+            // Application timeline: upcoming deadlines + soft + my to-dos (generic prep milestones excluded)
+            const tlBody = document.getElementById('dash-timeline-body');
+            if (tlBody) {
+                const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+                const evs = generateTimelineEvents()
+                    .filter(e => e.kind !== 'milestone' && Math.ceil((e.date - today0) / 86400000) >= 0)
+                    .slice(0, 5);
+                if (!evs.length) {
+                    tlBody.innerHTML = `<div class="dash-empty">예정된 마감·할 일이 없어요 ✓</div>`;
                 } else {
-                    weekBody.innerHTML = soon.slice(0, 5).map(d => {
-                        const n = daysUntil(d.date);
+                    tlBody.innerHTML = evs.map(e => {
+                        const n = Math.ceil((e.date - today0) / 86400000);
                         const badge = n === 0 ? 'D-DAY' : `D-${n}`;
-                        const name = d.uniNameKo ? `${d.uniName} (${d.uniNameKo})` : d.uniName;
-                        return `<div class="deadline-item"><span class="deadline-name">${name} · ${d.type}</span><span class="dday-badge ${n <= 3 ? 'urgent' : 'normal'}">${badge}</span></div>`;
+                        const name = e.uniNameKo ? `${e.uniName} (${e.uniNameKo})` : e.uniName;
+                        return `<div class="deadline-item"><span class="deadline-name">${e.icon} ${esc(e.label)} <span style="color:var(--text-faint)">· ${esc(name)}</span></span><span class="dday-badge ${n <= 3 ? 'urgent' : 'normal'}">${badge}</span></div>`;
+                    }).join('');
+                }
+            }
+
+            // Per-university readiness: least-ready first (준비 %)
+            const utBody = document.getElementById('dash-unitodo-body');
+            if (utBody) {
+                if (!universities.length) {
+                    utBody.innerHTML = `<div class="dash-empty">대학을 추가하면 준비 현황이 보여요.</div>`;
+                } else {
+                    const rows = universities.map(u => ({ u, prog: computeUniProgress(u) }))
+                        .sort((a, b) => a.prog.pct - b.prog.pct).slice(0, 5);
+                    utBody.innerHTML = rows.map(({ u, prog }) => {
+                        const col = prog.pct >= 80 ? '#34c759' : prog.pct >= 40 ? '#f59e0b' : '#ff3b30';
+                        const name = u.nameEn || u.nameKo || '대학';
+                        return `<div class="dash-utrow"><span class="dash-utname">${esc(name)}</span><span class="dash-utbar"><i style="width:${prog.pct}%;background:${col}"></i></span><span class="dash-utpct" style="color:${col}">${prog.pct}%</span></div>`;
                     }).join('');
                 }
             }
