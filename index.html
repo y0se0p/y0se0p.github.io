@@ -827,6 +827,31 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .utodo-mono { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; color: #fff; font-weight: 800; font-size: 0.72rem; margin-right: 3px; vertical-align: middle; }
         .utodo-suggest { font-size: 0.76rem; font-weight: 700; color: var(--accent); background: rgba(0,113,227,0.1); border: 1px solid rgba(0,113,227,0.25); border-radius: 8px; padding: 3px 10px; cursor: pointer; transition: background .15s; }
         .utodo-suggest:hover { background: rgba(0,113,227,0.18); }
+        .utodo-toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+        .utodo-search { flex: 1; min-width: 160px; padding: 9px 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); color: var(--text); font-size: 0.9rem; font-family: inherit; outline: none; }
+        .utodo-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.15); }
+        .utodo-sort { padding: 9px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); color: var(--text); font-size: 0.88rem; cursor: pointer; outline: none; }
+        .utodo-expand-all { padding: 9px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); color: var(--text); font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .utodo-expand-all:hover { background: var(--surface-3); }
+        .utodo-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .utodo-card.expanded { box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .utodo-head { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 15px; background: transparent; border: none; cursor: pointer; text-align: left; transition: background .12s; }
+        .utodo-head:hover { background: var(--surface-2); }
+        .utodo-name { font-weight: 700; color: var(--text); font-size: 0.95rem; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .utodo-headprog { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+        .utodo-bar { width: 60px; height: 6px; background: var(--surface-3); border-radius: 999px; overflow: hidden; }
+        .utodo-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg,#34c759,#30b0c7); }
+        .utodo-pct { font-size: 0.74rem; font-weight: 800; color: var(--text-muted); font-variant-numeric: tabular-nums; min-width: 30px; }
+        .utodo-nextdue { font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--surface-3); color: var(--text-muted); white-space: nowrap; }
+        .utodo-nextdue.soon { background: rgba(255,59,48,0.13); color: #b91c1c; }
+        .utodo-rem { font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(255,149,0,0.14); color: #b45309; white-space: nowrap; }
+        .utodo-rem.done { background: rgba(52,199,89,0.15); color: #15803d; }
+        .utodo-rem.empty { background: var(--surface-3); color: var(--text-faint); }
+        .utodo-chev { font-size: 1.1rem; color: var(--text-faint); flex: 0 0 auto; }
+        .utodo-body { padding: 0 15px 14px; }
+        html[data-theme="dark"] .utodo-nextdue.soon { background: rgba(255,59,48,0.2); color: #fca5a5; }
+        html[data-theme="dark"] .utodo-rem { background: rgba(255,149,0,0.2); color: #fcd34d; }
+        html[data-theme="dark"] .utodo-rem.done { background: rgba(52,199,89,0.2); color: #4ade80; }
         .cal-event-label { font-size: 0.62rem; font-weight: 700; line-height: 1.15; text-align: center; margin-top: 4px; z-index: 5; display: flex; align-items: center; gap: 2px; flex-wrap: wrap; justify-content: center; color: var(--text-muted); }
         .cal-event-label .cal-uni { max-width: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .cal-event-label .cal-more { color: var(--text-faint); }
@@ -3677,6 +3702,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             try { renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); } catch (e) {}
             try { renderUpcomingDeadlines(); } catch (e) {}
         }
+        // Collapsible board scales to many universities: search + smart sort + expand/collapse
+        let uniTodoSearch = '';
+        let uniTodoSort = 'default';
+        let uniTodoExpanded = new Set();
+        function uniTodoStats(uni) {
+            const list = Array.isArray(uniTodos[uni.id]) ? uniTodos[uni.id] : [];
+            const total = list.length, done = list.filter(t => t.done).length;
+            const pct = total ? Math.round(done / total * 100) : 0;
+            let nextDue = null;
+            list.forEach(t => { if (t.done || !t.due) return; const d = new Date(t.due + 'T00:00:00'); if (isNaN(d)) return; if (!nextDue || d < nextDue) nextDue = d; });
+            return { list, total, done, pct, nextDue };
+        }
         function renderUniTodoBoard() {
             const board = document.getElementById('uni-todo-board');
             if (!board) return;
@@ -3684,43 +3721,83 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 board.innerHTML = `<p class="admin-empty">아직 추가한 대학이 없어요. University List에서 대학을 추가하면 여기에 학교별 할 일 칸이 생겨요.</p>`;
                 return;
             }
-            board.innerHTML = universities.map(uni => {
-                const list = Array.isArray(uniTodos[uni.id]) ? uniTodos[uni.id] : [];
-                const total = list.length, done = list.filter(t => t.done).length;
-                const pct = total ? Math.round(done / total * 100) : 0;
-                const sorted = [...list].sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
+            const allExpanded = universities.every(u => uniTodoExpanded.has(u.id));
+            board.innerHTML = `
+                <div class="utodo-toolbar">
+                    <input type="text" id="utodo-search" class="utodo-search" placeholder="🔍 대학 검색" value="${esc(uniTodoSearch)}" oninput="onUniTodoSearch(this.value)">
+                    <select class="utodo-sort" onchange="onUniTodoSort(this.value)">
+                        <option value="default" ${uniTodoSort === 'default' ? 'selected' : ''}>기본 순</option>
+                        <option value="deadline" ${uniTodoSort === 'deadline' ? 'selected' : ''}>마감 임박순</option>
+                        <option value="remaining" ${uniTodoSort === 'remaining' ? 'selected' : ''}>할 일 남은순</option>
+                        <option value="progress" ${uniTodoSort === 'progress' ? 'selected' : ''}>준비 낮은순</option>
+                        <option value="name" ${uniTodoSort === 'name' ? 'selected' : ''}>이름순</option>
+                    </select>
+                    <button type="button" class="utodo-expand-all" onclick="toggleAllUniTodo(${allExpanded ? 'false' : 'true'})">${allExpanded ? '모두 접기' : '모두 펼치기'}</button>
+                </div>
+                <div id="uni-todo-cards"></div>`;
+            renderUniTodoCards();
+            const si = document.getElementById('utodo-search');
+            if (si && uniTodoSearch) { si.focus(); const n = si.value.length; si.setSelectionRange(n, n); }
+        }
+        function renderUniTodoCards() {
+            const wrap = document.getElementById('uni-todo-cards');
+            if (!wrap) return;
+            const q = (uniTodoSearch || '').trim().toLowerCase();
+            let view = universities.map(uni => ({ uni, s: uniTodoStats(uni) }));
+            if (q) view = view.filter(x => ((x.uni.nameEn || '') + ' ' + (x.uni.nameKo || '')).toLowerCase().includes(q));
+            const INF = 8640000000000000;
+            if (uniTodoSort === 'deadline') view.sort((a, b) => (a.s.nextDue ? a.s.nextDue.getTime() : INF) - (b.s.nextDue ? b.s.nextDue.getTime() : INF));
+            else if (uniTodoSort === 'remaining') view.sort((a, b) => (b.s.total - b.s.done) - (a.s.total - a.s.done));
+            else if (uniTodoSort === 'progress') view.sort((a, b) => a.s.pct - b.s.pct);
+            else if (uniTodoSort === 'name') view.sort((a, b) => (a.uni.nameEn || '').localeCompare(b.uni.nameEn || ''));
+            if (!view.length) { wrap.innerHTML = `<p class="rp-dim" style="padding:16px;text-align:center;">"${esc(uniTodoSearch)}" 검색 결과가 없어요.</p>`; return; }
+            wrap.innerHTML = view.map(({ uni, s }) => {
+                const expanded = uniTodoExpanded.has(uni.id);
+                const color = getSignatureColor(uni);
+                let dueBadge = '';
+                if (s.nextDue) { const dd = daysUntil(s.nextDue); dueBadge = `<span class="utodo-nextdue ${dd <= 7 ? 'soon' : ''}">📅 D-${dd}</span>`; }
+                const remaining = s.total - s.done;
+                const remBadge = remaining > 0 ? `<span class="utodo-rem">남은 ${remaining}</span>` : (s.total ? `<span class="utodo-rem done">완료 ✓</span>` : '<span class="utodo-rem empty">할 일 없음</span>');
+                const header = `<button type="button" class="utodo-head" onclick="toggleUniTodoExpand('${uni.id}')">
+                    <span class="utodo-mono" style="background:${esc(color)}">${esc(uniMonogram(uni.nameEn))}</span>
+                    <span class="utodo-name">${esc(uni.nameEn || '(이름 없음)')}</span>
+                    <span class="utodo-headprog"><span class="utodo-bar"><i style="width:${s.pct}%"></i></span><span class="utodo-pct">${s.pct}%</span></span>
+                    ${dueBadge}${remBadge}
+                    <span class="utodo-chev">${expanded ? '⌄' : '›'}</span>
+                </button>`;
+                if (!expanded) return `<div class="utodo-card">${header}</div>`;
+                const sorted = [...s.list].sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
                 const items = sorted.map(t => {
-                    let dueBadge = '';
+                    let db = '';
                     if (t.due) {
                         const dd = adminDaysUntil(t.due);
                         const soon = dd !== null && dd <= 7 && !t.done;
-                        dueBadge = `<span class="ki-due ${soon ? 'soon' : ''}">📅 ${esc(formatDueShort(t.due))}${dd !== null && dd >= 0 && !t.done ? ` · D-${dd}` : ''}</span>`;
+                        db = `<span class="ki-due ${soon ? 'soon' : ''}">📅 ${esc(formatDueShort(t.due))}${dd !== null && dd >= 0 && !t.done ? ` · D-${dd}` : ''}</span>`;
                     }
                     return `<label class="kanban-item ${t.done ? 'done' : ''}">
                         <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleUniTodo('${uni.id}','${t.id}')">
                         <span class="ki-box"></span>
-                        <span class="ki-text">${esc(t.text)}${dueBadge}</span>
+                        <span class="ki-text">${esc(t.text)}${db}</span>
                         <button type="button" class="ki-del" title="삭제" onclick="deleteUniTodo('${uni.id}','${t.id}')">×</button>
                     </label>`;
                 }).join('');
-                const color = getSignatureColor(uni);
-                return `<div class="kanban-col">
-                    <div class="kanban-head">
-                        <span class="kanban-title"><span class="utodo-mono" style="background:${esc(color)}">${esc(uniMonogram(uni.nameEn))}</span> ${esc(uni.nameEn || '(이름 없음)')}</span>
-                        <button type="button" class="utodo-suggest" title="카운슬러 추천 할 일 자동 추가" onclick="addSuggestedTodos('${uni.id}')">✨ 추천</button>
+                return `<div class="utodo-card expanded">
+                    ${header}
+                    <div class="utodo-body">
+                        <div class="kanban-items">${items || '<p class="kanban-noitems">할 일을 추가하거나 ✨추천을 눌러보세요.</p>'}</div>
+                        <form class="kanban-add" onsubmit="return addUniTodo(event, '${uni.id}')">
+                            <input type="text" placeholder="+ 할 일 추가" class="kanban-add-input ut-add-text">
+                            <input type="date" class="kanban-add-date ut-add-date" title="마감일 (선택) — 캘린더에 표시돼요">
+                            <button type="button" class="utodo-suggest" title="카운슬러 추천 할 일 자동 추가" onclick="addSuggestedTodos('${uni.id}')">✨ 추천</button>
+                        </form>
                     </div>
-                    <div class="kanban-progress">
-                        <div class="kanban-bar"><div class="kanban-bar-fill" style="width:${pct}%"></div></div>
-                        <span class="kanban-count">${done}/${total}</span>
-                    </div>
-                    <div class="kanban-items">${items || '<p class="kanban-noitems">할 일을 추가하거나 ✨추천을 눌러보세요.</p>'}</div>
-                    <form class="kanban-add" onsubmit="return addUniTodo(event, '${uni.id}')">
-                        <input type="text" placeholder="+ 할 일 추가" class="kanban-add-input ut-add-text">
-                        <input type="date" class="kanban-add-date ut-add-date" title="마감일 (선택) — 캘린더에 표시돼요">
-                    </form>
                 </div>`;
             }).join('');
         }
+        function onUniTodoSearch(v) { uniTodoSearch = v; renderUniTodoCards(); }
+        function onUniTodoSort(v) { uniTodoSort = v; renderUniTodoCards(); }
+        function toggleUniTodoExpand(id) { if (uniTodoExpanded.has(id)) uniTodoExpanded.delete(id); else uniTodoExpanded.add(id); renderUniTodoCards(); }
+        function toggleAllUniTodo(expand) { uniTodoExpanded = new Set(expand ? universities.map(u => u.id) : []); renderUniTodoBoard(); }
         function toggleUniTodo(uniId, itemId) {
             const list = uniTodos[uniId]; if (!Array.isArray(list)) return;
             const t = list.find(x => x.id === itemId); if (!t) return;
