@@ -821,6 +821,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .cal-marker-soft { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,.6); }
         .cal-marker-milestone { background: #3b82f6; box-shadow: 0 0 6px rgba(59,130,246,.5); }
         .cal-marker-admin { background: #34c759; box-shadow: 0 0 6px rgba(52,199,89,.5); }
+        .cal-marker-todo { background: #8b5cf6; box-shadow: 0 0 6px rgba(139,92,246,.5); }
+        .cal-label-todo { color: #6d28d9; }
+        html[data-theme="dark"] .cal-label-todo { color: #c4b5fd; }
+        .utodo-mono { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; color: #fff; font-weight: 800; font-size: 0.72rem; margin-right: 3px; vertical-align: middle; }
+        .utodo-suggest { font-size: 0.76rem; font-weight: 700; color: var(--accent); background: rgba(0,113,227,0.1); border: 1px solid rgba(0,113,227,0.25); border-radius: 8px; padding: 3px 10px; cursor: pointer; transition: background .15s; }
+        .utodo-suggest:hover { background: rgba(0,113,227,0.18); }
         .cal-event-label { font-size: 0.62rem; font-weight: 700; line-height: 1.15; text-align: center; margin-top: 4px; z-index: 5; display: flex; align-items: center; gap: 2px; flex-wrap: wrap; justify-content: center; color: var(--text-muted); }
         .cal-event-label .cal-uni { max-width: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .cal-event-label .cal-more { color: var(--text-faint); }
@@ -2644,6 +2650,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <div id="upcoming-deadlines" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8"><h4 class="text-xl font-semibold mb-1">🗓️ 원서 제출 타임라인</h4><p class="tl-sub">University List에서 대학 마감일을 입력하면 단계별 마일스톤이 자동 생성돼요.</p></div>
 
                 <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                    <h3 class="text-2xl font-semibold text-blue-700">🎯 대학별 할 일 (To-Do)</h3>
+                </div>
+                <p class="tl-sub">추가한 <b>대학마다</b> 해야 할 일을 적어 관리하세요. 완료하면 University List의 <b>준비 %</b>가 올라가고, 마감일을 넣으면 위 <b>캘린더</b>에도 표시돼요. <b>✨추천</b>을 누르면 카운슬러 추천 할 일이 자동으로 채워져요.</p>
+                <div id="uni-todo-board" class="admin-board"></div>
+
+                <div class="flex items-center justify-between mb-2 mt-8 flex-wrap gap-2">
                     <h3 class="text-2xl font-semibold text-blue-700">✅ 행정 체크리스트 (Admin Board)</h3>
                     <button type="button" onclick="addAdminCategory()" class="admin-add-cat">+ 카테고리 추가</button>
                 </div>
@@ -3640,6 +3652,107 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             renderUpcomingDeadlines();
         }
 
+        // ===== Per-university To-Do tracker (drives University List "준비 %" + calendar) =====
+        let uniTodos = {}; // { uniId: [ {id, text, done, due} ] }
+        const SUGGESTED_TODOS = [
+            "'왜 우리 학교' 서플 에세이 작성",
+            '추천서 요청 (교사·카운슬러)',
+            '고교 성적표(Transcript) 발송',
+            '공인 성적(SAT/ACT/TOEFL) 발송',
+            '지원 마감일 확인 & 캘린더 등록',
+            '재정지원 서류(CSS/FAFSA) 확인',
+            '인터뷰 신청·준비',
+            'Common App 원서 최종 검토·제출',
+        ];
+        function loadUniTodos() {
+            try { uniTodos = JSON.parse(localStorage.getItem('myUniTodos') || '{}') || {}; } catch (e) { uniTodos = {}; }
+            if (typeof uniTodos !== 'object' || Array.isArray(uniTodos)) uniTodos = {};
+            renderUniTodoBoard();
+        }
+        function saveUniTodos() { localStorage.setItem('myUniTodos', JSON.stringify(uniTodos)); }
+        function refreshUniProgressViews() {
+            saveUniTodos();
+            renderUniTodoBoard();
+            try { applyFiltersAndSort(); } catch (e) {}      // University List 준비 % 바 갱신
+            try { renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); } catch (e) {}
+            try { renderUpcomingDeadlines(); } catch (e) {}
+        }
+        function renderUniTodoBoard() {
+            const board = document.getElementById('uni-todo-board');
+            if (!board) return;
+            if (!universities.length) {
+                board.innerHTML = `<p class="admin-empty">아직 추가한 대학이 없어요. University List에서 대학을 추가하면 여기에 학교별 할 일 칸이 생겨요.</p>`;
+                return;
+            }
+            board.innerHTML = universities.map(uni => {
+                const list = Array.isArray(uniTodos[uni.id]) ? uniTodos[uni.id] : [];
+                const total = list.length, done = list.filter(t => t.done).length;
+                const pct = total ? Math.round(done / total * 100) : 0;
+                const sorted = [...list].sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
+                const items = sorted.map(t => {
+                    let dueBadge = '';
+                    if (t.due) {
+                        const dd = adminDaysUntil(t.due);
+                        const soon = dd !== null && dd <= 7 && !t.done;
+                        dueBadge = `<span class="ki-due ${soon ? 'soon' : ''}">📅 ${esc(formatDueShort(t.due))}${dd !== null && dd >= 0 && !t.done ? ` · D-${dd}` : ''}</span>`;
+                    }
+                    return `<label class="kanban-item ${t.done ? 'done' : ''}">
+                        <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleUniTodo('${uni.id}','${t.id}')">
+                        <span class="ki-box"></span>
+                        <span class="ki-text">${esc(t.text)}${dueBadge}</span>
+                        <button type="button" class="ki-del" title="삭제" onclick="deleteUniTodo('${uni.id}','${t.id}')">×</button>
+                    </label>`;
+                }).join('');
+                const color = getSignatureColor(uni);
+                return `<div class="kanban-col">
+                    <div class="kanban-head">
+                        <span class="kanban-title"><span class="utodo-mono" style="background:${esc(color)}">${esc(uniMonogram(uni.nameEn))}</span> ${esc(uni.nameEn || '(이름 없음)')}</span>
+                        <button type="button" class="utodo-suggest" title="카운슬러 추천 할 일 자동 추가" onclick="addSuggestedTodos('${uni.id}')">✨ 추천</button>
+                    </div>
+                    <div class="kanban-progress">
+                        <div class="kanban-bar"><div class="kanban-bar-fill" style="width:${pct}%"></div></div>
+                        <span class="kanban-count">${done}/${total}</span>
+                    </div>
+                    <div class="kanban-items">${items || '<p class="kanban-noitems">할 일을 추가하거나 ✨추천을 눌러보세요.</p>'}</div>
+                    <form class="kanban-add" onsubmit="return addUniTodo(event, '${uni.id}')">
+                        <input type="text" placeholder="+ 할 일 추가" class="kanban-add-input ut-add-text">
+                        <input type="date" class="kanban-add-date ut-add-date" title="마감일 (선택) — 캘린더에 표시돼요">
+                    </form>
+                </div>`;
+            }).join('');
+        }
+        function toggleUniTodo(uniId, itemId) {
+            const list = uniTodos[uniId]; if (!Array.isArray(list)) return;
+            const t = list.find(x => x.id === itemId); if (!t) return;
+            t.done = !t.done;
+            refreshUniProgressViews();
+        }
+        function addUniTodo(event, uniId) {
+            event.preventDefault();
+            const form = event.target;
+            const text = (form.querySelector('.ut-add-text').value || '').trim();
+            const dateEl = form.querySelector('.ut-add-date');
+            const due = (dateEl && dateEl.value) || '';
+            if (!text) return false;
+            if (!Array.isArray(uniTodos[uniId])) uniTodos[uniId] = [];
+            uniTodos[uniId].push({ id: generateUniqueId('ut-'), text, done: false, due });
+            refreshUniProgressViews();
+            return false;
+        }
+        function deleteUniTodo(uniId, itemId) {
+            if (!Array.isArray(uniTodos[uniId])) return;
+            uniTodos[uniId] = uniTodos[uniId].filter(x => x.id !== itemId);
+            refreshUniProgressViews();
+        }
+        function addSuggestedTodos(uniId) {
+            if (!Array.isArray(uniTodos[uniId])) uniTodos[uniId] = [];
+            const existing = new Set(uniTodos[uniId].map(t => t.text));
+            let added = 0;
+            SUGGESTED_TODOS.forEach(text => { if (!existing.has(text)) { uniTodos[uniId].push({ id: generateUniqueId('ut-'), text, done: false, due: '' }); added++; } });
+            refreshUniProgressViews();
+            toast(added ? `카운슬러 추천 할 일 ${added}개를 넣었어요 ✨` : '추천 할 일이 이미 다 들어있어요.', 'success');
+        }
+
         async function addAdminCategory() {
             const name = await showPrompt('새 카테고리 추가', {
                 message: '행정 항목을 묶을 카테고리 이름을 입력하세요.',
@@ -3993,9 +4106,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const r = (typeof requirements !== 'undefined' && requirements && requirements[uni.id]) || {};
             const reqTotal = REQ_COLS.length;
             const reqDone = REQ_COLS.filter(c => r[c.key]).length;
-            // 준비율 = 학교별 요구사항 체크리스트(6개 항목) 완료 비율만 사용
-            const pct = reqTotal ? Math.round(reqDone / reqTotal * 100) : 0;
-            return { pct, essayDone, essayTotal, reqDone, reqTotal };
+            const todos = (typeof uniTodos !== 'undefined' && Array.isArray(uniTodos[uni.id])) ? uniTodos[uni.id] : [];
+            const todoTotal = todos.length;
+            const todoDone = todos.filter(t => t.done).length;
+            // 준비율 = 요구사항 체크리스트(6) + 대학별 할 일 완료 비율 종합
+            const total = reqTotal + todoTotal;
+            const doneCount = reqDone + todoDone;
+            const pct = total ? Math.round(doneCount / total * 100) : 0;
+            return { pct, essayDone, essayTotal, reqDone, reqTotal, todoDone, todoTotal };
         }
 
         // Side-by-side comparison of all universities (rows = attributes, columns = schools)
@@ -4318,7 +4436,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             saveUniversities();
             applyFiltersAndSort();
             try { renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); } catch (e) {}
-            try { renderUpcomingDeadlines(); renderFavoriteUniversities(); renderProsConsCards(); } catch (e) {}
+            try { renderUpcomingDeadlines(); renderFavoriteUniversities(); renderProsConsCards(); renderUniTodoBoard(); } catch (e) {}
             toast(`${s.nameEn} 추가됨 ✓ 나머지 정보는 '✏️ 수정'에서 직접 채워보세요`, 'success');
             renderStarterGrid();
         }
@@ -4430,7 +4548,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <div class="uni-card-main">
                             <div class="uni-card-name">${esc(uni.nameEn) || '(이름 없음)'}${uni.nameKo ? ` <span class="uni-card-nameko">${esc(uni.nameKo)}</span>` : ''}</div>
                             <div class="uni-card-meta">${[esc(uni.location), esc(uni.ranking)].filter(Boolean).join(' · ') || '-'}</div>
-                            <div class="uni-prog" title="지원 준비율 = 요구사항 체크리스트 ${prog.reqDone}/${prog.reqTotal} 완료 (원서·추천서·성적표·시험점수·서플·인터뷰)" onclick="event.stopPropagation()">
+                            <div class="uni-prog" title="지원 준비율 = 요구사항 ${prog.reqDone}/${prog.reqTotal} + 대학별 할 일 ${prog.todoDone}/${prog.todoTotal} 완료 (할 일 페이지에서 관리)" onclick="event.stopPropagation()">
                                 <span class="uni-prog-lbl">준비</span>
                                 <div class="uni-prog-track"><i style="width:${prog.pct}%;background:${progColor}"></i></div>
                                 <span class="uni-prog-pct" style="color:${progColor}">${prog.pct}%</span>
@@ -4705,6 +4823,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             renderUpcomingDeadlines(); // Update D-Day list
             renderFavoriteUniversities(); // Refresh favorite university dropdowns/details
             renderProsConsCards(); // Render pros/cons cards
+            renderUniTodoBoard(); // Refresh per-university to-do board
             closeUniversityModal(); // Close the modal
         });
 
@@ -4725,7 +4844,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (!ok) return;
             {
                 universities = universities.filter(uni => uni.id !== id); // Remove university
-                // Removed: supplementalEssays = supplementalEssays.filter(essay => essay.universityId !== id); // Removed this line
+                if (uniTodos && uniTodos[id]) { delete uniTodos[id]; saveUniTodos(); } // clean up this uni's to-dos
 
                 saveUniversities(); // Save updated university data
                 // No need to save supplementalEssays explicitly if not modified in this function
@@ -4734,6 +4853,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth()); // Update calendar
                 renderUpcomingDeadlines(); // Update D-Day list
                 renderProsConsCards(); // Render pros/cons cards
+                renderUniTodoBoard(); // Refresh per-university to-do board
                 
                 // If the deleted university was a favorite, reset the favorite selection
                 if (firstChoiceUniId === id) {
@@ -5244,6 +5364,21 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         date: d, kind: 'admin', icon: '✅', label: it.text || '행정 할 일',
                         uniName: (cat.icon || '') + (cat.name || '행정'), uniNameKo: '',
                         deadlineType: '행정', deadlineDate: d
+                    });
+                });
+            });
+            // Per-university to-dos that have a due date (and aren't done yet)
+            Object.keys(uniTodos || {}).forEach(uniId => {
+                const uni = universities.find(u => u.id === uniId);
+                (Array.isArray(uniTodos[uniId]) ? uniTodos[uniId] : []).forEach(t => {
+                    if (!t || !t.due || t.done) return;
+                    const d = new Date(t.due + 'T00:00:00');
+                    if (isNaN(d)) return;
+                    d.setHours(0, 0, 0, 0);
+                    events.push({
+                        date: d, kind: 'todo', icon: '🎯', label: t.text || '할 일',
+                        uniName: uni ? (uni.nameEn || uni.nameKo || '대학') : '대학', uniNameKo: uni ? uni.nameKo : '',
+                        deadlineType: '할일', deadlineDate: d
                     });
                 });
             });
@@ -5992,7 +6127,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             setTimeout(() => location.reload(), 900);
         }
 
-        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors'];
+        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors', 'myUniTodos'];
 
         function triggerDownload(filename, content, mime) {
             const blob = new Blob([content], { type: mime });
@@ -6841,9 +6976,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Re-run every load + render after cloud data lands in localStorage
         function refreshAppFromStorage() {
             loadUniversities(); loadMatchWeights(); loadAdminTasks(); loadSupplementalEssays();
-            loadMotivationStatement(); loadFavoriteUniversities();
+            loadMotivationStatement(); loadFavoriteUniversities(); loadUniTodos();
             applyFiltersAndSort(); renderSupplementalEssays(); renderFavoriteUniversities();
-            renderProsConsCards(); renderAdminBoard(); renderDashboard();
+            renderProsConsCards(); renderAdminBoard(); renderUniTodoBoard(); renderDashboard();
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
             renderUpcomingDeadlines();
             loadAppManager();
