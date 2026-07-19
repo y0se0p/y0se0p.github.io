@@ -828,6 +828,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .cal-marker-milestone { background: #3b82f6; box-shadow: 0 0 6px rgba(59,130,246,.5); }
         .cal-marker-admin { background: #34c759; box-shadow: 0 0 6px rgba(52,199,89,.5); }
         .cal-marker-todo { background: #8b5cf6; box-shadow: 0 0 6px rgba(139,92,246,.5); }
+        .cal-marker-scholarship { background: #0ea5e9; box-shadow: 0 0 6px rgba(14,165,233,.5); }
+        .cal-marker-deposit { background: #ec4899; box-shadow: 0 0 7px rgba(236,72,153,.6); }
+        .cal-label-scholarship { color: #0369a1; }
+        .cal-label-deposit { color: #be185d; }
+        html[data-theme="dark"] .cal-label-scholarship { color: #7dd3fc; }
+        html[data-theme="dark"] .cal-label-deposit { color: #f9a8d4; }
         .cal-label-todo { color: #6d28d9; }
         html[data-theme="dark"] .cal-label-todo { color: #c4b5fd; }
         .utodo-mono { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; color: #fff; font-weight: 800; font-size: 0.72rem; margin-right: 3px; vertical-align: middle; }
@@ -925,6 +931,90 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .ca-tag.cat-write { background: #fef3c7; color: #b45309; } .ca-tag.cat-req { background: #fce7f3; color: #be185d; }
         .ca-tag.cat-sub { background: #dcfce7; color: #15803d; }
         .ca-opt { flex: 0 0 auto; font-size: 0.62rem; font-weight: 700; color: #98989d; border: 1px solid #e0e0e2; padding: 1px 6px; border-radius: 9999px; }
+        /* ===== 장학금 트래커 ===== */
+        .sch-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+        .sch-stat { background: linear-gradient(135deg,#f0fdf4,#ecfeff); border: 1px solid #dcfce7; border-radius: 14px; padding: 16px 18px; }
+        .sch-stat-n { display: block; font-size: 1.7rem; font-weight: 800; color: #0369a1; line-height: 1.1; }
+        .sch-stat-l { font-size: 0.82rem; font-weight: 600; color: #4b5563; }
+        .sch-add { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; align-items: center; }
+        .sch-add input { border: 1px solid var(--border); border-radius: 9px; padding: 9px 12px; font-size: 0.9rem; background: var(--surface); color: var(--text); }
+        .sch-i-name { flex: 2 1 180px; } .sch-i-org { flex: 1 1 130px; } .sch-i-amount { flex: 0 1 110px; } .sch-i-url { flex: 1 1 140px; }
+        .sch-add-btn { background: #0071e3; color: #fff; border: none; border-radius: 9px; padding: 9px 18px; font-weight: 700; cursor: pointer; flex: 0 0 auto; }
+        .sch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+        .sch-card { border: 1px solid var(--border); border-left: 4px solid #cbd5e1; border-radius: 12px; padding: 13px 15px; background: var(--surface); }
+        .sch-card.sch-won { border-left-color: #16a34a; background: linear-gradient(135deg,var(--surface),#f0fdf4); }
+        .sch-card.sch-app { border-left-color: #0071e3; } .sch-card.sch-plan { border-left-color: #f59e0b; }
+        .sch-card.sch-int { border-left-color: #94a3b8; } .sch-card.sch-rej { border-left-color: #ef4444; opacity: .62; }
+        .sch-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .sch-card-title { font-weight: 700; font-size: 0.95rem; color: var(--text); line-height: 1.35; }
+        .sch-card-title a { color: #0071e3; text-decoration: none; }
+        .sch-org { display: block; font-size: 0.76rem; font-weight: 500; color: var(--text-muted); margin-top: 2px; }
+        .sch-del { background: none; border: none; color: var(--text-faint); font-size: 1.15rem; cursor: pointer; line-height: 1; flex: 0 0 auto; }
+        .sch-card-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+        .sch-amt { font-size: 1.05rem; font-weight: 800; color: #0369a1; }
+        .sch-due { font-size: 0.76rem; font-weight: 600; color: var(--text-muted); }
+        .sch-due.soon { color: #dc2626; }
+        .sch-status { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; font-size: 0.82rem; font-weight: 600; background: var(--surface); color: var(--text); cursor: pointer; }
+        .sch-status.sch-won { color: #15803d; } .sch-status.sch-app { color: #1d4ed8; } .sch-status.sch-rej { color: #b91c1c; }
+        /* ===== 결정 트래커 ===== */
+        .dec-tally { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .dec-t { border-radius: 14px; padding: 16px; text-align: center; border: 1px solid var(--border); }
+        .dec-t b { display: block; font-size: 2rem; font-weight: 800; line-height: 1; }
+        .dec-t span { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+        .dec-t-acc { background: linear-gradient(135deg,#f0fdf4,#dcfce7); } .dec-t-acc b { color: #15803d; }
+        .dec-t-wait { background: linear-gradient(135deg,#fff7ed,#ffedd5); } .dec-t-wait b { color: #c2410c; }
+        .dec-t-def { background: linear-gradient(135deg,#eef2ff,#e0e7ff); } .dec-t-def b { color: #4338ca; }
+        .dec-t-rej { background: var(--surface-2); } .dec-t-rej b { color: #6b7280; }
+        .dec-empty { padding: 22px; background: var(--surface-2); border-radius: 12px; color: var(--text-muted); line-height: 1.6; }
+        .dec-compare { margin-bottom: 20px; }
+        .dec-compare-head { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .dec-table-wrap { overflow-x: auto; }
+        .dec-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .dec-table th, .dec-table td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; white-space: nowrap; }
+        .dec-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: .03em; color: var(--text-muted); }
+        .dec-uni { font-weight: 700; color: var(--text); }
+        .dec-final-row { background: linear-gradient(90deg,#f0fdf4,transparent); }
+        .dec-final-chip { font-size: 0.66rem; font-weight: 800; background: #16a34a; color: #fff; padding: 2px 7px; border-radius: 9999px; }
+        .dec-coa-in { width: 110px; border: 1px solid var(--border); border-radius: 8px; padding: 6px 9px; font-size: 0.88rem; background: var(--surface); color: var(--text); }
+        .dec-net b { color: #0369a1; } .dec-net b.dec-cheap { color: #15803d; }
+        .dec-pick { border: 1px solid #0071e3; color: #0071e3; background: var(--surface); border-radius: 8px; padding: 6px 14px; font-weight: 700; font-size: 0.82rem; cursor: pointer; }
+        .dec-pick.on { background: #16a34a; border-color: #16a34a; color: #fff; }
+        .dec-final-panel { background: linear-gradient(135deg,#f0fdf4,#ecfeff); border: 1px solid #bbf7d0; border-radius: 16px; padding: 20px 22px; }
+        .dec-final-title { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+        .dec-final-row2 { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .dec-final-row2 label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: flex; flex-direction: column; gap: 5px; }
+        .dec-final-row2 input { border: 1px solid var(--border); border-radius: 9px; padding: 8px 11px; font-size: 0.9rem; background: var(--surface); color: var(--text); }
+        .dec-dday { font-size: 1.3rem; font-weight: 800; color: #dc2626; }
+        .dec-dday.past { font-size: 1rem; color: var(--text-faint); }
+        /* 주간 다이제스트 배너 */
+        .digest-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; background: linear-gradient(135deg,#eff6ff,#f0f9ff); border: 1px solid #bfdbfe; border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; }
+        html[data-theme="dark"] .digest-banner { background: linear-gradient(135deg,#0c1a2e,#0a1622); border-color: #1e3a5f; }
+        .digest-txt { font-size: 0.95rem; color: var(--text); }
+        .digest-actions { display: flex; align-items: center; gap: 8px; }
+        .digest-send { background: #0071e3; color: #fff; border: none; border-radius: 9999px; padding: 9px 18px; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+        .digest-send:disabled { opacity: .6; cursor: default; }
+        .digest-dismiss { background: transparent; border: none; color: var(--text-faint); font-size: 1.05rem; cursor: pointer; padding: 4px 8px; }
+        /* 네비 검색 버튼 */
+        .nav-search-btn { background: none; border: none; font-size: 1.05rem; cursor: pointer; padding: 4px 8px; border-radius: 8px; opacity: .8; }
+        .nav-search-btn:hover { opacity: 1; background: rgba(0,0,0,.05); }
+        /* 전체 검색 오버레이 */
+        .search-overlay { position: fixed; inset: 0; z-index: 3000; background: rgba(15,23,42,.45); backdrop-filter: blur(3px); display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px; }
+        .search-overlay.hidden { display: none; }
+        .search-box { width: 100%; max-width: 640px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.3); overflow: hidden; max-height: 72vh; display: flex; flex-direction: column; }
+        .search-input-row { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+        .search-ic { font-size: 1.1rem; }
+        #search-input { flex: 1 1 auto; border: none; outline: none; background: transparent; font-size: 1.05rem; color: var(--text); }
+        .search-esc { border: 1px solid var(--border); border-radius: 7px; background: var(--surface-2); color: var(--text-muted); font-size: 0.7rem; font-weight: 700; padding: 4px 8px; cursor: pointer; }
+        .search-results { overflow-y: auto; padding: 8px; }
+        .search-hint { padding: 22px 16px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+        .search-kbd { border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; font-size: 0.8rem; background: var(--surface-2); }
+        .search-group { margin-bottom: 6px; }
+        .search-group-head { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; padding: 8px 12px 4px; cursor: pointer; }
+        .search-goto { margin-left: auto; color: #0071e3; font-weight: 700; text-transform: none; letter-spacing: 0; }
+        .search-item { padding: 9px 12px; border-radius: 9px; cursor: pointer; }
+        .search-item:hover { background: var(--surface-2); }
+        .search-item-main { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+        .search-item-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 1px; }
         .admin-empty { color: var(--text-faint); padding: 20px; }
         .kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
         .kanban-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
@@ -1050,6 +1140,47 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .dash-nav a:hover { background: var(--surface-3); }
         .dash-data-btn { font-size: 1.05rem; line-height: 1; padding: 7px 10px; border-radius: 9999px; border: none; background: transparent; cursor: pointer; transition: background 0.2s; }
         .dash-data-btn:hover { background: var(--surface-3); }
+        .nav-hamburger { display: none; font-size: 1.4rem; line-height: 1; background: transparent; border: none; color: var(--text); cursor: pointer; padding: 6px 10px; border-radius: 10px; }
+
+        /* ===== 모바일 반응형 (태블릿·폰에서 데스크탑처럼 깔끔하게) ===== */
+        @media (max-width: 860px) {
+            .dash-topbar-inner { flex-wrap: wrap; padding: 10px 16px; gap: 8px; }
+            .dash-brand { font-size: 1.02rem; flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .nav-hamburger { display: block; order: 3; }
+            #auth-area { order: 2; }
+            .dash-nav {
+                order: 5; flex-basis: 100%; flex-direction: column; align-items: stretch; gap: 2px;
+                max-height: 0; overflow: hidden; opacity: 0; pointer-events: none;
+                transition: max-height .28s ease, opacity .2s ease; margin-top: 0;
+            }
+            .dash-nav.open { max-height: 78vh; overflow-y: auto; opacity: 1; pointer-events: auto; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+            .dash-nav a { padding: 12px 14px; border-radius: 12px; font-size: 1rem; }
+            .dash-nav a:active { background: var(--surface-3); }
+            .nav-search-btn, .dash-nav .theme-toggle, .dash-nav .dash-data-btn { text-align: left; padding: 12px 14px; border-radius: 12px; }
+            .nav-search-btn::after { content: ' 전체 검색'; font-size: 0.95rem; }
+            .dash-nav .theme-toggle::after { content: ' 다크 모드'; font-size: 0.95rem; }
+            .dash-nav .dash-data-btn::after { content: ' 백업 · 설정'; font-size: 0.95rem; }
+            /* 콘텐츠 여백·타이포 압축 */
+            main.container { padding-left: 14px !important; padding-right: 14px !important; }
+            main.dash-main, main.flex-grow { padding: 16px 14px !important; }
+            main > section.card { padding: 18px 16px !important; }
+            .section-title, main section .text-3xl { font-size: 1.55rem !important; }
+            /* 그리드 단순화 */
+            .ca-grid, .sch-grid, .scc-cats { grid-template-columns: 1fr; }
+            .sch-summary { grid-template-columns: 1fr; gap: 10px; }
+            .dec-tally { grid-template-columns: repeat(2, 1fr); }
+            .sch-add input, .sch-add-btn { flex: 1 1 100%; }
+            .digest-banner { flex-direction: column; align-items: stretch; }
+            .digest-actions { justify-content: space-between; }
+            .std-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .search-box { max-width: 100%; }
+            .search-overlay { padding: 8vh 10px 10px; }
+        }
+        @media (max-width: 480px) {
+            .dec-tally { grid-template-columns: 1fr 1fr; }
+            .section-title, main section .text-3xl { font-size: 1.35rem !important; }
+            main > section.card { padding: 15px 13px !important; }
+        }
 
         /* Auth area (login / user) */
         .dash-auth { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -2310,6 +2441,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .care-check{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px 20px; margin-bottom:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.05); }
         .care-check-head{ font-size:1rem; font-weight:800; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:7px; }
         .care-check-head .cc-count{ font-size:0.76rem; font-weight:800; padding:2px 10px; border-radius:999px; }
+        .cc-nudge{ margin-left:auto; background:#0071e3; color:#fff; border:none; border-radius:999px; padding:6px 14px; font-size:0.8rem; font-weight:700; cursor:pointer; white-space:nowrap; }
+        .cc-nudge:hover{ background:#0060c0; }
         .cc-list{ display:flex; flex-direction:column; gap:8px; }
         .cc-row{ display:flex; align-items:flex-start; gap:10px; padding:9px 12px; border-radius:11px; background:var(--surface-2); border:1px solid var(--border); }
         .cc-row.red{ background:rgba(255,59,48,0.06); border-color:rgba(255,59,48,0.28); }
@@ -2334,6 +2467,27 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .scc-bar > i { display: block; height: 100%; border-radius: 9999px; }
         .scc-remain { font-size: 0.78rem; color: #c2410c; line-height: 1.45; }
         .scc-remain.done { color: #16a34a; }
+        /* 카운셀러 비공개 메모 · 미팅 로그 */
+        .cn-wrap { display: flex; flex-direction: column; gap: 18px; }
+        .cn-privacy { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 14px; font-size: 0.85rem; color: #92400e; }
+        html[data-theme="dark"] .cn-privacy { background: #422006; border-color: #78350f; color: #fcd34d; }
+        .cn-section { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--surface); }
+        .cn-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .cn-head h4 { font-size: 1rem; font-weight: 700; color: var(--text); margin: 0; }
+        .cn-save { font-size: 0.75rem; color: var(--text-faint); font-weight: 600; }
+        .cn-save.saving { color: #0071e3; } .cn-save.saved { color: #16a34a; }
+        .cn-note { width: 100%; min-height: 130px; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 0.92rem; line-height: 1.6; background: var(--surface-2); color: var(--text); resize: vertical; font-family: inherit; }
+        .cn-mtg-add { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .cn-mtg-add .cn-m-date { flex: 0 0 auto; } .cn-mtg-add .cn-m-summary { flex: 1 1 220px; }
+        .cn-mtg-add input { border: 1px solid var(--border); border-radius: 9px; padding: 9px 12px; font-size: 0.9rem; background: var(--surface); color: var(--text); }
+        .cn-m-btn { background: #0071e3; color: #fff; border: none; border-radius: 9px; padding: 9px 16px; font-weight: 700; cursor: pointer; flex: 0 0 auto; }
+        .cn-mtg-list { display: flex; flex-direction: column; gap: 10px; }
+        .cn-mtg { border: 1px solid var(--border); border-left: 3px solid #0071e3; border-radius: 9px; padding: 10px 13px; background: var(--surface-2); }
+        .cn-mtg-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        .cn-mtg-date { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+        .cn-mtg-del { background: none; border: none; color: var(--text-faint); font-size: 1.1rem; cursor: pointer; line-height: 1; }
+        .cn-mtg-body { font-size: 0.9rem; color: var(--text); line-height: 1.55; white-space: pre-wrap; }
+        .cn-empty { font-size: 0.85rem; color: var(--text-faint); padding: 8px 0; }
         .sut-uni { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; background: var(--surface-2); }
         .sut-uni-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .sut-uni-name { font-weight: 700; color: var(--text); font-size: 0.95rem; flex: 0 0 auto; }
@@ -2390,6 +2544,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     <div id="ui-dialog-root"></div>
 
     <!-- Student Report Generator overlay (print → PDF) -->
+    <!-- 전체 검색 오버레이 -->
+    <div id="search-overlay" class="search-overlay hidden" onclick="if(event.target===this)closeSearch()">
+        <div class="search-box">
+            <div class="search-input-row">
+                <span class="search-ic">🔍</span>
+                <input type="text" id="search-input" placeholder="대학 · 에세이 · 할 일 · 장학금 · 커먼앱 검색…" oninput="runSearch(this.value)" autocomplete="off">
+                <button type="button" class="search-esc" onclick="closeSearch()">ESC</button>
+            </div>
+            <div id="search-results" class="search-results"></div>
+        </div>
+    </div>
+
     <div id="report-overlay" class="report-overlay hidden">
         <div class="report-toolbar">
             <div class="rt-left">
@@ -2506,13 +2672,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     <header class="dash-topbar">
         <div class="container mx-auto dash-topbar-inner">
             <h1 class="dash-brand">🎓 University Explorer</h1>
-            <nav class="dash-nav">
+            <button type="button" class="nav-hamburger" onclick="toggleMobileNav()" aria-label="메뉴" aria-expanded="false">☰</button>
+            <nav class="dash-nav" id="main-nav">
                 <a href="#home" onclick="showSection('home')">홈</a>
                 <a href="#university-list" onclick="showSection('university-list')">대학 리스트</a>
                 <a href="#common-app" onclick="showSection('common-app')">커먼앱</a>
                 <a href="#my-essays" onclick="showSection('my-essays')">에세이</a>
+                <a href="#scholarships" onclick="showSection('scholarships')">장학금</a>
+                <a href="#decision" onclick="showSection('decision')">결정</a>
                 <a href="#app-manager" onclick="showSection('app-manager')">프로필</a>
                 <a href="#my-notes" onclick="showSection('my-notes')">할 일</a>
+                <button type="button" class="nav-search-btn" onclick="openSearch()" title="전체 검색 (⌘K)" aria-label="검색">🔍</button>
                 <button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="다크모드 전환" aria-label="다크모드 전환">🌙</button>
                 <button type="button" class="dash-data-btn" onclick="openDataModal()" title="데이터 백업·캘린더">⚙️</button>
             </nav>
@@ -2530,6 +2700,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <p id="dash-greeting-date"></p>
             </div>
             <div id="student-feedback"></div>
+            <div id="digest-banner"></div>
             <div class="dash-grid">
                 <!-- Row 1: quick stats -->
                 <a class="bento" href="#my-essays" onclick="showSection('my-essays')">
@@ -2749,6 +2920,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <div id="commonapp-board"></div>
         </section>
 
+        <section id="scholarships" class="bg-white p-8 rounded-xl card transition-shadow duration-300 hover:shadow-xl">
+            <h2 class="text-3xl font-bold mb-2 section-title">💵 장학금 트래커</h2>
+            <p class="text-lg leading-relaxed mb-6">교외 장학금을 한곳에서 관리하세요. 마감일을 넣으면 <b>캘린더</b>에도 표시되고, 잠재 총액·수상 금액이 자동 집계돼요. 재정보조(대학 자체 지원)와는 별개로, 놓치기 쉬운 외부 장학금을 챙기는 곳이에요.</p>
+            <div id="scholarship-board"></div>
+        </section>
+
+        <section id="decision" class="bg-white p-8 rounded-xl card transition-shadow duration-300 hover:shadow-xl">
+            <h2 class="text-3xl font-bold mb-2 section-title">🎓 결정 (Decision Season)</h2>
+            <p class="text-lg leading-relaxed mb-6">합격 결과가 모이면 이곳에서 <b>합격한 학교들의 실제 부담 비용을 나란히 비교</b>하고 최종 진학교를 결정하세요. 결과는 <b>대학 리스트</b>의 각 대학 "합격 결과"에서 입력해요.</p>
+            <div id="decision-board"></div>
+        </section>
+
         <section id="my-notes" class="bg-white p-8 rounded-xl card transition-shadow duration-300 hover:shadow-xl">
             <h2 class="text-3xl font-bold mb-6 section-title">할 일 · 자주 묻는 질문</h2>
             <p class="text-lg leading-relaxed mb-6">
@@ -2784,6 +2967,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <span><span class="inline-block w-3 h-3 bg-amber-500 rounded-full mr-1 align-middle" style="background:#f59e0b;"></span> ⚠️ 소프트 데드라인 (3일 전)</span>
                         <span><span class="inline-block w-3 h-3 bg-blue-500 rounded-full mr-1 align-middle"></span> 📝 내부 마일스톤</span>
                         <span><span class="inline-block w-3 h-3 rounded-full mr-1 align-middle" style="background:#34c759;"></span> ✅ 행정 할 일</span>
+                        <span><span class="inline-block w-3 h-3 rounded-full mr-1 align-middle" style="background:#0ea5e9;"></span> 💵 장학금 마감</span>
+                        <span><span class="inline-block w-3 h-3 rounded-full mr-1 align-middle" style="background:#ec4899;"></span> 🎓 디파짓 마감</span>
                     </div>
                 </div>
 
@@ -3904,6 +4089,216 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div class="ca-overall-bar"><i style="width:${prog.pct}%"></i></div>
                 </div>
                 <div class="ca-grid">${catHtml}</div>`;
+        }
+
+        // =======================================================================
+        // 장학금 트래커 (교외 장학금 · 마감 캘린더 연동)
+        // =======================================================================
+        const SCHOLARSHIP_STATUS = ['관심', '지원 예정', '지원 완료', '수상', '불합격'];
+        const SCH_STATUS_CLASS = { '관심': 'sch-int', '지원 예정': 'sch-plan', '지원 완료': 'sch-app', '수상': 'sch-won', '불합격': 'sch-rej' };
+        let scholarships = []; // [{id, name, org, amount, deadline, status, url, notes}]
+        function loadScholarships() {
+            try { scholarships = JSON.parse(localStorage.getItem('myScholarships') || '[]') || []; } catch (e) { scholarships = []; }
+            if (!Array.isArray(scholarships)) scholarships = [];
+        }
+        function saveScholarships() { localStorage.setItem('myScholarships', JSON.stringify(scholarships)); }
+        function schAmountNum(a) { const n = parseInt(String(a || '').replace(/[^\d]/g, ''), 10); return isNaN(n) ? 0 : n; }
+        function addScholarship(ev) {
+            ev.preventDefault();
+            const f = ev.target;
+            const name = (f.querySelector('.sch-i-name').value || '').trim();
+            if (!name) return false;
+            scholarships.push({
+                id: generateUniqueId('sch-'), name,
+                org: (f.querySelector('.sch-i-org').value || '').trim(),
+                amount: (f.querySelector('.sch-i-amount').value || '').trim(),
+                deadline: f.querySelector('.sch-i-due').value || '',
+                url: (f.querySelector('.sch-i-url').value || '').trim(),
+                status: '관심', notes: ''
+            });
+            saveScholarships(); renderScholarships();
+            renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+            renderUpcomingDeadlines();
+            f.reset();
+            return false;
+        }
+        function updateScholarship(id, field, val) {
+            const s = scholarships.find(x => x.id === id); if (!s) return;
+            s[field] = val;
+            saveScholarships(); renderScholarships();
+            if (field === 'deadline' || field === 'status') {
+                renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+                renderUpcomingDeadlines();
+            }
+        }
+        function deleteScholarship(id) {
+            scholarships = scholarships.filter(x => x.id !== id);
+            saveScholarships(); renderScholarships();
+            renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+            renderUpcomingDeadlines();
+        }
+        function renderScholarships() {
+            const board = document.getElementById('scholarship-board');
+            if (!board) return;
+            const potential = scholarships.filter(s => s.status !== '불합격').reduce((sum, s) => sum + schAmountNum(s.amount), 0);
+            const won = scholarships.filter(s => s.status === '수상').reduce((sum, s) => sum + schAmountNum(s.amount), 0);
+            const wonN = scholarships.filter(s => s.status === '수상').length;
+            const appN = scholarships.filter(s => s.status === '지원 완료').length;
+            const summary = `<div class="sch-summary">
+                <div class="sch-stat"><span class="sch-stat-n">$${won.toLocaleString()}</span><span class="sch-stat-l">🏆 수상 확정 · ${wonN}건</span></div>
+                <div class="sch-stat"><span class="sch-stat-n">$${potential.toLocaleString()}</span><span class="sch-stat-l">💵 잠재 총액 (불합격 제외)</span></div>
+                <div class="sch-stat"><span class="sch-stat-n">${appN}</span><span class="sch-stat-l">📨 지원 완료 대기중</span></div>
+            </div>`;
+            const rank = { '지원 완료': 0, '지원 예정': 1, '관심': 2, '수상': 3, '불합격': 4 };
+            const sorted = [...scholarships].sort((a, b) => {
+                const ra = rank[a.status] ?? 5, rb = rank[b.status] ?? 5;
+                if (ra !== rb) return ra - rb;
+                return schDeadlineTime(a) - schDeadlineTime(b);
+            });
+            const statusOpts = s => SCHOLARSHIP_STATUS.map(o => `<option value="${o}" ${s.status === o ? 'selected' : ''}>${o}</option>`).join('');
+            const cards = sorted.map(s => {
+                let dueBadge = '';
+                if (s.deadline) {
+                    const dd = adminDaysUntil(s.deadline);
+                    const active = s.status === '관심' || s.status === '지원 예정';
+                    const soon = dd !== null && dd >= 0 && dd <= 14 && active;
+                    dueBadge = `<span class="sch-due ${soon ? 'soon' : ''}">📅 ${esc(formatDueShort(s.deadline))}${dd !== null && dd >= 0 && active ? ` · D-${dd}` : ''}</span>`;
+                }
+                const amt = schAmountNum(s.amount);
+                return `<div class="sch-card ${SCH_STATUS_CLASS[s.status] || ''}">
+                    <div class="sch-card-top">
+                        <div class="sch-card-title">
+                            ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)} ↗</a>` : esc(s.name)}
+                            ${s.org ? `<span class="sch-org">${esc(s.org)}</span>` : ''}
+                        </div>
+                        <button type="button" class="sch-del" title="삭제" onclick="deleteScholarship('${s.id}')">×</button>
+                    </div>
+                    <div class="sch-card-meta">
+                        ${amt ? `<span class="sch-amt">$${amt.toLocaleString()}</span>` : ''}
+                        ${dueBadge}
+                    </div>
+                    <select class="sch-status ${SCH_STATUS_CLASS[s.status] || ''}" onchange="updateScholarship('${s.id}','status',this.value)">${statusOpts(s)}</select>
+                </div>`;
+            }).join('');
+            board.innerHTML = summary + `
+                <form class="sch-add" onsubmit="return addScholarship(event)">
+                    <input type="text" class="sch-i-name" placeholder="장학금 이름 *" required>
+                    <input type="text" class="sch-i-org" placeholder="주최 기관">
+                    <input type="text" class="sch-i-amount" placeholder="금액 ($)" inputmode="numeric">
+                    <input type="date" class="sch-i-due" title="마감일">
+                    <input type="url" class="sch-i-url" placeholder="링크 (선택)">
+                    <button type="submit" class="sch-add-btn">+ 추가</button>
+                </form>
+                <div class="sch-grid">${cards || '<p class="dash-empty">아직 장학금이 없어요. 위에서 관심 장학금을 추가해보세요.</p>'}</div>`;
+        }
+        function schDeadlineTime(s) { if (!s.deadline) return Infinity; const d = new Date(s.deadline + 'T00:00:00'); return isNaN(d) ? Infinity : d.getTime(); }
+
+        // =======================================================================
+        // 결정 트래커 (Decision Season · 합격 결과 + 재정보조 비교 + 최종 진학 + 디파짓)
+        // =======================================================================
+        let decision = { finalUniId: '', depositDue: '', coa: {} };
+        function loadDecision() {
+            try { decision = JSON.parse(localStorage.getItem('myDecision') || '{}') || {}; } catch (e) { decision = {}; }
+            if (!decision || typeof decision !== 'object') decision = {};
+            if (!decision.coa || typeof decision.coa !== 'object') decision.coa = {};
+        }
+        function saveDecision() { localStorage.setItem('myDecision', JSON.stringify(decision)); }
+        function nextMayFirst() {
+            const now = new Date(); const y = now.getFullYear();
+            let d = new Date(y, 4, 1); // May 1 this year
+            if (d < now) d = new Date(y + 1, 4, 1);
+            return `${d.getFullYear()}-05-01`;
+        }
+        function setFinalChoice(uniId) {
+            decision.finalUniId = (decision.finalUniId === uniId) ? '' : uniId;
+            if (decision.finalUniId && !decision.depositDue) decision.depositDue = nextMayFirst();
+            saveDecision(); renderDecision();
+            renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+            renderUpcomingDeadlines();
+        }
+        function updateCoa(uniId, val) {
+            const n = parseInt(String(val || '').replace(/[^\d]/g, ''), 10);
+            if (n) decision.coa[uniId] = n; else delete decision.coa[uniId];
+            saveDecision(); renderDecision();
+        }
+        function updateDepositDue(val) {
+            decision.depositDue = val || '';
+            saveDecision(); renderDecision();
+            renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+            renderUpcomingDeadlines();
+        }
+        function decisionNetCost(u) {
+            const coa = decision.coa[u.id];
+            if (!coa) return null;
+            const aid = schAmountNum(u.aidAmount);
+            return Math.max(0, coa - aid);
+        }
+        function renderDecision() {
+            const board = document.getElementById('decision-board');
+            if (!board) return;
+            const unis = universities || [];
+            const tally = { '합격': 0, '불합격': 0, '대기': 0, '유예': 0 };
+            unis.forEach(u => { if (u.result && tally[u.result] !== undefined) tally[u.result]++; });
+            const decided = unis.filter(u => u.result).length;
+            const accepted = unis.filter(u => u.result === '합격');
+            // 상단 결과 요약
+            const tallyHtml = `<div class="dec-tally">
+                <div class="dec-t dec-t-acc"><b>${tally['합격']}</b><span>🎉 합격</span></div>
+                <div class="dec-t dec-t-wait"><b>${tally['대기']}</b><span>⏳ 대기</span></div>
+                <div class="dec-t dec-t-def"><b>${tally['유예']}</b><span>🔁 유예</span></div>
+                <div class="dec-t dec-t-rej"><b>${tally['불합격']}</b><span>😌 불합격</span></div>
+            </div>`;
+            if (decided === 0) {
+                board.innerHTML = tallyHtml + `<div class="dec-empty">아직 결과가 없어요. <b>대학 리스트</b>에서 각 대학의 <b>합격 결과</b>를 입력하면, 합격한 학교들의 <b>재정보조를 나란히 비교</b>하고 최종 진학교를 결정할 수 있어요.</div>`;
+                return;
+            }
+            // 합격교 재정보조 비교
+            let compare = '';
+            if (accepted.length) {
+                const nets = accepted.map(u => decisionNetCost(u)).filter(v => v !== null);
+                const minNet = nets.length ? Math.min(...nets) : null;
+                const rows = accepted.map(u => {
+                    const coa = decision.coa[u.id] || '';
+                    const aid = schAmountNum(u.aidAmount);
+                    const net = decisionNetCost(u);
+                    const isFinal = decision.finalUniId === u.id;
+                    const cheapest = net !== null && net === minNet;
+                    return `<tr class="${isFinal ? 'dec-final-row' : ''}">
+                        <td class="dec-uni">${esc(u.nameEn || u.nameKo || '대학')}${isFinal ? ' <span class="dec-final-chip">최종 선택</span>' : ''}</td>
+                        <td><input type="text" class="dec-coa-in" inputmode="numeric" value="${coa ? '$' + Number(coa).toLocaleString() : ''}" placeholder="총 비용" onchange="updateCoa('${u.id}', this.value)"></td>
+                        <td class="dec-aid">${aid ? '$' + aid.toLocaleString() : '<span class="rp-dim">–</span>'}</td>
+                        <td class="dec-net">${net !== null ? `<b class="${cheapest ? 'dec-cheap' : ''}">$${net.toLocaleString()}${cheapest ? ' 💰' : ''}</b>` : '<span class="rp-dim">비용 입력</span>'}</td>
+                        <td><button type="button" class="dec-pick ${isFinal ? 'on' : ''}" onclick="setFinalChoice('${u.id}')">${isFinal ? '✓ 선택됨' : '선택'}</button></td>
+                    </tr>`;
+                }).join('');
+                compare = `<div class="dec-compare">
+                    <div class="dec-compare-head">🎓 합격한 ${accepted.length}개 학교 · 재정보조 비교</div>
+                    <p class="tl-sub">총 비용(COA)을 입력하면 <b>순비용 = 총 비용 − 받은 보조</b>가 자동 계산돼요. 가장 저렴한 학교엔 💰 표시가 붙어요. (받은 보조는 대학 리스트의 합격 결과에서 입력한 금액)</p>
+                    <div class="dec-table-wrap"><table class="dec-table">
+                        <thead><tr><th>대학</th><th>총 비용 (COA)</th><th>받은 보조</th><th>순비용/년</th><th>결정</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table></div>
+                </div>`;
+            } else {
+                compare = `<div class="dec-compare"><div class="dec-empty">합격한 학교가 아직 없어요. 합격 결과가 들어오면 여기서 재정보조를 비교할 수 있어요.</div></div>`;
+            }
+            // 최종 결정 + 디파짓
+            let finalPanel = '';
+            const finalUni = unis.find(u => u.id === decision.finalUniId);
+            if (finalUni) {
+                const dd = decision.depositDue ? adminDaysUntil(decision.depositDue) : null;
+                finalPanel = `<div class="dec-final-panel">
+                    <div class="dec-final-title">🎊 최종 진학: <b>${esc(finalUni.nameEn || finalUni.nameKo)}</b></div>
+                    <div class="dec-final-row2">
+                        <label>디파짓(등록금 예치) 마감일
+                            <input type="date" value="${esc(decision.depositDue || '')}" onchange="updateDepositDue(this.value)">
+                        </label>
+                        ${dd !== null && dd >= 0 ? `<span class="dec-dday">D-${dd}</span>` : (dd !== null && dd < 0 ? `<span class="dec-dday past">지남</span>` : '')}
+                    </div>
+                    <p class="tl-sub">디파짓 마감은 <b>캘린더</b>에도 표시돼요. 마감 전에 예치를 완료해야 입학이 확정됩니다.</p>
+                </div>`;
+            }
+            board.innerHTML = tallyHtml + compare + finalPanel;
         }
 
         // ===== Per-university To-Do tracker (drives University List "준비 %" + calendar) =====
@@ -5688,6 +6083,29 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     });
                 });
             });
+            // Scholarship deadlines (still open — not won/rejected)
+            (scholarships || []).forEach(s => {
+                if (!s || !s.deadline || s.status === '수상' || s.status === '불합격') return;
+                const d = new Date(s.deadline + 'T00:00:00');
+                if (isNaN(d)) return;
+                d.setHours(0, 0, 0, 0);
+                events.push({
+                    date: d, kind: 'scholarship', icon: '💵', label: (s.name || '장학금') + ' 마감',
+                    uniName: s.org || '장학금', uniNameKo: '', deadlineType: '장학금', deadlineDate: d
+                });
+            });
+            // Enrollment deposit deadline for the final-choice school
+            if (decision && decision.finalUniId && decision.depositDue) {
+                const fu = universities.find(u => u.id === decision.finalUniId);
+                const d = new Date(decision.depositDue + 'T00:00:00');
+                if (!isNaN(d)) {
+                    d.setHours(0, 0, 0, 0);
+                    events.push({
+                        date: d, kind: 'deposit', icon: '🎓', label: '디파짓(등록) 마감',
+                        uniName: fu ? (fu.nameEn || fu.nameKo || '진학교') : '진학교', uniNameKo: '', deadlineType: '디파짓', deadlineDate: d
+                    });
+                }
+            }
             events.sort((a, b) => a.date - b.date);
             return events;
         }
@@ -5764,7 +6182,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (!dayEvents.length) return;
 
             // Dot colour follows the highest-priority event on that day
-            const priority = { deadline: 4, admin: 3, soft: 2, milestone: 1 };
+            const priority = { deposit: 5, deadline: 4, scholarship: 3, admin: 3, soft: 2, milestone: 1, todo: 1 };
             dayEvents.sort((a, b) => priority[b.kind] - priority[a.kind]);
             const top = dayEvents[0];
 
@@ -5797,7 +6215,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const TL_KIND_TAG = { milestone: ['준비 단계', 'tl-k-mile'], soft: ['권장 마감', 'tl-k-soft'], deadline: ['최종 마감', 'tl-k-dead'], admin: ['행정', 'tl-k-admin'] };
         function showDayEventsModal(events) {
             if (!events || !events.length) return;
-            const priority = { deadline: 4, admin: 3, soft: 2, milestone: 1 };
+            const priority = { deposit: 5, deadline: 4, scholarship: 3, admin: 3, soft: 2, milestone: 1, todo: 1 };
             const sorted = events.slice().sort((a, b) => priority[b.kind] - priority[a.kind]);
             const date = sorted[0].date;
             const dstr = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${['일', '월', '화', '수', '목', '금', '토'][date.getDay()]})`;
@@ -5953,7 +6371,86 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
 
         /** Renders the home dashboard bento cards from live data. */
+        // ===== 주간 요약 이메일 다이제스트 (학생 본인에게 발송) =====
+        function loadDigestMeta() { try { return JSON.parse(localStorage.getItem('digestMeta') || '{}') || {}; } catch (e) { return {}; } }
+        function digestDaysSince() { const m = loadDigestMeta(); if (!m.lastSentAt) return 999; return Math.floor((Date.now() - m.lastSentAt) / 86400000); }
+        function composeDigest() {
+            const lines = [];
+            // 이번 주 마감 (7일 이내)
+            const evs = generateTimelineEvents().filter(e => { const d = daysUntil(e.date); return d >= 0 && d <= 7; });
+            if (evs.length) {
+                lines.push('📅 이번 주 마감 · 일정');
+                evs.slice(0, 6).forEach(e => { const d = daysUntil(e.date); lines.push(`  ${e.icon} D-${d} ${e.label}${e.uniName ? ' · ' + e.uniName : ''}`); });
+                if (evs.length > 6) lines.push(`  … 외 ${evs.length - 6}건`);
+                lines.push('');
+            }
+            // Common App
+            const cap = commonAppProgress();
+            lines.push(`📋 Common App: ${cap.pct}% (필수 ${cap.reqDone}/${cap.reqTotal})`);
+            const capNext = [];
+            COMMONAPP_TEMPLATE.forEach(cat => cat.items.forEach(it => { if (!it.optional && !commonApp[it.id] && capNext.length < 3) capNext.push(it.text); }));
+            if (capNext.length) lines.push('  다음 할 것: ' + capNext.join(', '));
+            // 대학별 준비 낮은 학교
+            if ((universities || []).length) {
+                const low = universities.map(u => ({ u, p: computeUniProgress(u).pct })).sort((a, b) => a.p - b.p)[0];
+                if (low) lines.push(`🎯 가장 준비가 필요한 학교: ${low.u.nameEn || low.u.nameKo} (${low.p}%)`);
+            }
+            // 행정 남은
+            const adminPending = (adminTasks || []).flatMap(c => (Array.isArray(c && c.items) ? c.items : [])).filter(i => i && !i.done).length;
+            if (adminPending) lines.push(`✅ 행정 체크리스트: ${adminPending}개 남음`);
+            // 장학금 임박
+            const schSoon = (scholarships || []).filter(s => s.deadline && (s.status === '관심' || s.status === '지원 예정') && (() => { const dd = adminDaysUntil(s.deadline); return dd !== null && dd >= 0 && dd <= 14; })());
+            if (schSoon.length) lines.push(`💵 마감 임박 장학금 ${schSoon.length}건`);
+            const itemCount = evs.length + capNext.length + adminPending + schSoon.length;
+            return { text: lines.join('\n'), itemCount, deadlineCount: evs.length, capPct: cap.pct };
+        }
+        async function sendDigestEmail() {
+            if (!currentUser || !currentUser.email) { toast('로그인 후 이용해주세요.', 'error'); return; }
+            const dg = composeDigest();
+            const btn = document.getElementById('digest-send-btn');
+            if (btn) { btn.disabled = true; btn.textContent = '보내는 중…'; }
+            try {
+                const ej = await ensureEmailJs();
+                await ej.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+                    to_email: currentUser.email,
+                    student_name: (safeParse(localStorage.getItem('userProfile'), {}) || {}).nameKo || currentUser.displayName || '학생',
+                    teacher_name: 'University Explorer',
+                    feedback_text: dg.text || '이번 주는 급한 항목이 없어요. 페이스 유지해요! 🙌',
+                    feedback_context: '📋 이번 주 요약',
+                    urgency_label: dg.deadlineCount ? `📅 이번 주 마감 ${dg.deadlineCount}건` : '🔵 주간 진행 요약',
+                    date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }),
+                    app_url: 'https://y0se0p.github.io'
+                });
+                localStorage.setItem('digestMeta', JSON.stringify({ lastSentAt: Date.now() }));
+                toast('이번 주 요약을 이메일로 보냈어요 📩', 'success');
+                renderDigestBanner();
+            } catch (e) {
+                if (e && e.message === 'not-configured') { toast('이메일 기능이 아직 설정되지 않았어요.', 'error'); }
+                else { console.warn('digest failed', e); toast('이메일 발송 실패: ' + ((e && (e.text || e.message)) || e), 'error'); }
+                if (btn) { btn.disabled = false; btn.textContent = '📩 이번 주 요약 메일 받기'; }
+            }
+        }
+        function dismissDigest() {
+            localStorage.setItem('digestMeta', JSON.stringify({ lastSentAt: Date.now() }));
+            renderDigestBanner();
+        }
+        function renderDigestBanner() {
+            const el = document.getElementById('digest-banner');
+            if (!el) return;
+            const due = digestDaysSince() >= 7;
+            if (!due) { el.innerHTML = ''; return; }
+            const dg = composeDigest();
+            el.innerHTML = `<div class="digest-banner">
+                <div class="digest-txt">📬 <b>이번 주 요약</b>이 준비됐어요${dg.deadlineCount ? ` · 이번 주 마감 <b>${dg.deadlineCount}건</b>` : ''} · Common App <b>${dg.capPct}%</b></div>
+                <div class="digest-actions">
+                    <button type="button" id="digest-send-btn" class="digest-send" onclick="sendDigestEmail()">📩 이번 주 요약 메일 받기</button>
+                    <button type="button" class="digest-dismiss" onclick="dismissDigest()" title="이번 주는 넘기기">✕</button>
+                </div>
+            </div>`;
+        }
+
         function renderDashboard() {
+            renderDigestBanner();
             // Greeting date
             const dateEl = document.getElementById('dash-greeting-date');
             if (dateEl) {
@@ -6485,7 +6982,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             setTimeout(() => location.reload(), 900);
         }
 
-        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors', 'myUniTodos', 'myCommonApp'];
+        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors', 'myUniTodos', 'myCommonApp', 'myScholarships', 'myDecision', 'digestMeta'];
 
         function triggerDownload(filename, content, mime) {
             const blob = new Blob([content], { type: mime });
@@ -7349,9 +7846,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Re-run every load + render after cloud data lands in localStorage
         function refreshAppFromStorage() {
             loadUniversities(); loadMatchWeights(); loadAdminTasks(); loadSupplementalEssays();
-            loadMotivationStatement(); loadFavoriteUniversities(); loadUniTodos(); loadCommonApp();
+            loadMotivationStatement(); loadFavoriteUniversities(); loadUniTodos(); loadCommonApp(); loadScholarships(); loadDecision();
             applyFiltersAndSort(); renderSupplementalEssays(); renderFavoriteUniversities();
-            renderProsConsCards(); renderAdminBoard(); renderUniTodoBoard(); renderCommonApp(); renderDashboard();
+            renderProsConsCards(); renderAdminBoard(); renderUniTodoBoard(); renderCommonApp(); renderScholarships(); renderDecision(); renderDashboard();
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
             renderUpcomingDeadlines();
             loadAppManager();
@@ -7536,7 +8033,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // ===== Teacher dashboard state =====
         let teacherStudents = [];
         let teacherStudentsUnsub = null;
-        let teacherState = { studentClasses: {}, feedbackTemplates: [], statsHistory: [], admitLevels: {}, hiddenFeedback: {} };
+        let teacherState = { studentClasses: {}, feedbackTemplates: [], statsHistory: [], admitLevels: {}, hiddenFeedback: {}, counselorNotes: {} };
         let teacherShowHidden = false;
         let teacherFilter = { q: '', sort: 'risk', risk: 'all', cls: 'all', only: '' };
         const DEFAULT_FB_TEMPLATES = [
@@ -7555,7 +8052,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     feedbackTemplates: teacherState.feedbackTemplates,
                     statsHistory: teacherState.statsHistory,
                     admitLevels: teacherState.admitLevels || {},
-                    hiddenFeedback: teacherState.hiddenFeedback || {}
+                    hiddenFeedback: teacherState.hiddenFeedback || {},
+                    counselorNotes: teacherState.counselorNotes || {}
                 }, { merge: true });
             } catch (e) { console.warn('teacher state save failed', e); }
         }
@@ -7621,9 +8119,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     feedbackTemplates: (td.feedbackTemplates && td.feedbackTemplates.length) ? td.feedbackTemplates : DEFAULT_FB_TEMPLATES.slice(),
                     statsHistory: td.statsHistory || [],
                     admitLevels: td.admitLevels || {},
-                    hiddenFeedback: td.hiddenFeedback || {}
+                    hiddenFeedback: td.hiddenFeedback || {},
+                    counselorNotes: td.counselorNotes || {}
                 };
-            } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {}, hiddenFeedback: {} }; }
+            } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {}, hiddenFeedback: {}, counselorNotes: {} }; }
             stopTeacherStudentsWatch();   // manual refresh → force a fresh subscription
             startCohortWatch();
         }
@@ -8014,6 +8513,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div class="std-tabs">
                         <button class="std-tab" id="std-tab-report" onclick="switchStudentTab('report')">📊 진행 현황</button>
                         <button class="std-tab" id="std-tab-profile" onclick="switchStudentTab('profile')">🎓 프로필</button>
+                        <button class="std-tab" id="std-tab-notes" onclick="switchStudentTab('notes')">🔒 상담 메모</button>
                         <button class="std-tab" id="std-tab-chat" onclick="switchStudentTab('chat')">💬 메시지${chatUnreadCount(data) ? `<span class="std-tab-badge">${chatUnreadCount(data)}</span>` : ''}</button>
                     </div>
                     <div id="std-tab-content"></div>`;
@@ -8031,7 +8531,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const redN = gaps.filter(g => g.sev === 'red').length;
             const countCls = redN ? 'gap-red' : 'gap-yellow';
             const rows = sorted.map(g => `<div class="cc-row ${g.sev}"><span class="cc-ic">${g.icon}</span><span class="cc-txt">${esc(g.text)}</span></div>`).join('');
-            return `<div class="care-check"><div class="care-check-head">🔎 케어 체크리스트 <span class="cc-count ${countCls}">${gaps.length}건 확인 필요</span></div><div class="cc-list">${rows}</div></div>`;
+            return `<div class="care-check"><div class="care-check-head">🔎 케어 체크리스트 <span class="cc-count ${countCls}">${gaps.length}건 확인 필요</span><button type="button" class="cc-nudge" onclick="sendNudge()">📩 리마인드 보내기</button></div><div class="cc-list">${rows}</div></div>`;
         }
         function chatUnreadCount(d) {
             const seen = (d && d.chatSeen && d.chatSeen.teacher) || 0;
@@ -8040,9 +8540,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
         function switchStudentTab(tab) {
             const data = currentStudentData; if (!data) return;
-            const rBtn = document.getElementById('std-tab-report'), pBtn = document.getElementById('std-tab-profile'), cBtn = document.getElementById('std-tab-chat');
+            const rBtn = document.getElementById('std-tab-report'), pBtn = document.getElementById('std-tab-profile'), cBtn = document.getElementById('std-tab-chat'), nBtn = document.getElementById('std-tab-notes');
             if (rBtn) rBtn.classList.toggle('active', tab === 'report');
             if (pBtn) pBtn.classList.toggle('active', tab === 'profile');
+            if (nBtn) nBtn.classList.toggle('active', tab === 'notes');
             if (cBtn) cBtn.classList.toggle('active', tab === 'chat');
             const c = document.getElementById('std-tab-content'); if (!c) return;
             if (tab !== 'chat') stopWatchStudentChat();
@@ -8055,6 +8556,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 if (badge) badge.remove();
             } else if (tab === 'profile') {
                 c.innerHTML = buildStudentProfile(data);
+            } else if (tab === 'notes') {
+                c.innerHTML = buildCounselorNotes(currentStudentUid);
             } else {
                 c.innerHTML = buildCareChecklist(data) + buildStudentReport(data) + buildStudentCommonApp(data) + buildStudentUniTodos(data) + buildFeedbackPanel(data);
             }
@@ -8324,6 +8827,74 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             </div>`;
         }
 
+        // ===== 카운셀러 비공개 메모 · 미팅 로그 (선생님 전용 · 학생에겐 절대 안 보임) =====
+        // users/{teacherUid}.counselorNotes[studentUid] = { note, meetings:[{id,date,summary,at}] }
+        function getCounselorEntry(uid) {
+            if (!teacherState.counselorNotes) teacherState.counselorNotes = {};
+            if (!teacherState.counselorNotes[uid]) teacherState.counselorNotes[uid] = { note: '', meetings: [] };
+            const e = teacherState.counselorNotes[uid];
+            if (!Array.isArray(e.meetings)) e.meetings = [];
+            return e;
+        }
+        let counselorNoteTimer = null;
+        function saveCounselorNote(uid, text) {
+            const e = getCounselorEntry(uid);
+            e.note = text;
+            const dot = document.getElementById('cn-save-state');
+            if (dot) { dot.textContent = '저장 중…'; dot.className = 'cn-save saving'; }
+            clearTimeout(counselorNoteTimer);
+            counselorNoteTimer = setTimeout(async () => {
+                await saveTeacherState();
+                const d = document.getElementById('cn-save-state');
+                if (d) { d.textContent = '✓ 저장됨'; d.className = 'cn-save saved'; }
+            }, 700);
+        }
+        async function addMeetingLog(uid, ev) {
+            ev.preventDefault();
+            const f = ev.target;
+            const date = f.querySelector('.cn-m-date').value;
+            const summary = (f.querySelector('.cn-m-summary').value || '').trim();
+            if (!summary) return false;
+            const e = getCounselorEntry(uid);
+            e.meetings.unshift({ id: generateUniqueId('mtg-'), date: date || '', summary, at: Date.now() });
+            await saveTeacherState();
+            switchStudentTab('notes');
+            return false;
+        }
+        async function deleteMeetingLog(uid, id) {
+            const e = getCounselorEntry(uid);
+            e.meetings = e.meetings.filter(m => m.id !== id);
+            await saveTeacherState();
+            switchStudentTab('notes');
+        }
+        function buildCounselorNotes(uid) {
+            const e = getCounselorEntry(uid);
+            const meetings = e.meetings.slice().sort((a, b) => (b.at || 0) - (a.at || 0));
+            const mHtml = meetings.length ? meetings.map(m => {
+                const dLabel = m.date ? formatDueShort(m.date) : new Date(m.at).toLocaleDateString('ko-KR');
+                return `<div class="cn-mtg">
+                    <div class="cn-mtg-top"><span class="cn-mtg-date">🗓️ ${esc(dLabel)}</span><button type="button" class="cn-mtg-del" onclick="deleteMeetingLog('${uid}','${m.id}')" title="삭제">×</button></div>
+                    <div class="cn-mtg-body">${esc(m.summary)}</div>
+                </div>`;
+            }).join('') : '<p class="cn-empty">아직 미팅 기록이 없어요. 상담 후 요약을 남겨두면 다음 상담 때 큰 도움이 돼요.</p>';
+            return `<div class="cn-wrap">
+                <div class="cn-privacy">🔒 이 탭의 메모와 미팅 기록은 <b>선생님만</b> 볼 수 있어요. 학생 화면에는 절대 표시되지 않습니다.</div>
+                <div class="cn-section">
+                    <div class="cn-head"><h4>📝 비공개 메모</h4><span id="cn-save-state" class="cn-save">자동 저장</span></div>
+                    <textarea class="cn-note" placeholder="이 학생에 대한 관찰·전략·주의사항을 자유롭게 적어두세요. (예: 부모님 재정보조 민감 / ED는 Cornell 강력 희망 / 에세이 톤 조정 필요)" oninput="saveCounselorNote('${uid}', this.value)">${esc(e.note || '')}</textarea>
+                </div>
+                <div class="cn-section">
+                    <div class="cn-head"><h4>🗓️ 미팅 로그</h4></div>
+                    <form class="cn-mtg-add" onsubmit="return addMeetingLog('${uid}', event)">
+                        <input type="date" class="cn-m-date" title="미팅 날짜">
+                        <input type="text" class="cn-m-summary" placeholder="상담 요약 (무엇을 논의했고 다음 액션은?)" required>
+                        <button type="submit" class="cn-m-btn">+ 기록</button>
+                    </form>
+                    <div class="cn-mtg-list">${mHtml}</div>
+                </div>
+            </div>`;
+        }
+
         // Teacher-only "hide from my view" for feedback clutter. Hidden IDs live in the teacher's own
         // state (users/{teacherUid}.hiddenFeedback) so the STUDENT always keeps seeing every feedback.
         function isFeedbackHidden(id) { return !!(id && teacherState.hiddenFeedback && teacherState.hiddenFeedback[id]); }
@@ -8416,6 +8987,44 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 console.warn('email send failed', e);
                 const reason = (e && (e.text || e.message)) || JSON.stringify(e);
                 toast('📧 이메일 발송 실패: ' + reason + '\n(피드백 자체는 저장됐어요)', 'error');
+            }
+        }
+
+        // ===== 선생님 원클릭 넛지: 갭 기반 리마인드 (이메일 + 채팅 기록) =====
+        async function sendNudge() {
+            if (!currentStudentData || !currentStudentUid) { toast('학생을 먼저 선택해주세요.', 'error'); return; }
+            const gaps = computeStudentGaps(currentStudentData, currentStudentUid)
+                .filter(g => g.sev === 'red' || g.sev === 'yellow');
+            if (!gaps.length) { toast('지금은 리마인드할 항목이 없어요. 잘하고 있어요! 🎉', 'success'); return; }
+            const top = gaps.slice(0, 6);
+            const list = top.map(g => `${g.icon} ${g.text}`).join('\n');
+            const body = `안녕하세요 ${currentStudentName}님, 아래 항목들을 챙겨주세요:\n\n${list}\n\n궁금한 점은 언제든 메시지로 물어보세요!`;
+            const ok = await showConfirm('리마인드 보내기', `${currentStudentName}님에게 아래 내용을 보냅니다.\n(메시지로 기록되고${currentStudentEmail ? ', 이메일로도 발송돼요' : ''})\n\n${body}`, { icon: '📩', confirmText: '보내기' });
+            if (!ok) return;
+            // 1) 채팅 메시지로 기록 (학생이 앱에서 바로 확인)
+            try {
+                const msg = { id: generateUniqueId('msg-'), from: 'teacher', name: currentUser.displayName || currentUser.email, text: body, at: Date.now() };
+                await fbDb.collection('students').doc(currentStudentUid).update({ messages: firebase.firestore.FieldValue.arrayUnion(msg), 'chatSeen.teacher': Date.now() });
+            } catch (e) { toast('메시지 기록 실패: ' + e.message, 'error'); }
+            // 2) 이메일 알림 (EmailJS 템플릿 재사용)
+            if (currentStudentEmail) {
+                try {
+                    const ej = await ensureEmailJs();
+                    await ej.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+                        to_email: currentStudentEmail, student_name: currentStudentName || '학생',
+                        teacher_name: currentUser.displayName || currentUser.email || '선생님',
+                        feedback_text: body, feedback_context: '🔔 할 일 리마인드',
+                        urgency_label: gaps.some(g => g.sev === 'red') ? '🔴 마감 임박 항목 포함' : '🟡 확인 요망',
+                        date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        app_url: 'https://y0se0p.github.io'
+                    });
+                    toast('리마인드를 메시지 + 이메일로 보냈어요 📩', 'success');
+                } catch (e) {
+                    if (e && e.message === 'not-configured') { toast('리마인드를 메시지로 보냈어요 (이메일 미설정) 📩', 'success'); }
+                    else { console.warn('nudge email failed', e); toast('메시지는 보냈지만 이메일 발송은 실패했어요.', 'error'); }
+                }
+            } else {
+                toast('리마인드를 메시지로 보냈어요 📩', 'success');
             }
         }
 
@@ -8984,7 +9593,76 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             saveRequirements(); renderRequirements();
         }
 
+        // ===== 전체 검색 (학생 데이터 통합) =====
+        function openSearch() {
+            closeMobileNav();
+            const ov = document.getElementById('search-overlay'); if (!ov) return;
+            ov.classList.remove('hidden');
+            const inp = document.getElementById('search-input');
+            if (inp) { inp.value = ''; setTimeout(() => inp.focus(), 50); }
+            runSearch('');
+        }
+        function closeSearch() {
+            const ov = document.getElementById('search-overlay'); if (ov) ov.classList.add('hidden');
+        }
+        function searchGo(section) { closeSearch(); showSection(section); }
+        function runSearch(qRaw) {
+            const box = document.getElementById('search-results'); if (!box) return;
+            const q = (qRaw || '').trim().toLowerCase();
+            if (!q) {
+                box.innerHTML = `<div class="search-hint">대학 이름, 에세이, 할 일, 장학금, 커먼앱 항목을 한 번에 검색하세요. <span class="search-kbd">⌘K</span> 로 언제든 열 수 있어요.</div>`;
+                return;
+            }
+            const groups = [];
+            const hit = s => (s || '').toString().toLowerCase().includes(q);
+            // 대학
+            const uMatch = (universities || []).filter(u => hit(u.nameEn) || hit(u.nameKo) || hit(u.location) || hit(u.ranking));
+            if (uMatch.length) groups.push({ icon: '🏫', title: '대학', section: 'university-list', items: uMatch.slice(0, 6).map(u => ({ main: u.nameEn || u.nameKo, sub: [u.nameKo && u.nameEn ? u.nameKo : '', u.location, u.ranking].filter(Boolean).join(' · ') })) });
+            // 에세이
+            const eMatch = (supplementalEssays || []).filter(e => hit(e.prompt) || hit(e.type) || hit(e.uniName));
+            if (eMatch.length) groups.push({ icon: '✍️', title: '에세이', section: 'my-essays', items: eMatch.slice(0, 6).map(e => { const u = (universities || []).find(x => x.id === e.universityId); return { main: (u && (u.nameEn || u.nameKo)) || e.uniName || '에세이', sub: (e.prompt || e.type || '').slice(0, 60) }; }) });
+            // 대학별 할 일
+            const tMatch = [];
+            Object.keys(uniTodos || {}).forEach(uid => (uniTodos[uid] || []).forEach(t => { if (hit(t.text)) { const u = (universities || []).find(x => x.id === uid); tMatch.push({ main: t.text, sub: '🎯 ' + ((u && (u.nameEn || u.nameKo)) || '대학') + (t.done ? ' · 완료' : '') }); } }));
+            if (tMatch.length) groups.push({ icon: '🎯', title: '대학별 할 일', section: 'my-notes', items: tMatch.slice(0, 6) });
+            // 행정 체크리스트
+            const aMatch = [];
+            (adminTasks || []).forEach(c => (c.items || []).forEach(i => { if (hit(i.text)) aMatch.push({ main: i.text, sub: '✅ ' + ((c.icon || '') + ' ' + (c.name || '행정')) + (i.done ? ' · 완료' : '') }); }));
+            if (aMatch.length) groups.push({ icon: '✅', title: '행정 체크리스트', section: 'my-notes', items: aMatch.slice(0, 6) });
+            // 장학금
+            const sMatch = (scholarships || []).filter(s => hit(s.name) || hit(s.org));
+            if (sMatch.length) groups.push({ icon: '💵', title: '장학금', section: 'scholarships', items: sMatch.slice(0, 6).map(s => ({ main: s.name, sub: [s.org, s.status].filter(Boolean).join(' · ') })) });
+            // 커먼앱
+            const cMatch = [];
+            COMMONAPP_TEMPLATE.forEach(cat => cat.items.forEach(it => { if (hit(it.text) || hit(cat.name)) cMatch.push({ main: it.text, sub: '📋 ' + cat.name + (commonApp[it.id] ? ' · 완료' : '') }); }));
+            if (cMatch.length) groups.push({ icon: '📋', title: '커먼앱', section: 'common-app', items: cMatch.slice(0, 6) });
+
+            if (!groups.length) { box.innerHTML = `<div class="search-hint">"${esc(qRaw)}"에 대한 결과가 없어요.</div>`; return; }
+            box.innerHTML = groups.map(g => `
+                <div class="search-group">
+                    <div class="search-group-head" onclick="searchGo('${g.section}')">${g.icon} ${g.title} <span class="search-goto">이동 →</span></div>
+                    ${g.items.map(it => `<div class="search-item" onclick="searchGo('${g.section}')"><div class="search-item-main">${esc(it.main)}</div>${it.sub ? `<div class="search-item-sub">${esc(it.sub)}</div>` : ''}</div>`).join('')}
+                </div>`).join('');
+        }
+
+        // ===== 모바일 네비 드로어 =====
+        function toggleMobileNav() {
+            const nav = document.getElementById('main-nav'); if (!nav) return;
+            const open = nav.classList.toggle('open');
+            const btn = document.querySelector('.nav-hamburger');
+            if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+        function closeMobileNav() {
+            const nav = document.getElementById('main-nav');
+            if (nav && nav.classList.contains('open')) {
+                nav.classList.remove('open');
+                const btn = document.querySelector('.nav-hamburger');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            }
+        }
+
         function showSection(sectionId) {
+            closeMobileNav();
             // Hide all main content sections
             document.querySelectorAll('main section.card').forEach(section => {
                 section.classList.remove('active-section');
@@ -8999,6 +9677,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 renderSupplementalEssays();
             } else if (sectionId === 'common-app') {
                 renderCommonApp();
+            } else if (sectionId === 'scholarships') {
+                renderScholarships();
+            } else if (sectionId === 'decision') {
+                renderDecision();
             } else if (sectionId === 'university-list') {
                 applyFiltersAndSort(); // Render university list and apply filter/sort
                 renderFavoriteUniversities(); // Display favorite university dropdowns and info
@@ -9089,6 +9771,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             loadMotivationStatement();
             loadFavoriteUniversities();
             loadCommonApp();
+            loadScholarships();
+            loadDecision();
+
+            // 전체 검색 단축키: ⌘K / Ctrl+K 로 열고 ESC 로 닫기
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); openSearch(); }
+                else if (e.key === 'Escape') { const ov = document.getElementById('search-overlay'); if (ov && !ov.classList.contains('hidden')) closeSearch(); }
+            });
 
             // Determine which section to show initially based on the URL hash, or default to 'home'
             if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
