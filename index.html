@@ -1364,6 +1364,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .ecard-doc:hover { background: var(--surface-3); }
         .ecard-openbtn { text-decoration: none; font-size: 0.8rem; font-weight: 700; color: #0071e3; border: 1px solid var(--border); border-radius: 9px; padding: 6px 12px; white-space: nowrap; }
         .ecard-openbtn:hover { background: #0071e3; color: #fff; border-color: #0071e3; }
+        .ecard-openbtn.disabled { color: var(--text-faint); cursor: default; }
+        .ecard-openbtn.disabled:hover { background: transparent; color: var(--text-faint); border-color: var(--border); }
         /* 코호트 통계 접기 토글 */
         .tstats-wrap { margin-top: 4px; }
         .tstats-toggle { width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px 16px; font-size: 0.88rem; font-weight: 700; color: var(--text-muted); cursor: pointer; }
@@ -9412,7 +9414,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                             <div><span class="ecard-uni">📝 Common App 메인 에세이</span> <span class="ecard-stage">${esc(essayStageLabel(mainE.status))}</span></div>
                             ${mePrompt ? `<div class="ecard-prompt"><b>Prompt ${mePrompt.id}.</b> ${esc(mePrompt.short)}</div>` : ''}
                         </div>
-                        <div class="ecard-actions">${mainE.googleDocLink ? `<a class="ecard-openbtn" href="${esc(mainE.googleDocLink)}" target="_blank" rel="noopener">📄 에세이 열기 ↗</a>` : ''}<button class="ecard-fb-btn ${meFbVis.length ? 'has' : ''}" onclick="toggleEssayFeedback('main')">💬${meFbVis.length ? ` ${meFbVis.length}` : ''}</button></div>
+                        <div class="ecard-actions">${mainE.googleDocLink ? `<a class="ecard-openbtn" href="${esc(mainE.googleDocLink)}" target="_blank" rel="noopener">📄 에세이 열기 ↗</a>` : `<span class="ecard-openbtn disabled" title="학생이 아직 구글 문서 링크를 넣지 않았어요">📄 링크 없음</span>`}<button class="ecard-fb-btn ${meFbVis.length ? 'has' : ''}" onclick="toggleEssayFeedback('main')">💬${meFbVis.length ? ` ${meFbVis.length}` : ''}</button></div>
                     </div>
                     <div class="ecard-fb" id="ecard-fb-main" style="display:${meOpen ? 'block' : 'none'};">
                         <div class="efb-list">${meFbItems}</div>
