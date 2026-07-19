@@ -1066,6 +1066,25 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .srn-memo { font-size: 0.84rem; color: var(--text); }
         .srn-time { font-size: 0.72rem; color: var(--text-faint); }
         @media (max-width: 860px) { .me-row { grid-template-columns: 1fr; } }
+        /* ===== 서플 여러 개 추가 모달 ===== */
+        .ea-uni-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+        .ea-uni-field label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+        .ea-uni-field select { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 0.92rem; background: var(--surface); color: var(--text); }
+        #ea-rows { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+        .ea-row { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: var(--surface-2); }
+        .ea-row-top { display: flex; gap: 8px; align-items: flex-start; }
+        .ea-prompt { flex: 1 1 auto; border: 1px solid var(--border); border-radius: 9px; padding: 9px 11px; font-size: 0.9rem; font-family: inherit; line-height: 1.5; background: var(--surface); color: var(--text); resize: vertical; }
+        .ea-remove { flex: 0 0 auto; width: 30px; height: 30px; border: none; border-radius: 8px; background: var(--surface-3); color: var(--text-muted); font-size: 1.2rem; line-height: 1; cursor: pointer; }
+        .ea-remove:hover { background: #fee2e2; color: #dc2626; }
+        .ea-row-fields { display: grid; grid-template-columns: 1.2fr 0.8fr 1.2fr 1.5fr; gap: 8px; margin-top: 9px; }
+        .ea-row-fields select, .ea-row-fields input { border: 1px solid var(--border); border-radius: 9px; padding: 8px 10px; font-size: 0.85rem; background: var(--surface); color: var(--text); min-width: 0; }
+        .ea-addrow { width: 100%; border: 1px dashed var(--border); background: var(--surface); color: #0071e3; border-radius: 10px; padding: 11px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+        .ea-addrow:hover { background: var(--surface-2); }
+        .ea-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+        .ea-cancel { background: var(--surface-3); color: var(--text); border: none; border-radius: 10px; padding: 10px 18px; font-weight: 700; cursor: pointer; }
+        .ea-save { background: #0071e3; color: #fff; border: none; border-radius: 10px; padding: 10px 22px; font-weight: 700; cursor: pointer; }
+        .ea-save:hover { background: #0060c0; }
+        @media (max-width: 640px) { .ea-row-fields { grid-template-columns: 1fr 1fr; } }
         .admin-empty { color: var(--text-faint); padding: 20px; }
         .kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
         .kanban-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
@@ -2943,7 +2962,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 </div>
                 <div class="essay-supp-actions">
                     <button onclick="openEssayReuseModal()" class="match-settings-btn">🔁 재활용 분석</button>
-                    <button onclick="openEssayModal()" class="essay-add-btn">+ 서플 에세이 추가</button>
+                    <button onclick="openEssayAddModal()" class="essay-add-btn">+ 서플 에세이 추가</button>
                 </div>
             </div>
 
@@ -3635,6 +3654,25 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         </div>
     </div>
 
+    <!-- 서플 에세이 여러 개 한 번에 추가 모달 -->
+    <div id="essay-add-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeEssayAddModal()">×</span>
+            <h2 class="text-2xl font-bold mb-2">서플 에세이 추가</h2>
+            <p class="text-sm text-gray-500 mb-5">한 대학에는 서플 문항이 여러 개일 수 있어요. 아래에서 <b>문항을 계속 추가·삭제</b>한 뒤 한 번에 저장하세요.</p>
+            <div class="ea-uni-field">
+                <label for="ea-uni-select">대학 선택</label>
+                <select id="ea-uni-select"><option value="">-- 대학 선택 --</option></select>
+            </div>
+            <div id="ea-rows"></div>
+            <button type="button" class="ea-addrow" onclick="eaAddRow()">+ 문항 추가</button>
+            <div class="ea-modal-actions">
+                <button type="button" class="ea-cancel" onclick="closeEssayAddModal()">취소</button>
+                <button type="button" class="ea-save" onclick="saveEssayAddModal()">모두 저장</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Firebase SDK (compat build so the existing non-module script can use it) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -3739,13 +3777,13 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // =======================================================================
         const COMMONAPP_ESSAY_LIMIT = 650;
         const COMMONAPP_PROMPTS = [
-            { id: 1, short: '배경·정체성·관심·재능', full: '어떤 학생은 배경, 정체성, 관심사, 재능이 너무나 의미 있어서 이것 없이는 지원서가 완성되지 않는다고 느낍니다. 당신이 그렇다면, 당신의 이야기를 들려주세요.' },
-            { id: 2, short: '역경·실패에서 배운 것', full: '우리가 마주하는 장애물에서 얻는 교훈은 훗날 성공의 밑거름이 됩니다. 도전·좌절·실패를 겪었던 때를 떠올려 보세요. 그것이 당신에게 어떤 영향을 주었고, 무엇을 배웠나요?' },
-            { id: 3, short: '신념·생각에 의문을 던진 경험', full: '어떤 신념이나 생각에 의문을 품거나 도전했던 때를 돌아보세요. 무엇이 당신을 그렇게 생각하게 만들었나요? 결과는 어땠나요?' },
-            { id: 4, short: '누군가의 도움에 대한 감사', full: '누군가가 당신을 위해 해준 일로 뜻밖의 기쁨이나 감사를 느낀 경험을 돌아보세요. 그 감사가 당신에게 어떤 영향을 주었거나 동기를 부여했나요?' },
-            { id: 5, short: '성장을 이끈 성취·사건·깨달음', full: '개인적 성장과 자신·타인에 대한 새로운 이해로 이어진 성취, 사건, 깨달음에 대해 이야기해 보세요.' },
-            { id: 6, short: '시간 가는 줄 모르는 주제', full: '너무 몰입해서 시간 가는 줄 모르게 만드는 주제·아이디어·개념을 설명해 보세요. 왜 그것에 매료되나요? 더 알고 싶을 때 누구·무엇을 찾나요?' },
-            { id: 7, short: '자유 주제 (Topic of your choice)', full: '어떤 주제든 자유롭게 써보세요. 이미 쓴 글이든, 다른 프롬프트에 답한 글이든, 직접 설계한 글이든 좋습니다.' }
+            { id: 1, short: 'Background, identity, interest, or talent', full: 'Some students have a background, identity, interest, or talent that is so meaningful they believe their application would be incomplete without it. If this sounds like you, then please share your story.' },
+            { id: 2, short: 'Lessons from obstacles, challenges, or failure', full: 'The lessons we take from obstacles we encounter can be fundamental to later success. Recount a time when you faced a challenge, setback, or failure. How did it affect you, and what did you learn from the experience?' },
+            { id: 3, short: 'Questioned or challenged a belief or idea', full: 'Reflect on a time when you questioned or challenged a belief or idea. What prompted your thinking? What was the outcome?' },
+            { id: 4, short: 'Gratitude that motivated you', full: 'Reflect on something that someone has done for you that has made you happy or thankful in a surprising way. How has this gratitude affected or motivated you?' },
+            { id: 5, short: 'Accomplishment or realization of growth', full: 'Discuss an accomplishment, event, or realization that sparked a period of personal growth and a new understanding of yourself or others.' },
+            { id: 6, short: 'Topic that makes you lose track of time', full: 'Describe a topic, idea, or concept you find so engaging that it makes you lose all track of time. Why does it captivate you? What or who do you turn to when you want to learn more?' },
+            { id: 7, short: 'Topic of your choice', full: "Share an essay on any topic of your choice. It can be one you've already written, one that responds to a different prompt, or one of your own design." }
         ];
         let mainEssay = {};
         function loadMainEssay() {
@@ -6050,6 +6088,81 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             supplementalEssays = supplementalEssays.filter(essay => essay.id !== id); // Remove the essay
             saveSupplementalEssays(); // Save updated data
             renderSupplementalEssays(); // Re-render the essay table
+        }
+
+        // ===== 서플 에세이 여러 개 한 번에 추가 (문항 행 추가/삭제) =====
+        function eaTypeOptions() {
+            return ['<option value="">유형 선택(선택)</option>']
+                .concat(ESSAY_TAG_PRESETS.map(t => `<option value="${esc(t)}">${esc(t)}</option>`)).join('');
+        }
+        function eaRowHtml() {
+            return `<div class="ea-row">
+                <div class="ea-row-top">
+                    <textarea class="ea-prompt" rows="2" placeholder="에세이 문항 (예: Why do you want to attend our school?)"></textarea>
+                    <button type="button" class="ea-remove" title="이 문항 삭제" onclick="eaRemoveRow(this)">×</button>
+                </div>
+                <div class="ea-row-fields">
+                    <select class="ea-type" title="유형">${eaTypeOptions()}</select>
+                    <input type="number" class="ea-limit" min="0" placeholder="단어 제한">
+                    <select class="ea-status" title="진행 단계">${essayStatusOptionsHtml('Brainstorming')}</select>
+                    <input type="url" class="ea-link" placeholder="구글 문서 링크(선택)">
+                </div>
+            </div>`;
+        }
+        function eaAddRow() {
+            const box = document.getElementById('ea-rows');
+            if (!box) return;
+            box.insertAdjacentHTML('beforeend', eaRowHtml());
+            const last = box.lastElementChild;
+            const ta = last && last.querySelector('.ea-prompt');
+            if (ta) ta.focus();
+        }
+        function eaRemoveRow(btn) {
+            const box = document.getElementById('ea-rows');
+            const row = btn.closest('.ea-row');
+            if (!row || !box) return;
+            if (box.querySelectorAll('.ea-row').length <= 1) { row.querySelector('.ea-prompt').value = ''; return; } // keep at least one
+            row.remove();
+        }
+        function openEssayAddModal() {
+            const sel = document.getElementById('ea-uni-select');
+            if (sel) {
+                sel.innerHTML = '<option value="">-- 대학 선택 --</option>' +
+                    universities.map(u => `<option value="${u.id}">${esc((u.nameEn && u.nameKo) ? `${u.nameEn} (${u.nameKo})` : (u.nameEn || u.nameKo))}</option>`).join('');
+            }
+            const box = document.getElementById('ea-rows');
+            if (box) box.innerHTML = eaRowHtml(); // start with one empty row
+            document.getElementById('essay-add-modal').classList.remove('hidden');
+        }
+        function closeEssayAddModal() {
+            document.getElementById('essay-add-modal').classList.add('hidden');
+        }
+        function saveEssayAddModal() {
+            const uniId = document.getElementById('ea-uni-select').value;
+            if (!uniId) { toast('먼저 대학을 선택해주세요.', 'error'); return; }
+            const rows = [...document.querySelectorAll('#ea-rows .ea-row')];
+            const toAdd = [];
+            rows.forEach(r => {
+                const prompt = (r.querySelector('.ea-prompt').value || '').trim();
+                if (!prompt) return; // skip empty rows
+                const type = r.querySelector('.ea-type').value;
+                const link = (r.querySelector('.ea-link').value || '').trim();
+                toAdd.push({
+                    id: generateUniqueId('essay-'),
+                    universityId: uniId,
+                    prompt,
+                    tags: type ? [type] : [],
+                    wordLimit: (r.querySelector('.ea-limit').value || '').trim(),
+                    googleDocLink: link,
+                    status: r.querySelector('.ea-status').value
+                });
+            });
+            if (!toAdd.length) { toast('추가할 문항을 하나 이상 입력해주세요.', 'error'); return; }
+            supplementalEssays.push(...toAdd);
+            saveSupplementalEssays();
+            renderSupplementalEssays();
+            closeEssayAddModal();
+            toast(`서플 에세이 ${toAdd.length}개를 추가했어요 ✅`, 'success');
         }
 
 
@@ -9250,28 +9363,23 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 return `<tr><td>${esc(u.nameEn || '')}${u.nameKo ? ` <span class="rp-ko">${esc(u.nameKo)}</span>` : ''} ${finAidChips(u)}</td><td>${admitSel}</td><td>${resCell}</td><td class="rp-dim">${esc(u.deadline || '-')} ${ddayBadge}</td></tr>`;
             }).join('');
             const essayFeedback = data.essayFeedback || {};
-            const verLabel = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()} 버전`; };
             // ---- Common App 메인 에세이 카드 (선생님 열람 + 피드백) ----
             const mainE = safeParse(ad.myMainEssay, {}) || {};
             const mePrompt = COMMONAPP_PROMPTS.find(p => p.id === Number(mainE.promptId));
             const meFbAll = essayFeedback['main'] || [];
             const meFbVis = meFbAll.filter(f => !isFeedbackHidden(f.id));
             const meFbItems = meFbVis.slice().reverse().map(f => `<div class="efb-item"><span class="efb-meta">${esc(f.teacherName || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</span> ${esc(f.text)}${f.id ? `<button class="efb-hidebtn" onclick="hideTeacherFeedback('${f.id}')" title="내 화면에서 가리기 (학생에겐 그대로 보여요)">🗑️</button>` : ''}</div>`).join('') || '<span class="rp-dim">아직 메인 에세이에 남긴 피드백이 없어요.</span>';
-            const meHist = Array.isArray(mainE.linkHistory) ? mainE.linkHistory : [];
-            const meHistChips = meHist.slice().reverse().map(h => `<a class="ver-chip" href="${esc(h.link)}" target="_blank" rel="noopener">${verLabel(h.at)}</a>`).join('');
             const meOpen = openEssayFbIds.has('main');
-            const meWc = parseInt(mainE.wordCount, 10) || 0;
-            const meHasContent = !!(mainE.promptId || mainE.title || mainE.googleDocLink || mainE.status || mainE.brainstorm || meFbAll.length);
+            const meHasContent = !!(mainE.promptId || mainE.title || mainE.googleDocLink || mainE.status || meFbAll.length);
             const mainEssayCard = meHasContent ? `<div class="ecard ecard-mainessay">
                     <div class="ecard-head">
                         <div class="ecard-main">
-                            <div><span class="ecard-uni">📝 Common App 메인 에세이</span> <span class="ecard-stage">${esc(essayStageLabel(mainE.status))}</span>${meWc ? ` <span class="ecard-wc ${meWc > COMMONAPP_ESSAY_LIMIT ? 'over' : ''}">${meWc}/${COMMONAPP_ESSAY_LIMIT}단어${meWc > COMMONAPP_ESSAY_LIMIT ? ' ⚠️' : ''}</span>` : ''}</div>
-                            ${mePrompt ? `<div class="ecard-prompt"><b>프롬프트 ${mePrompt.id}.</b> ${esc(mePrompt.short)}${mainE.title ? ` · “${esc(mainE.title)}”` : ''}</div>` : (mainE.title ? `<div class="ecard-prompt">“${esc(mainE.title)}”</div>` : '')}
-                            ${mainE.brainstorm ? `<div class="ecard-prompt rp-dim">🧠 ${esc(mainE.brainstorm.length > 90 ? mainE.brainstorm.slice(0, 90) + '…' : mainE.brainstorm)}</div>` : ''}
+                            <div><span class="ecard-uni">📝 Common App 메인 에세이</span> <span class="ecard-stage">${esc(essayStageLabel(mainE.status))}</span></div>
+                            ${mePrompt ? `<div class="ecard-prompt"><b>Prompt ${mePrompt.id}.</b> ${esc(mePrompt.short)}</div>` : ''}
                         </div>
                         <button class="ecard-fb-btn ${meFbVis.length ? 'has' : ''}" onclick="toggleEssayFeedback('main')">💬${meFbVis.length ? ` ${meFbVis.length}` : ''}</button>
                     </div>
-                    ${(mainE.googleDocLink || meHistChips) ? `<div class="ecard-links">${mainE.googleDocLink ? `<a class="ver-chip cur" href="${esc(mainE.googleDocLink)}" target="_blank" rel="noopener">📄 현재본</a>` : ''}${meHistChips ? `<span class="ver-tag">🕒 버전:</span>${meHistChips}` : ''}</div>` : ''}
+                    ${mainE.googleDocLink ? `<div class="ecard-links"><a class="ver-chip cur" href="${esc(mainE.googleDocLink)}" target="_blank" rel="noopener">📄 문서 열기 ↗</a></div>` : ''}
                     <div class="ecard-fb" id="ecard-fb-main" style="display:${meOpen ? 'block' : 'none'};">
                         <div class="efb-list">${meFbItems}</div>
                         <div class="efb-input-row"><input type="text" id="efb-input-main" class="efb-input" placeholder="메인 에세이에 대한 피드백…" onkeydown="if(event.key==='Enter'){event.preventDefault();submitEssayFeedback('main');}"><button class="efb-send" onclick="submitEssayFeedback('main')">전송</button></div>
@@ -9279,8 +9387,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 </div>` : '<p class="rp-dim">학생이 아직 Common App 메인 에세이를 시작하지 않았어요.</p>';
             const essayCards = essays.map(e => {
                 const uni = unis.find(u => u.id === e.universityId);
-                const hist = Array.isArray(e.linkHistory) ? e.linkHistory : [];
-                const histChips = hist.slice().reverse().map(h => `<a class="ver-chip" href="${esc(h.link)}" target="_blank" rel="noopener">${verLabel(h.at)}</a>`).join('');
                 const fbList = essayFeedback[e.id] || [];
                 const visibleFb = fbList.filter(f => !isFeedbackHidden(f.id));
                 const fbItems = visibleFb.slice().reverse().map(f => `<div class="efb-item"><span class="efb-meta">${esc(f.teacherName || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</span> ${esc(f.text)}${f.id ? `<button class="efb-hidebtn" onclick="hideTeacherFeedback('${f.id}')" title="내 화면에서 가리기 (학생에겐 그대로 보여요)">🗑️</button>` : ''}</div>`).join('') || '<span class="rp-dim">아직 이 문항에 남긴 피드백이 없어요.</span>';
@@ -9294,7 +9400,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         </div>
                         <button class="ecard-fb-btn ${visibleFb.length ? 'has' : ''}" onclick="toggleEssayFeedback('${e.id}')">💬${visibleFb.length ? ` ${visibleFb.length}` : ''}</button>
                     </div>
-                    ${(e.googleDocLink || histChips) ? `<div class="ecard-links">${e.googleDocLink ? `<a class="ver-chip cur" href="${esc(e.googleDocLink)}" target="_blank" rel="noopener">📄 현재본</a>` : ''}${histChips ? `<span class="ver-tag">🕒 버전:</span>${histChips}` : ''}</div>` : ''}
+                    ${e.googleDocLink ? `<div class="ecard-links"><a class="ver-chip cur" href="${esc(e.googleDocLink)}" target="_blank" rel="noopener">📄 문서 열기 ↗</a></div>` : ''}
                     <div class="ecard-fb" id="ecard-fb-${e.id}" style="display:${open ? 'block' : 'none'};">
                         <div class="efb-list">${fbItems}</div>
                         <div class="efb-input-row"><input type="text" id="efb-input-${e.id}" class="efb-input" placeholder="이 문항에 대한 피드백…" onkeydown="if(event.key==='Enter'){event.preventDefault();submitEssayFeedback('${e.id}');}"><button class="efb-send" onclick="submitEssayFeedback('${e.id}')">전송</button></div>
