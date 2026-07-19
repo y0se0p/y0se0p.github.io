@@ -1960,6 +1960,20 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .rep-chk{ color:#16a34a; font-weight:800; }
         .rep-comment{ font-size:10pt; line-height:1.6; white-space:pre-line; background:#f5f5f7; border-radius:10px; padding:12px 14px; color:#1d1d1f; }
         .rep-dimx{ color:#c7c7cc; font-size:9pt; }
+        .rep-dday.far{ background:#f5f5f7; color:#8e8e93; }
+        /* 대학별 할 일 (리포트) */
+        .rep-todo-uni{ margin:8px 0 12px; padding:8px 12px; background:#fafafa; border:1px solid #eee; border-radius:10px; break-inside:avoid; }
+        .rep-todo-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+        .rep-todo-head b{ font-size:10.5pt; color:#1d1d1f; }
+        .rep-todo-prog{ font-size:9pt; font-weight:800; color:#0071e3; }
+        .rep-todo-item{ font-size:9.5pt; line-height:1.6; color:#1d1d1f; }
+        .rep-todo-item .rep-chk, .rep-todo-item .rep-dimx{ display:inline-block; width:14px; }
+        .rep-todo-done{ color:#8e8e93; text-decoration:line-through; }
+        .rep-todo-due{ margin-left:6px; font-size:8.5pt; color:#e07000; font-weight:700; }
+        /* 행정 체크리스트 남은 항목 */
+        .rep-admin-cat{ margin:6px 0; }
+        .rep-admin-left{ font-size:9pt; color:#c2410c; margin:1px 0 0 4px; line-height:1.5; }
+        .rep-admin-left.done{ color:#16a34a; }
         .rep-pagenum{ position:absolute; bottom:11mm; left:0; right:0; text-align:center; font-size:8pt; color:#c7c7cc; }
         @media print {
             @page { size: A4; margin: 0; }
@@ -2341,9 +2355,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <label><input type="checkbox" checked onchange="toggleReportSection('universities',this.checked)"> 대학</label>
                 <label><input type="checkbox" checked onchange="toggleReportSection('finaid',this.checked)"> 재정보조</label>
                 <label><input type="checkbox" checked onchange="toggleReportSection('requirements',this.checked)"> 요구사항</label>
+                <label><input type="checkbox" checked onchange="toggleReportSection('timeline',this.checked)"> 타임라인</label>
+                <label><input type="checkbox" checked onchange="toggleReportSection('unitodos',this.checked)"> 대학별 할 일</label>
                 <label><input type="checkbox" onchange="toggleReportSection('essays',this.checked)"> 에세이</label>
                 <label><input type="checkbox" onchange="toggleReportSection('recommenders',this.checked)"> 추천서</label>
-                <label><input type="checkbox" onchange="toggleReportSection('admin',this.checked)"> 행정</label>
+                <label><input type="checkbox" checked onchange="toggleReportSection('admin',this.checked)"> 행정 체크리스트</label>
                 <label><input type="checkbox" onchange="toggleReportSection('motivation',this.checked)"> 다짐</label>
                 <label><input type="checkbox" onchange="toggleReportSection('comment',this.checked)"> 코멘트</label>
             </div>
@@ -7857,7 +7873,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
 
         // ===== Student Report Generator (PDF) =====
-        let reportSections = { header: true, academics: true, activities: true, honors: true, universities: true, finaid: true, requirements: true, essays: false, recommenders: false, admin: false, motivation: false, comment: false };
+        let reportSections = { header: true, academics: true, activities: true, honors: true, universities: true, finaid: true, requirements: true, timeline: true, unitodos: true, essays: false, recommenders: false, admin: true, motivation: false, comment: false };
         let reportComment = '';
         function openReport() {
             if (!currentStudentData) { toast('학생을 먼저 선택해주세요.', 'error'); return; }
@@ -7962,6 +7978,47 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 blocks.push(`<div class="rep-sec"><div class="rep-h">학교별 요구사항 체크리스트</div>
                     <table class="rep-table rep-req"><thead><tr><th>대학</th>${head}<th>완료</th></tr></thead><tbody>${rows}</tbody></table></div>`);
             }
+            if (reportSections.timeline && unis.length) {
+                const year = new Date().getFullYear();
+                const evs = [];
+                unis.forEach(u => {
+                    parseDeadlineString(u.deadline, year, u.applicationStrategy)
+                        .filter(d => daysUntil(d.date) >= 0)
+                        .forEach(d => evs.push({ name: uniName(u), type: d.type || u.applicationStrategy || '', date: d.date, dday: daysUntil(d.date) }));
+                });
+                evs.sort((a, b) => a.date - b.date);
+                if (evs.length) {
+                    const trows = evs.slice(0, 14).map(e => {
+                        const soon = e.dday <= 14, mid = e.dday <= 30;
+                        const cls = soon ? 'rep-dday soon' : (mid ? 'rep-dday' : 'rep-dday far');
+                        const dateLabel = `${e.date.getMonth() + 1}/${e.date.getDate()}`;
+                        return `<tr><td class="rep-u-name">${e.name}</td><td>${e.type ? `<span class="rep-al al-match">${esc(e.type)}</span>` : '<span class="rep-dimx">–</span>'}</td><td>${dateLabel}</td><td><span class="${cls}">D-${e.dday}</span></td></tr>`;
+                    }).join('');
+                    const nextEv = evs[0];
+                    blocks.push(`<div class="rep-sec"><div class="rep-h">원서 제출 타임라인 · 가장 급한 마감 D-${nextEv.dday} (${esc(nextEv.name)})</div>
+                        <table class="rep-table"><thead><tr><th>대학</th><th>전형</th><th>마감</th><th>남은 기간</th></tr></thead><tbody>${trows}</tbody></table>${evs.length > 14 ? `<div class="rep-dimx" style="margin-top:6px;">외 ${evs.length - 14}개 마감</div>` : ''}</div>`);
+                } else {
+                    blocks.push(`<div class="rep-sec"><div class="rep-h">원서 제출 타임라인</div><div class="rep-dimx">등록된 마감일이 없어요. (대학별 마감일을 입력하면 자동 정리됩니다.)</div></div>`);
+                }
+            }
+            if (reportSections.unitodos) {
+                const todos = safeParse(ad.myUniTodos, {}) || {};
+                const withTodos = unis.filter(u => Array.isArray(todos[u.id]) && todos[u.id].length);
+                if (withTodos.length) {
+                    const rate = u => { const l = todos[u.id]; return l.filter(t => t.done).length / l.length; };
+                    const sorted = [...withTodos].sort((a, b) => rate(a) - rate(b)); // 준비 낮은 순 (챙길 것 먼저)
+                    const cards = sorted.map(u => {
+                        const list = todos[u.id].slice().sort((a, b) => (a.done === b.done ? 0 : a.done ? 1 : -1));
+                        const done = list.filter(t => t.done).length, total = list.length;
+                        const pct = Math.round(done / total * 100);
+                        const items = list.map(t => `<div class="rep-todo-item"><span class="${t.done ? 'rep-chk' : 'rep-dimx'}">${t.done ? '✓' : '○'}</span><span class="${t.done ? 'rep-todo-done' : ''}">${esc(t.text)}</span>${t.due ? `<span class="rep-todo-due">📅 ${esc(t.due)}</span>` : ''}</div>`).join('');
+                        return `<div class="rep-todo-uni"><div class="rep-todo-head"><b>${uniName(u)}</b><span class="rep-todo-prog">${done}/${total} · ${pct}%</span></div>${items}</div>`;
+                    }).join('');
+                    blocks.push(`<div class="rep-sec"><div class="rep-h">대학별 할 일 (준비 낮은 순)</div>${cards}</div>`);
+                } else {
+                    blocks.push(`<div class="rep-sec"><div class="rep-h">대학별 할 일</div><div class="rep-dimx">학생이 아직 대학별 할 일을 추가하지 않았어요.</div></div>`);
+                }
+            }
             if (reportSections.essays && essays.length) {
                 const erows = essays.map(e => {
                     const uni = unis.find(u => u.id === e.universityId);
@@ -7980,7 +8037,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const at = admin.reduce((s, c) => s + (c.items ? c.items.length : 0), 0);
                 const ad2 = admin.reduce((s, c) => s + (c.items ? c.items.filter(i => i.done).length : 0), 0);
                 const pct = at ? Math.round(ad2 / at * 100) : 0;
-                const cats = admin.map(c => { const t = (c.items || []).length, d = (c.items || []).filter(i => i.done).length; return `<div class="rep-line"><span>${esc((c.icon || '') + ' ' + (c.name || ''))}</span> ${d}/${t}</div>`; }).join('');
+                const cats = admin.map(c => {
+                    const items = c.items || [];
+                    const t = items.length, d = items.filter(i => i.done).length;
+                    const undone = items.filter(i => !i.done);
+                    const detail = t === 0 ? '' : (undone.length
+                        ? `<div class="rep-admin-left">남은 항목 — ${undone.map(i => esc((i.text || '') + (i.due ? ` (📅${esc(i.due)})` : ''))).join(', ')}</div>`
+                        : `<div class="rep-admin-left done">✓ 모두 완료</div>`);
+                    return `<div class="rep-admin-cat"><div class="rep-line"><span>${esc((c.icon || '') + ' ' + (c.name || ''))}</span> <b>${d}/${t}</b></div>${detail}</div>`;
+                }).join('');
                 blocks.push(`<div class="rep-sec"><div class="rep-h">행정 체크리스트 · ${pct}% (${ad2}/${at})</div>${cats || '<div class="rep-dimx">항목 없음</div>'}</div>`);
             }
             if (reportSections.motivation && motivation.trim()) {
