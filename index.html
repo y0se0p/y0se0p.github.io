@@ -3993,10 +3993,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const r = (typeof requirements !== 'undefined' && requirements && requirements[uni.id]) || {};
             const reqTotal = REQ_COLS.length;
             const reqDone = REQ_COLS.filter(c => r[c.key]).length;
-            const parts = [];
-            if (essayTotal) parts.push(essayDone / essayTotal);
-            parts.push(reqDone / reqTotal);
-            const pct = parts.length ? Math.round(parts.reduce((a, b) => a + b, 0) / parts.length * 100) : 0;
+            // 준비율 = 학교별 요구사항 체크리스트(6개 항목) 완료 비율만 사용
+            const pct = reqTotal ? Math.round(reqDone / reqTotal * 100) : 0;
             return { pct, essayDone, essayTotal, reqDone, reqTotal };
         }
 
@@ -4432,7 +4430,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <div class="uni-card-main">
                             <div class="uni-card-name">${esc(uni.nameEn) || '(이름 없음)'}${uni.nameKo ? ` <span class="uni-card-nameko">${esc(uni.nameKo)}</span>` : ''}</div>
                             <div class="uni-card-meta">${[esc(uni.location), esc(uni.ranking)].filter(Boolean).join(' · ') || '-'}</div>
-                            <div class="uni-prog" title="지원 준비: 에세이 ${prog.essayDone}/${prog.essayTotal} · 요구사항 ${prog.reqDone}/${prog.reqTotal} 완료" onclick="event.stopPropagation()">
+                            <div class="uni-prog" title="지원 준비율 = 요구사항 체크리스트 ${prog.reqDone}/${prog.reqTotal} 완료 (원서·추천서·성적표·시험점수·서플·인터뷰)" onclick="event.stopPropagation()">
                                 <span class="uni-prog-lbl">준비</span>
                                 <div class="uni-prog-track"><i style="width:${prog.pct}%;background:${progColor}"></i></div>
                                 <span class="uni-prog-pct" style="color:${progColor}">${prog.pct}%</span>
