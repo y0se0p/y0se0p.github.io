@@ -1020,10 +1020,18 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .auth-signin { font-size: 0.85rem; font-weight: 600; padding: 8px 16px; border-radius: 9999px; border: none; background: #0071e3; color: #fff; cursor: pointer; }
         .auth-signin:hover { background: #0060c0; }
         .auth-user { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--text); }
-        .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #d1d1d6; transition: background 0.2s; cursor: help; }
-        .sync-dot.syncing { background: #f59e0b; }
-        .sync-dot.synced { background: #34c759; }
-        .sync-dot.error { background: #ef4444; }
+        .sync-dot { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: var(--surface-3); color: var(--text-muted); transition: background .2s, color .2s; cursor: help; white-space: nowrap; }
+        .sync-led { width: 7px; height: 7px; border-radius: 50%; background: #9ca3af; flex: 0 0 auto; }
+        .sync-dot.synced { background: rgba(52,199,89,0.14); color: #15803d; }
+        .sync-dot.synced .sync-led { background: #34c759; }
+        .sync-dot.syncing { background: rgba(0,113,227,0.14); color: #0071e3; }
+        .sync-dot.syncing .sync-led { background: #0071e3; animation: syncPulse 1s ease-in-out infinite; }
+        .sync-dot.error { background: rgba(239,68,68,0.14); color: #b91c1c; }
+        .sync-dot.error .sync-led { background: #ef4444; }
+        @keyframes syncPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(1.4); } }
+        html[data-theme="dark"] .sync-dot.synced { background: rgba(52,199,89,0.2); color: #4ade80; }
+        html[data-theme="dark"] .sync-dot.syncing { background: rgba(0,113,227,0.22); color: #6ea8ff; }
+        @media (max-width: 640px) { .sync-dot .sync-text { display: none; } .sync-dot { padding: 4px; } }
         .auth-signout { font-size: 0.8rem; font-weight: 600; padding: 6px 12px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer; }
         .auth-signout:hover { background: var(--surface-3); }
         .auth-share, .auth-teacher { font-size: 0.82rem; font-weight: 600; padding: 7px 13px; border-radius: 9999px; border: 1px solid #ddd6fe; background: #f0eefe; color: #4f46e5; cursor: pointer; }
@@ -7048,12 +7056,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
 
         let syncErrorAlerted = false;
-        function setSyncState(state, title) {
+        function setSyncState(state, title, text) {
             const dot = document.getElementById('sync-dot');
             if (!dot) return;
             dot.classList.remove('syncing', 'synced', 'error');
             if (state) dot.classList.add(state);
             dot.title = title || '';
+            const t = dot.querySelector('.sync-text');
+            if (t && text) t.textContent = text;
         }
         function getDeviceId() {
             let id = localStorage.getItem('deviceId');
@@ -7062,11 +7072,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
         async function pushStudentData() {
             if (!currentUser || currentRole !== 'student' || !fbDb) return;
+            cloudPushTimer = null; // no longer pending — this push covers current changes
             const appData = {};
             BACKUP_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) appData[k] = v; });
             const profile = safeParse(localStorage.getItem('userProfile'), {}) || {};
             const displayName = (profile.nameKo || profile.nameEn || profile.name) || currentUser.displayName || currentUser.email;
-            setSyncState('syncing', '저장 중…');
+            setSyncState('syncing', '저장 중…', '저장 중');
             try {
                 await fbDb.collection('students').doc(currentUser.uid).set({
                     email: currentUser.email, name: displayName, profile,
@@ -7074,11 +7085,11 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     , appData
                 }, { merge: true });
                 lastPushedAt = Date.now();
-                setSyncState('synced', '클라우드에 저장됨 ✓');
+                setSyncState('synced', '클라우드에 저장됨 ✓', '저장됨');
             } catch (e) {
                 console.error('Cloud sync failed:', e);
                 const msg = (e && e.message) ? e.message : String(e);
-                setSyncState('error', '동기화 실패: ' + msg);
+                setSyncState('error', '동기화 실패: ' + msg, '저장 실패');
                 if (!syncErrorAlerted) {
                     syncErrorAlerted = true;
                     showAlert('클라우드 저장 실패 😢', '원인: ' + msg + '\n\n가장 흔한 원인은 Firestore Database가 아직 안 만들어진 경우예요. Firebase 콘솔 → "빌드 → Firestore Database → 데이터베이스 만들기"를 했는지 확인해주세요.', '☁️');
@@ -7086,7 +7097,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             }
         }
 
-        function scheduleCloudPush() { clearTimeout(cloudPushTimer); cloudPushTimer = setTimeout(pushStudentData, 1500); }
+        function scheduleCloudPush() {
+            setSyncState('syncing', '변경사항 저장 중…', '저장 중'); // show the blue light immediately on any edit
+            clearTimeout(cloudPushTimer);
+            cloudPushTimer = setTimeout(pushStudentData, 1200);
+        }
+        // Flush any pending save immediately — so leaving/closing the tab never loses recent edits
+        function flushCloudPush() {
+            if (cloudPushTimer) { clearTimeout(cloudPushTimer); cloudPushTimer = null; pushStudentData(); }
+        }
         function bindCloudAutoPush() {
             if (cloudSyncBound) return;
             cloudSyncBound = true;
@@ -7095,6 +7114,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 realSet(k, v);
                 if (currentUser && currentRole === 'student' && BACKUP_KEYS.indexOf(k) !== -1) scheduleCloudPush();
             };
+            // Save-before-leave safeguards (tab switch / minimize / close)
+            document.addEventListener('visibilitychange', () => { if (document.hidden) flushCloudPush(); });
+            window.addEventListener('pagehide', flushCloudPush);
+            window.addEventListener('beforeunload', flushCloudPush);
         }
 
         // Re-run every load + render after cloud data lands in localStorage
@@ -7117,7 +7140,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             }
             const name = esc(currentUser.displayName || currentUser.email);
             const shareBtn = currentRole === 'teacher' ? '' : `<button class="auth-share" onclick="shareWithTeacher()">👩‍🏫 선생님께 공유</button>`;
-            const syncDot = currentRole === 'student' ? `<span id="sync-dot" class="sync-dot" title="클라우드 동기화 상태"></span>` : '';
+            const syncDot = currentRole === 'student' ? `<span id="sync-dot" class="sync-dot synced" title="변경사항은 자동으로 클라우드에 저장돼요"><span class="sync-led"></span><span class="sync-text">저장됨</span></span>` : '';
             const roleTag = currentRole === 'teacher' ? ' <span class="role-tag">선생님</span>' : '';
             el.innerHTML = `${shareBtn}<span class="auth-user">${syncDot}${name}${roleTag}</span><button class="auth-role" onclick="changeRole()" title="학생/선생님 전환">역할</button><button class="auth-signout" onclick="signOutUser()">로그아웃</button>`;
         }
