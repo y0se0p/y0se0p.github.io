@@ -1078,6 +1078,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .ea-remove:hover { background: #fee2e2; color: #dc2626; }
         .ea-row-fields { display: grid; grid-template-columns: 1.2fr 0.8fr 1.2fr 1.5fr; gap: 8px; margin-top: 9px; }
         .ea-row-fields select, .ea-row-fields input { border: 1px solid var(--border); border-radius: 9px; padding: 8px 10px; font-size: 0.85rem; background: var(--surface); color: var(--text); min-width: 0; }
+        .ea-row-fields .ea-invalid { border-color: #dc2626; background: #fef2f2; }
         .ea-addrow { width: 100%; border: 1px dashed var(--border); background: var(--surface); color: #0071e3; border-radius: 10px; padding: 11px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
         .ea-addrow:hover { background: var(--surface-2); }
         .ea-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
@@ -1344,6 +1345,27 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .eprog-chip { font-size:0.76rem; color:var(--text-muted); background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:4px 10px; }
         .eprog-chip b { color:var(--text); }
         .ecard-list { display: flex; flex-direction: column; gap: 10px; }
+        /* 선생님: 서플 에세이 대학별 그룹 */
+        .teg-group { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+        .teg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 9px 13px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+        .teg-name { font-size: 0.92rem; font-weight: 700; color: var(--text); }
+        .teg-dday { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); background: var(--surface-3); padding: 1px 8px; border-radius: 9999px; margin-left: 4px; }
+        .teg-dday.soon { color: #fff; background: #dc2626; }
+        .teg-prog { display: flex; align-items: center; gap: 8px; }
+        .teg-count { font-size: 0.74rem; color: var(--text-muted); }
+        .teg-bar { width: 54px; height: 5px; background: var(--surface-3); border-radius: 9999px; overflow: hidden; }
+        .teg-bar > i { display: block; height: 100%; border-radius: 9999px; background: #0071e3; }
+        .teg-prog b { font-size: 0.76rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .teg-cards { display: flex; flex-direction: column; }
+        .teg-cards .ecard { border: none; border-bottom: 1px solid var(--border); border-radius: 0; }
+        .teg-cards .ecard:last-child { border-bottom: none; }
+        .ecard-actions { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+        .ecard-doc { text-decoration: none; font-size: 1rem; padding: 2px 4px; border-radius: 7px; }
+        .ecard-doc:hover { background: var(--surface-3); }
+        /* 코호트 통계 접기 토글 */
+        .tstats-wrap { margin-top: 4px; }
+        .tstats-toggle { width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px 16px; font-size: 0.88rem; font-weight: 700; color: var(--text-muted); cursor: pointer; }
+        .tstats-toggle:hover { background: var(--surface-2); color: var(--text); }
         .ecard { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--surface); }
         .ecard-head { display: flex; align-items: flex-start; gap: 12px; }
         .ecard-main { flex: 1; min-width: 0; }
@@ -2750,12 +2772,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <button type="button" class="nav-hamburger" onclick="toggleMobileNav()" aria-label="메뉴" aria-expanded="false">☰</button>
             <nav class="dash-nav" id="main-nav">
                 <a href="#home" onclick="showSection('home')">홈</a>
+                <a href="#app-manager" onclick="showSection('app-manager')">프로필</a>
                 <a href="#university-list" onclick="showSection('university-list')">대학 리스트</a>
                 <a href="#common-app" onclick="showSection('common-app')">커먼앱</a>
                 <a href="#my-essays" onclick="showSection('my-essays')">에세이</a>
-                <a href="#decision" onclick="showSection('decision')">결정</a>
-                <a href="#app-manager" onclick="showSection('app-manager')">프로필</a>
                 <a href="#my-notes" onclick="showSection('my-notes')">할 일</a>
+                <a href="#decision" onclick="showSection('decision')">결정</a>
                 <button type="button" class="nav-search-btn" onclick="openSearch()" title="전체 검색 (⌘K)" aria-label="검색">🔍</button>
                 <button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="다크모드 전환" aria-label="다크모드 전환">🌙</button>
                 <button type="button" class="dash-data-btn" onclick="openDataModal()" title="데이터 백업·캘린더">⚙️</button>
@@ -3659,7 +3681,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         <div class="modal-content">
             <span class="close-button" onclick="closeEssayAddModal()">×</span>
             <h2 class="text-2xl font-bold mb-2">서플 에세이 추가</h2>
-            <p class="text-sm text-gray-500 mb-5">한 대학에는 서플 문항이 여러 개일 수 있어요. 아래에서 <b>문항을 계속 추가·삭제</b>한 뒤 한 번에 저장하세요.</p>
+            <p class="text-sm text-gray-500 mb-5">한 대학에는 서플 문항이 여러 개일 수 있어요. 아래에서 <b>문항을 계속 추가·삭제</b>한 뒤 한 번에 저장하세요. <b>문항과 구글 문서 링크는 필수</b>예요.</p>
             <div class="ea-uni-field">
                 <label for="ea-uni-select">대학 선택</label>
                 <select id="ea-uni-select"><option value="">-- 대학 선택 --</option></select>
@@ -6105,7 +6127,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <select class="ea-type" title="유형">${eaTypeOptions()}</select>
                     <input type="number" class="ea-limit" min="0" placeholder="단어 제한">
                     <select class="ea-status" title="진행 단계">${essayStatusOptionsHtml('Brainstorming')}</select>
-                    <input type="url" class="ea-link" placeholder="구글 문서 링크(선택)">
+                    <input type="url" class="ea-link" placeholder="구글 문서 링크 (필수) *">
                 </div>
             </div>`;
         }
@@ -6142,11 +6164,14 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             if (!uniId) { toast('먼저 대학을 선택해주세요.', 'error'); return; }
             const rows = [...document.querySelectorAll('#ea-rows .ea-row')];
             const toAdd = [];
+            let missingLink = false;
             rows.forEach(r => {
                 const prompt = (r.querySelector('.ea-prompt').value || '').trim();
                 if (!prompt) return; // skip empty rows
-                const type = r.querySelector('.ea-type').value;
                 const link = (r.querySelector('.ea-link').value || '').trim();
+                if (!link) { missingLink = true; r.querySelector('.ea-link').classList.add('ea-invalid'); return; }
+                r.querySelector('.ea-link').classList.remove('ea-invalid');
+                const type = r.querySelector('.ea-type').value;
                 toAdd.push({
                     id: generateUniqueId('essay-'),
                     universityId: uniId,
@@ -6157,6 +6182,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     status: r.querySelector('.ea-status').value
                 });
             });
+            if (missingLink) { toast('구글 문서 링크는 필수예요. 각 문항에 링크를 넣어주세요.', 'error'); return; }
             if (!toAdd.length) { toast('추가할 문항을 하나 이상 입력해주세요.', 'error'); return; }
             supplementalEssays.push(...toAdd);
             saveSupplementalEssays();
@@ -8491,8 +8517,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 return `<button class="radar-chip ${cls}" onclick="openStudentDetail('${x.id}')"><div class="radar-dday">D-${x.dday}</div><div class="radar-uni">${esc(x.uni)}</div><div class="radar-who">${esc(x.name)}</div></button>`;
             }).join('');
             const radar = `<div class="radar"><div class="radar-head">🛰️ 마감 레이더 <span class="rp-dim" style="font-weight:600;font-size:0.8rem;">(가까운 순 · 120일 이내)</span></div>${deadlines.length ? `<div class="radar-track">${chips}</div>` : '<div class="radar-empty">다가오는 마감이 없어요.</div>'}</div>`;
-            el.innerHTML = tiles + radar + buildTeacherStats(students) + buildCohortTrend();
+            // 코호트 통계·추세는 접어두어 화면을 단순하게 유지 (학생이 많아도 위쪽은 액션 중심)
+            const stats = `<div class="tstats-wrap">
+                <button class="tstats-toggle" onclick="toggleTeacherStats()">${teacherStatsOpen ? '▾' : '▸'} 코호트 통계 · 추세 ${teacherStatsOpen ? '접기' : '보기'}</button>
+                ${teacherStatsOpen ? buildTeacherStats(students) + buildCohortTrend() : ''}
+            </div>`;
+            el.innerHTML = tiles + radar + stats;
         }
+        let teacherStatsOpen = false;
+        function toggleTeacherStats() { teacherStatsOpen = !teacherStatsOpen; renderCockpit(); }
         function cockpitRisk(level) { teacherFilter.risk = (teacherFilter.risk === level ? 'all' : level); renderCockpit(); syncToolbar(); renderStudentGrid(); scrollToMatrix(); }
         function cockpitUnread() { teacherFilter.only = (teacherFilter.only === 'unread' ? '' : 'unread'); renderCockpit(); renderStudentGrid(); scrollToMatrix(); }
         function cockpitDeadline() { teacherFilter.sort = 'deadline'; renderCockpit(); syncToolbar(); renderStudentGrid(); scrollToMatrix(); }
@@ -9385,8 +9418,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                         <div class="efb-input-row"><input type="text" id="efb-input-main" class="efb-input" placeholder="메인 에세이에 대한 피드백…" onkeydown="if(event.key==='Enter'){event.preventDefault();submitEssayFeedback('main');}"><button class="efb-send" onclick="submitEssayFeedback('main')">전송</button></div>
                     </div>
                 </div>` : '<p class="rp-dim">학생이 아직 Common App 메인 에세이를 시작하지 않았어요.</p>';
-            const essayCards = essays.map(e => {
-                const uni = unis.find(u => u.id === e.universityId);
+            // 서플 에세이 카드 (문항별 피드백) — 대학이 많아지면 서플도 몇 배 → 대학별로 묶어 한눈에
+            const renderECard = (e) => {
                 const fbList = essayFeedback[e.id] || [];
                 const visibleFb = fbList.filter(f => !isFeedbackHidden(f.id));
                 const fbItems = visibleFb.slice().reverse().map(f => `<div class="efb-item"><span class="efb-meta">${esc(f.teacherName || '선생님')} · ${new Date(f.at).toLocaleDateString('ko-KR')}</span> ${esc(f.text)}${f.id ? `<button class="efb-hidebtn" onclick="hideTeacherFeedback('${f.id}')" title="내 화면에서 가리기 (학생에겐 그대로 보여요)">🗑️</button>` : ''}</div>`).join('') || '<span class="rp-dim">아직 이 문항에 남긴 피드백이 없어요.</span>';
@@ -9395,16 +9428,32 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 return `<div class="ecard">
                     <div class="ecard-head">
                         <div class="ecard-main">
-                            <div><span class="ecard-uni">${esc(uni ? uni.nameEn : '—')}</span> <span class="ecard-stage">${esc(essayStageLabel(e.status))}</span></div>
+                            <div><span class="ecard-stage">${esc(essayStageLabel(e.status))}</span></div>
                             ${snip ? `<div class="ecard-prompt">${esc(snip)}</div>` : ''}
                         </div>
-                        <button class="ecard-fb-btn ${visibleFb.length ? 'has' : ''}" onclick="toggleEssayFeedback('${e.id}')">💬${visibleFb.length ? ` ${visibleFb.length}` : ''}</button>
+                        <div class="ecard-actions">${e.googleDocLink ? `<a class="ecard-doc" href="${esc(e.googleDocLink)}" target="_blank" rel="noopener" title="구글 문서 열기">📄</a>` : ''}<button class="ecard-fb-btn ${visibleFb.length ? 'has' : ''}" onclick="toggleEssayFeedback('${e.id}')">💬${visibleFb.length ? ` ${visibleFb.length}` : ''}</button></div>
                     </div>
-                    ${e.googleDocLink ? `<div class="ecard-links"><a class="ver-chip cur" href="${esc(e.googleDocLink)}" target="_blank" rel="noopener">📄 문서 열기 ↗</a></div>` : ''}
                     <div class="ecard-fb" id="ecard-fb-${e.id}" style="display:${open ? 'block' : 'none'};">
                         <div class="efb-list">${fbItems}</div>
                         <div class="efb-input-row"><input type="text" id="efb-input-${e.id}" class="efb-input" placeholder="이 문항에 대한 피드백…" onkeydown="if(event.key==='Enter'){event.preventDefault();submitEssayFeedback('${e.id}');}"><button class="efb-send" onclick="submitEssayFeedback('${e.id}')">전송</button></div>
                     </div>
+                </div>`;
+            };
+            const eGroups = new Map();
+            essays.forEach(e => { const k = e.universityId || '__none__'; if (!eGroups.has(k)) eGroups.set(k, []); eGroups.get(k).push(e); });
+            const eGroupArr = [...eGroups.entries()].map(([uid, list]) => {
+                const uni = unis.find(u => u.id === uid);
+                return { uni, list, dTime: uni ? uniNearestDeadlineTime(uni) : Infinity };
+            }).sort((a, b) => a.dTime - b.dTime);
+            const essayGroupsHtml = eGroupArr.map(g => {
+                const nameEn = g.uni ? (g.uni.nameEn || g.uni.nameKo || '대학') : '미지정 대학';
+                const nd = g.uni ? uniNearestDeadline(g.uni) : null;
+                const dday = nd ? `<span class="teg-dday ${daysUntil(nd.date) <= 14 ? 'soon' : ''}">D-${daysUntil(nd.date)}</span>` : '';
+                const gdone = g.list.filter(e => normalizeEssayStatus(e.status) === 'Done').length;
+                const gpct = Math.round(g.list.reduce((s, e) => s + essayStageProgress(e.status), 0) / g.list.length);
+                return `<div class="teg-group">
+                    <div class="teg-head"><span class="teg-name">${esc(nameEn)} ${dday}</span><span class="teg-prog"><span class="teg-count">${gdone}/${g.list.length}</span><span class="teg-bar"><i style="width:${gpct}%"></i></span><b>${gpct}%</b></span></div>
+                    <div class="teg-cards">${g.list.map(renderECard).join('')}</div>
                 </div>`;
             }).join('');
             // ---- Essay progress overview (how many written + how far along) ----
@@ -9450,9 +9499,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <div class="report-section"><h4>✍️ 에세이 · 진행도 &amp; 문항별 피드백</h4>
                     <div class="ecard-sublabel">📝 Common App 메인 에세이</div>
                     ${mainEssayCard}
-                    <div class="ecard-sublabel">🏫 서플 에세이 (${essays.length})</div>
+                    <div class="ecard-sublabel">🏫 서플 에세이 (${essays.length}) · ${eGroupArr.length}개 대학</div>
                     ${essayOverview}
-                    ${essays.length ? `<div class="ecard-list">${essayCards}</div>` : '<p class="rp-dim">등록된 서플 에세이 없음</p>'}
+                    ${essays.length ? essayGroupsHtml : '<p class="rp-dim">등록된 서플 에세이 없음</p>'}
                 </div>
                 <div class="report-section"><h4>✅ 행정 체크리스트 · ${adminDone}/${adminTotal} 완료</h4>
                     ${admin.length ? `<div class="radm-grid">${admin.map(cat => {
