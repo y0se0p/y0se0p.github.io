@@ -865,6 +865,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .tl-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; }
         .tl-sub code { background: var(--surface-3); padding: 1px 5px; border-radius: 5px; font-size: 0.9em; }
         .tl-list { display: flex; flex-direction: column; gap: 8px; }
+        .tl-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+        .tl-modeseg { display: inline-flex; background: var(--surface-3); border-radius: 10px; padding: 3px; gap: 2px; }
+        .tl-modebtn { padding: 6px 14px; border: none; background: transparent; color: var(--text-muted); font-size: 0.82rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: background .15s, color .15s; }
+        .tl-modebtn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .tl-group { margin-top: 16px; }
+        .tl-group-head { font-size: 0.9rem; font-weight: 800; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .tl-group-count { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); background: var(--surface-3); border-radius: 999px; padding: 1px 9px; }
+        .tl-later-toggle { width: 100%; text-align: left; padding: 11px 14px; border: 1px dashed var(--border); border-radius: 12px; background: var(--surface-2); color: var(--text-muted); font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: background .15s; }
+        .tl-later-toggle:hover { background: var(--surface-3); color: var(--text); }
         .tl-item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); border-left: 4px solid var(--border); }
         .tl-deadline { border-left-color: #ef4444; background: #fef2f2; }
         .tl-soft { border-left-color: #f59e0b; background: #fffbeb; }
@@ -5823,44 +5832,59 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
          * Renders the list of upcoming application deadlines.
          * Deadlines are sorted chronologically and display days remaining/passed.
          */
+        let tlMode = 'core';       // 'core' = 실제 마감·소프트·내 할 일만 / 'full' = 준비 마일스톤 포함
+        let tlShowLater = false;   // 'D-30+' 그룹 펼침 여부
+        function setTlMode(m) { tlMode = m; renderUpcomingDeadlines(); }
+        function toggleTlLater() { tlShowLater = !tlShowLater; renderUpcomingDeadlines(); }
         function renderUpcomingDeadlines() {
             const container = document.getElementById('upcoming-deadlines');
+            if (!container) return;
             const today = new Date();
             today.setHours(0, 0, 0, 0);
+            const dnum = e => Math.ceil((e.date - today) / (1000 * 60 * 60 * 24));
 
-            const events = generateTimelineEvents().filter(e => {
-                const n = Math.ceil((e.date - today) / (1000 * 60 * 60 * 24));
-                return n >= -2; // upcoming + only very recently passed
-            });
+            let events = generateTimelineEvents().filter(e => dnum(e) >= -2);
+            if (tlMode === 'core') events = events.filter(e => e.kind !== 'milestone'); // hide generic prep steps
 
-            let html = '<h4 class="text-xl font-semibold mb-1">🗓️ 원서 제출 타임라인</h4>'
-                + '<p class="tl-sub">각 대학 마감일에 맞춰 자동 생성된 단계별 마일스톤이에요. '
-                + '<b>⚠️ 소프트 데드라인</b>은 실제 마감 3일 전 — 서버·결제 오류에 대비해 이때까지 제출을 권장해요.</p>';
+            let html = `<div class="tl-head-row">
+                    <h4 class="text-xl font-semibold">🗓️ 원서 제출 타임라인</h4>
+                    <div class="tl-modeseg">
+                        <button type="button" class="tl-modebtn ${tlMode === 'core' ? 'active' : ''}" onclick="setTlMode('core')">핵심 마감</button>
+                        <button type="button" class="tl-modebtn ${tlMode === 'full' ? 'active' : ''}" onclick="setTlMode('full')">전체</button>
+                    </div>
+                </div>
+                <p class="tl-sub">${tlMode === 'core'
+                    ? '실제 마감일 · <b>소프트 데드라인(3일 전)</b> · 내 할 일만 모았어요. 준비 단계까지 보려면 <b>전체</b>를 눌러요.'
+                    : '준비 단계 마일스톤(에세이 초안·프리뷰 등)까지 모두 표시해요.'}</p>`;
 
-            if (events.length === 0) {
-                html += '<p class="text-gray-600 mt-3">예정된 마일스톤이 없어요. University List에서 대학 마감일(예: <code>REA: 11/1</code>)을 입력하면 자동으로 생성돼요.</p>';
+            if (!events.length) {
+                html += '<p class="text-gray-600 mt-3">예정된 일정이 없어요. University List에서 마감일(예: <code>REA: 11/1</code>)을 입력하거나, 대학별 할 일에 마감일을 넣으면 여기 표시돼요.</p>';
                 container.innerHTML = html;
                 return;
             }
 
-            html += '<div class="tl-list">';
-            events.slice(0, 20).forEach(e => {
-                const n = Math.ceil((e.date - today) / (1000 * 60 * 60 * 24));
+            const wk = [], mo = [], later = [];
+            events.forEach(e => { const n = dnum(e); if (n <= 7) wk.push(e); else if (n <= 30) mo.push(e); else later.push(e); });
+
+            const rowHtml = e => {
+                const n = dnum(e);
                 const dday = n === 0 ? 'D-DAY' : (n > 0 ? `D-${n}` : `+${Math.abs(n)}일`);
                 const urgent = n >= 0 && n <= 3;
                 const uniLabel = e.uniNameKo ? `${e.uniName} (${e.uniNameKo})` : e.uniName;
                 const dateStr = `${e.date.getMonth() + 1}/${e.date.getDate()}`;
-                const ddlStr = `${e.deadlineDate.getMonth() + 1}/${e.deadlineDate.getDate()}`;
-                html += `<div class="tl-item tl-${e.kind}${urgent ? ' tl-urgent' : ''}">
+                return `<div class="tl-item tl-${e.kind}${urgent ? ' tl-urgent' : ''}">
                     <div class="tl-dday">${dday}</div>
-                    <div class="tl-body">
-                        <div class="tl-label">${e.icon} ${esc(e.label)}</div>
-                        <div class="tl-context">${esc(uniLabel)} · ${esc(e.deadlineType)} ${ddlStr} 마감 대비</div>
-                    </div>
+                    <div class="tl-body"><div class="tl-label">${e.icon} ${esc(e.label)}</div><div class="tl-context">${esc(uniLabel)}</div></div>
                     <div class="tl-date">${dateStr}</div>
                 </div>`;
-            });
-            html += '</div>';
+            };
+            const section = (title, arr) => arr.length ? `<div class="tl-group"><div class="tl-group-head">${title} <span class="tl-group-count">${arr.length}</span></div><div class="tl-list">${arr.map(rowHtml).join('')}</div></div>` : '';
+
+            html += section('🔥 이번 주 (D-7 이내)', wk);
+            html += section('📅 이번 달 (D-30 이내)', mo);
+            if (later.length) {
+                html += `<div class="tl-group"><button type="button" class="tl-later-toggle" onclick="toggleTlLater()">🗓️ 그 이후 <b>${later.length}</b>개 ${tlShowLater ? '접기 ▲' : '보기 ▼'}</button>${tlShowLater ? `<div class="tl-list">${later.map(rowHtml).join('')}</div>` : ''}</div>`;
+            }
             container.innerHTML = html;
         }
 
