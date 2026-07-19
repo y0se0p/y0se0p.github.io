@@ -987,66 +987,85 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .search-item:hover { background: var(--surface-2); }
         .search-item-main { font-size: 0.95rem; font-weight: 600; color: var(--text); }
         .search-item-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 1px; }
-        /* ===== Common App 메인 에세이 카드 ===== */
-        .me-card { background: linear-gradient(135deg,#eff6ff,#f5f3ff); border: 1px solid #dbe4ff; border-radius: 18px; padding: 22px 24px; margin-bottom: 32px; }
-        html[data-theme="dark"] .me-card { background: linear-gradient(135deg,#0d1b2e,#141026); border-color: #24304d; }
-        .me-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
-        .me-title { font-size: 1.25rem; font-weight: 800; color: var(--text); }
-        .me-sub { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-top: 3px; }
+        /* ===== Common App 메인 에세이 카드 (애플-미니멀 · 톤다운) ===== */
+        .me-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; margin-bottom: 30px; }
+        .me-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+        .me-title { font-size: 1.15rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
         .me-prog { display: flex; align-items: center; gap: 10px; }
-        .me-prog-pct { font-size: 1.35rem; font-weight: 800; }
-        .me-prog-bar { width: 120px; height: 8px; background: #e5e7eb; border-radius: 9999px; overflow: hidden; }
-        .me-prog-bar > i { display: block; height: 100%; border-radius: 9999px; transition: width .3s; }
-        .me-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; }
-        .me-field { display: flex; flex-direction: column; gap: 5px; }
-        .me-field.me-span2 { grid-column: span 2; }
-        .me-field > span { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
-        .me-field input, .me-field select, .me-field textarea { border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-size: 0.92rem; background: var(--surface); color: var(--text); font-family: inherit; width: 100%; }
-        .me-field textarea { resize: vertical; line-height: 1.55; }
-        .me-promptfull { background: var(--surface); border: 1px dashed var(--border); border-radius: 10px; padding: 11px 14px; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin: 4px 0 14px; }
-        .me-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-        .me-vertag { font-size: 0.76rem; font-weight: 700; color: var(--text-faint); }
-        .me-ver { font-size: 0.76rem; font-weight: 700; color: #0071e3; text-decoration: none; background: var(--surface); border: 1px solid var(--border); border-radius: 9999px; padding: 3px 10px; }
-        .me-ver.cur { background: #0071e3; color: #fff; border-color: #0071e3; }
-        /* ===== 서플 에세이 · 대학별 그룹 카드 ===== */
+        .me-prog-bar { width: 130px; height: 6px; background: var(--surface-3); border-radius: 9999px; overflow: hidden; }
+        .me-prog-bar > i { display: block; height: 100%; border-radius: 9999px; background: #0071e3; transition: width .3s; }
+        .me-prog-pct { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .me-row { display: grid; grid-template-columns: 1fr 200px; gap: 14px; margin-bottom: 14px; }
+        .me-field { display: flex; flex-direction: column; gap: 6px; }
+        .me-field > span { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+        .me-field input, .me-field select { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 0.92rem; background: var(--surface); color: var(--text); font-family: inherit; width: 100%; }
+        .me-promptfull { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin: 0 0 14px; }
+        .me-linkrow { display: flex; gap: 8px; }
+        .me-linkrow input { flex: 1 1 auto; }
+        .me-open { flex: 0 0 auto; background: #0071e3; color: #fff; border: none; border-radius: 10px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .me-open.disabled { background: var(--surface-3); color: var(--text-faint); cursor: default; }
+        .me-actions { margin-top: 16px; }
+        .me-done { width: 100%; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 11px; padding: 12px; font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: background .15s, border-color .15s; }
+        .me-done:hover { background: #0071e3; border-color: #0071e3; color: #fff; }
+        /* ===== 서플 에세이 · 대학별 그룹 (톤다운 · 뉴트럴) ===== */
         .essay-supp-bar { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
-        .essay-supp-title { font-size: 1.4rem; font-weight: 800; color: var(--text); }
-        .essay-supp-sub { font-size: 0.9rem; color: var(--text-muted); margin-top: 2px; }
+        .essay-supp-title { font-size: 1.25rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+        .essay-supp-sub { font-size: 0.88rem; color: var(--text-muted); margin-top: 3px; }
         .essay-supp-actions { display: flex; gap: 10px; align-items: center; }
         .essay-add-btn { background: #0071e3; color: #fff; border: none; border-radius: 10px; padding: 9px 16px; font-weight: 700; cursor: pointer; }
         .essay-add-btn:hover { background: #0060c0; }
-        .seg-group { border: 1px solid var(--border); border-radius: 14px; margin-bottom: 14px; overflow: hidden; background: var(--surface); }
-        .seg-group-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 13px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
-        .seg-group-name { font-size: 1.05rem; font-weight: 700; color: var(--text); }
-        .seg-ko { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
-        .seg-dday { font-size: 0.72rem; font-weight: 800; color: #6b7280; background: var(--surface-3); padding: 2px 9px; border-radius: 9999px; }
+        .seg-group { border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; background: var(--surface); }
+        .seg-group-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        .seg-group-name { font-size: 1rem; font-weight: 700; color: var(--text); }
+        .seg-ko { font-size: 0.82rem; font-weight: 500; color: var(--text-muted); }
+        .seg-dday { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); background: var(--surface-3); padding: 2px 9px; border-radius: 9999px; }
         .seg-dday.soon { color: #fff; background: #dc2626; }
         .seg-group-prog { display: flex; align-items: center; gap: 9px; }
-        .seg-count { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
-        .seg-bar { width: 70px; height: 6px; background: #e5e7eb; border-radius: 9999px; overflow: hidden; }
-        .seg-bar > i { display: block; height: 100%; border-radius: 9999px; }
-        .seg-group-prog b { font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+        .seg-count { font-size: 0.76rem; font-weight: 500; color: var(--text-muted); }
+        .seg-bar { width: 64px; height: 5px; background: var(--surface-3); border-radius: 9999px; overflow: hidden; }
+        .seg-bar > i { display: block; height: 100%; border-radius: 9999px; background: #0071e3; }
+        .seg-group-prog b { font-size: 0.78rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
         .seg-essays { display: flex; flex-direction: column; }
-        .seg-essay { padding: 13px 16px; border-bottom: 1px solid var(--border); border-left: 4px solid transparent; }
+        .seg-essay { padding: 13px 16px; border-bottom: 1px solid var(--border); }
         .seg-essay:last-child { border-bottom: none; }
-        .seg-essay.essay-status-done { border-left-color: #34c759; }
-        .seg-essay.essay-status-final-polish { border-left-color: #0ea5e9; }
-        .seg-essay.essay-status-brainstorming { border-left-color: #cbd5e1; }
         .seg-essay-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
         .seg-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
         .seg-notype { font-size: 0.72rem; color: var(--text-faint); }
-        .seg-word { font-size: 0.72rem; font-weight: 700; color: #0369a1; background: #ecfeff; border-radius: 9999px; padding: 2px 8px; }
-        html[data-theme="dark"] .seg-word { background: #08313a; }
-        .seg-word.over { color: #b91c1c; background: #fef2f2; }
+        .seg-limit { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); background: var(--surface-3); border-radius: 9999px; padding: 2px 8px; }
         .seg-essay-actions { display: flex; align-items: center; gap: 6px; }
-        .seg-edit, .seg-del { background: none; border: none; cursor: pointer; font-size: 0.95rem; padding: 3px 5px; border-radius: 7px; }
-        .seg-edit:hover, .seg-del:hover { background: var(--surface-3); }
-        .seg-prompt { font-size: 0.9rem; color: var(--text); line-height: 1.5; margin-top: 8px; }
-        .seg-links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
-        .seg-chip { font-size: 0.76rem; font-weight: 600; color: #0071e3; text-decoration: none; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9999px; padding: 3px 10px; }
-        .seg-chip.cur { background: #0071e3; color: #fff; border-color: #0071e3; }
-        .seg-chip.ghost { color: var(--text-muted); }
-        @media (max-width: 860px) { .me-grid { grid-template-columns: 1fr; } .me-field.me-span2 { grid-column: span 1; } }
+        .seg-icon { background: none; border: none; cursor: pointer; font-size: 0.9rem; padding: 3px 5px; border-radius: 7px; opacity: .75; }
+        .seg-icon:hover { background: var(--surface-3); opacity: 1; }
+        .seg-prompt { font-size: 0.9rem; color: var(--text); line-height: 1.55; margin-top: 8px; }
+        .seg-foot { display: flex; align-items: center; gap: 8px; margin-top: 11px; flex-wrap: wrap; }
+        .seg-open { font-size: 0.8rem; font-weight: 600; color: #0071e3; text-decoration: none; border: 1px solid var(--border); border-radius: 9px; padding: 5px 12px; }
+        .seg-open:hover { background: var(--surface-2); }
+        .seg-nolink { font-size: 0.78rem; color: var(--text-faint); }
+        .seg-done { margin-left: auto; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 5px 12px; cursor: pointer; }
+        .seg-done:hover { background: #0071e3; border-color: #0071e3; color: #fff; }
+        /* ===== 선생님: 수정 완료 알림함 ===== */
+        .rvi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
+        .rvi-head { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+        .rvi-count { background: #0071e3; color: #fff; font-size: 0.72rem; font-weight: 800; border-radius: 9999px; padding: 1px 8px; }
+        .rvi-list { display: flex; flex-direction: column; gap: 6px; }
+        .rvi-item { display: flex; align-items: center; gap: 8px; }
+        .rvi-main { flex: 1 1 auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; cursor: pointer; text-align: left; min-width: 0; }
+        .rvi-main:hover { border-color: #0071e3; }
+        .rvi-who { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+        .rvi-essay { font-size: 0.82rem; font-weight: 600; color: #0071e3; }
+        .rvi-memo { font-size: 0.82rem; color: var(--text-muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rvi-nomemo { font-style: italic; }
+        .rvi-time { margin-left: auto; font-size: 0.72rem; color: var(--text-faint); white-space: nowrap; }
+        .rvi-dismiss { flex: 0 0 auto; background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); border-radius: 9px; padding: 8px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .rvi-dismiss:hover { background: #16a34a; border-color: #16a34a; color: #fff; }
+        /* 학생 상세 상단 알림 */
+        .srn-card { background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid #0071e3; border-radius: 12px; padding: 13px 15px; margin-bottom: 14px; }
+        .srn-head { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+        .srn-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+        .srn-body { flex: 1 1 auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+        .srn-essay { font-size: 0.85rem; font-weight: 700; color: #0071e3; }
+        .srn-memo { font-size: 0.84rem; color: var(--text); }
+        .srn-time { font-size: 0.72rem; color: var(--text-faint); }
+        @media (max-width: 860px) { .me-row { grid-template-columns: 1fr; } }
         .admin-empty { color: var(--text-faint); padding: 20px; }
         .kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
         .kanban-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
@@ -3587,21 +3606,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <textarea id="essay-prompt" class="shadow border rounded w-full py-2 px-3 text-gray-700" rows="5" placeholder="에세이 문항을 입력하세요." required=""></textarea>
                 </div>
                 <div class="md:col-span-2">
-                    <label for="essay-brainstorm" class="block text-gray-700 text-sm font-bold mb-2">🧠 브레인스토밍 & 개요</label>
-                    <p class="text-xs text-gray-500 mb-2">에세이의 뼈대가 되는 핵심 소재·Hook·개요를 적거나, 브레인스토밍 문서 링크를 붙여넣으세요. (막혔을 때 처음 방향으로 빠르게 복귀)</p>
-                    <textarea id="essay-brainstorm" class="shadow border rounded w-full py-2 px-3 text-gray-700" rows="3" placeholder="핵심 소재 / 개요 메모, 또는 https://docs.google.com/... 링크"></textarea>
-                </div>
-                <div class="md:col-span-2">
-                    <label for="essay-google-doc-link" class="block text-gray-700 text-sm font-bold mb-2">📄 완성본 구글 문서 링크</label>
-                    <input type="url" id="essay-google-doc-link" class="shadow border rounded w-full py-2 px-3 text-gray-700" placeholder="https://docs.google.com/document/d/... (선택)">
+                    <label for="essay-google-doc-link" class="block text-gray-700 text-sm font-bold mb-2">📄 구글 문서 링크</label>
+                    <input type="url" id="essay-google-doc-link" class="shadow border rounded w-full py-2 px-3 text-gray-700" placeholder="https://docs.google.com/document/d/... (붙여넣으면 '문서 열기' 버튼이 생겨요)">
                 </div>
                 <div>
                     <label for="essay-word-limit" class="block text-gray-700 text-sm font-bold mb-2">단어 제한 (Word Limit)</label>
                     <input type="number" id="essay-word-limit" min="0" class="shadow border rounded w-full py-2 px-3 text-gray-700" placeholder="예: 250">
-                </div>
-                <div>
-                    <label for="essay-word-count" class="block text-gray-700 text-sm font-bold mb-2">현재 단어 수</label>
-                    <input type="number" id="essay-word-count" min="0" class="shadow border rounded w-full py-2 px-3 text-gray-700" placeholder="예: 180">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2">유형 태그 (Type Tags):</label>
@@ -3741,26 +3751,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         function loadMainEssay() {
             try { mainEssay = JSON.parse(localStorage.getItem('myMainEssay') || '{}') || {}; } catch (e) { mainEssay = {}; }
             if (!mainEssay || typeof mainEssay !== 'object') mainEssay = {};
-            if (!Array.isArray(mainEssay.linkHistory)) mainEssay.linkHistory = [];
         }
         function saveMainEssay() { localStorage.setItem('myMainEssay', JSON.stringify(mainEssay)); }
-        let mainEssaySaveTimer = null;
-        function updateMainEssayField(field, value, immediate) {
-            if (field === 'googleDocLink') {
-                const link = (value || '').trim();
-                const hist = Array.isArray(mainEssay.linkHistory) ? mainEssay.linkHistory : [];
-                const last = hist.length ? hist[hist.length - 1].link : '';
-                if (link && link !== last) hist.push({ link, at: Date.now(), stage: mainEssay.status || 'Brainstorming' });
-                mainEssay.linkHistory = hist;
-                mainEssay.googleDocLink = link;
-            } else {
-                mainEssay[field] = value;
-            }
-            // status/prompt/link 는 즉시 다시 그려 진행바·버전·경고 갱신, 텍스트는 디바운스 저장만
-            const rerender = immediate || field === 'status' || field === 'promptId' || field === 'googleDocLink' || field === 'wordCount';
-            clearTimeout(mainEssaySaveTimer);
-            if (rerender) { saveMainEssay(); renderMainEssay(); }
-            else { mainEssaySaveTimer = setTimeout(saveMainEssay, 600); }
+        function updateMainEssayField(field, value) {
+            mainEssay[field] = (field === 'googleDocLink') ? (value || '').trim() : value;
+            saveMainEssay();
+            renderMainEssay();
+        }
+        function openMainEssayDoc() {
+            const link = (mainEssay.googleDocLink || '').trim();
+            if (!link) { toast('먼저 구글 문서 링크를 붙여넣어 주세요.', 'error'); return; }
+            window.open(link, '_blank', 'noopener');
         }
         function renderMainEssay() {
             const box = document.getElementById('main-essay-block');
@@ -3769,56 +3770,67 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const pid = m.promptId ? Number(m.promptId) : '';
             const chosen = COMMONAPP_PROMPTS.find(p => p.id === pid);
             const pct = essayStageProgress(m.status);
-            const barCol = pct >= 80 ? '#34c759' : pct >= 40 ? '#f59e0b' : '#0071e3';
-            const wc = parseInt(m.wordCount, 10) || 0;
-            const over = wc > COMMONAPP_ESSAY_LIMIT;
-            const wcCol = over ? '#ff3b30' : (wc >= 500 ? '#34c759' : 'var(--text-muted)');
             const promptOpts = ['<option value="">— 프롬프트 선택 —</option>']
                 .concat(COMMONAPP_PROMPTS.map(p => `<option value="${p.id}" ${p.id === pid ? 'selected' : ''}>${p.id}. ${esc(p.short)}</option>`)).join('');
-            const hist = Array.isArray(m.linkHistory) ? m.linkHistory : [];
-            const verLabel = at => { const d = new Date(at); return `${d.getMonth() + 1}/${d.getDate()}`; };
-            const histChips = hist.slice().reverse().slice(0, 6).map(h => `<a class="me-ver" href="${esc(h.link)}" target="_blank" rel="noopener">🕒 ${verLabel(h.at)}</a>`).join('');
+            const hasLink = !!(m.googleDocLink || '').trim();
             box.innerHTML = `
             <div class="me-card">
                 <div class="me-head">
-                    <div class="me-title">📝 Common App 메인 에세이 <span class="me-sub">Personal Statement · 모든 대학 공통 1편 · 최대 ${COMMONAPP_ESSAY_LIMIT}단어</span></div>
-                    <div class="me-prog"><span class="me-prog-pct" style="color:${barCol}">${pct}%</span><span class="me-prog-bar"><i style="width:${pct}%;background:${barCol}"></i></span></div>
+                    <div class="me-title">📝 Common App 메인 에세이</div>
+                    <div class="me-prog"><span class="me-prog-bar"><i style="width:${pct}%"></i></span><span class="me-prog-pct">${pct}%</span></div>
                 </div>
-                <div class="me-grid">
-                    <label class="me-field me-span2">
+                <div class="me-row">
+                    <label class="me-field">
                         <span>선택한 프롬프트</span>
-                        <select onchange="updateMainEssayField('promptId', this.value, true)">${promptOpts}</select>
+                        <select onchange="updateMainEssayField('promptId', this.value)">${promptOpts}</select>
                     </label>
-                    <label class="me-field">
+                    <label class="me-field me-narrow">
                         <span>진행 단계</span>
-                        <select onchange="updateMainEssayField('status', this.value, true)">${essayStatusOptionsHtml(m.status)}</select>
-                    </label>
-                    <label class="me-field">
-                        <span>작업 제목 (Working Title)</span>
-                        <input type="text" value="${esc(m.title || '')}" placeholder="예: 할머니의 정원" oninput="updateMainEssayField('title', this.value)">
-                    </label>
-                    <label class="me-field">
-                        <span>단어 수 <b style="color:${wcCol}">${wc}/${COMMONAPP_ESSAY_LIMIT}${over ? ' ⚠️ 초과' : ''}</b></span>
-                        <input type="number" value="${m.wordCount || ''}" min="0" placeholder="0" oninput="updateMainEssayField('wordCount', this.value)">
-                    </label>
-                    <label class="me-field me-span2">
-                        <span>📄 구글 문서 링크</span>
-                        <input type="url" value="${esc(m.googleDocLink || '')}" placeholder="https://docs.google.com/document/d/…" onchange="updateMainEssayField('googleDocLink', this.value, true)">
+                        <select onchange="updateMainEssayField('status', this.value)">${essayStatusOptionsHtml(m.status)}</select>
                     </label>
                 </div>
-                ${chosen ? `<div class="me-promptfull">📌 <b>프롬프트 ${chosen.id}:</b> ${esc(chosen.full)}</div>` : ''}
-                <div class="me-grid">
-                    <label class="me-field me-span2">
-                        <span>🧠 브레인스토밍 · 핵심 소재 · Hook</span>
-                        <textarea rows="3" placeholder="핵심 소재, 훅, 개요를 자유롭게 적어두세요. 막혔을 때 처음 방향으로 빠르게 복귀할 수 있어요." oninput="updateMainEssayField('brainstorm', this.value)">${esc(m.brainstorm || '')}</textarea>
-                    </label>
-                    <label class="me-field me-span2">
-                        <span>📝 메모 (수정 방향·피드백 반영 계획 등)</span>
-                        <textarea rows="2" placeholder="다음에 고칠 것, 강조할 포인트 등" oninput="updateMainEssayField('notes', this.value)">${esc(m.notes || '')}</textarea>
-                    </label>
+                ${chosen ? `<div class="me-promptfull">${esc(chosen.full)}</div>` : ''}
+                <label class="me-field">
+                    <span>구글 문서 링크</span>
+                    <div class="me-linkrow">
+                        <input type="url" value="${esc(m.googleDocLink || '')}" placeholder="https://docs.google.com/document/d/…" onchange="updateMainEssayField('googleDocLink', this.value)">
+                        <button type="button" class="me-open ${hasLink ? '' : 'disabled'}" onclick="openMainEssayDoc()">문서 열기 ↗</button>
+                    </div>
+                </label>
+                <div class="me-actions">
+                    <button type="button" class="me-done" onclick="sendRevisionNotice('main')">✅ 수정 완료 · 선생님께 알림</button>
                 </div>
-                ${(m.googleDocLink || histChips) ? `<div class="me-links">${m.googleDocLink ? `<a class="me-ver cur" href="${esc(m.googleDocLink)}" target="_blank" rel="noopener">📄 현재본 열기</a>` : ''}${histChips ? `<span class="me-vertag">버전:</span>${histChips}` : ''}</div>` : ''}
             </div>`;
+        }
+
+        // ===== 학생 "수정 완료" → 선생님 페이지 알림 (essayKey='main' 또는 서플 에세이 id) =====
+        function revisionLabelFor(essayKey) {
+            if (essayKey === 'main') return 'Common App 메인 에세이';
+            const e = supplementalEssays.find(x => x.id === essayKey);
+            if (!e) return '서플 에세이';
+            const uni = universities.find(u => u.id === e.universityId);
+            const uniName = uni ? (uni.nameEn || uni.nameKo) : '미지정 대학';
+            const promptBit = e.prompt ? ` — ${e.prompt.slice(0, 32)}${e.prompt.length > 32 ? '…' : ''}` : '';
+            return `${uniName} 서플${promptBit}`;
+        }
+        async function sendRevisionNotice(essayKey) {
+            const essayLabel = revisionLabelFor(essayKey);
+            if (!currentUser || !fbDb) { toast('로그인 후 이용할 수 있어요.', 'error'); return; }
+            const memo = await showPrompt('✅ 수정 완료 · 선생님께 알림', {
+                message: `"${essayLabel}" 수정을 마쳤다고 선생님께 알릴게요.\n무엇을 고쳤는지, 어떤 피드백을 원하는지 간단히 적어주세요. (비워도 돼요)`,
+                placeholder: '예: 결말 문단을 다시 썼어요. 흐름이 자연스러운지 봐주세요.',
+                confirmText: '선생님께 보내기', icon: '✅'
+            });
+            if (memo === null) return; // 취소
+            const entry = { id: generateUniqueId('rev-'), essayKey, essayLabel, memo: (memo || '').trim(), at: Date.now() };
+            try {
+                const ref = fbDb.collection('students').doc(currentUser.uid);
+                const snap = await ref.get();
+                const cur = (snap.exists && Array.isArray(snap.data().reviewRequests)) ? snap.data().reviewRequests : [];
+                const next = cur.filter(r => r.essayKey !== essayKey).concat(entry).slice(-40); // 에세이별 1건만 유지
+                await ref.update({ reviewRequests: next });
+                toast('선생님께 "수정 완료" 알림을 보냈어요 ✅', 'success');
+            } catch (e) { toast('알림 전송 실패: ' + e.message, 'error'); }
         }
 
         // =======================================================================
@@ -5793,45 +5805,39 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 const nameKo = uni && uni.nameKo && uni.nameEn ? uni.nameKo : '';
                 const nd = uni ? uniNearestDeadline(uni) : null;
                 const ddayBadge = nd ? `<span class="seg-dday ${daysUntil(nd.date) <= 14 ? 'soon' : ''}">D-${daysUntil(nd.date)}</span>` : '';
-                // per-school progress
                 const done = g.list.filter(e => normalizeEssayStatus(e.status) === 'Done').length;
                 const pctAvg = Math.round(g.list.reduce((s, e) => s + essayStageProgress(e.status), 0) / g.list.length);
-                const barCol = pctAvg >= 80 ? '#34c759' : pctAvg >= 40 ? '#f59e0b' : '#ff3b30';
                 const cards = g.list.map(essay => {
-                    const wc = parseInt(essay.wordCount, 10) || 0;
                     const wl = parseInt(essay.wordLimit, 10) || 0;
-                    const over = wl && wc > wl;
-                    const wordChip = (wc || wl)
-                        ? `<span class="seg-word ${over ? 'over' : ''}">✍️ ${wc || 0}${wl ? '/' + wl : ''}단어${over ? ' ⚠️' : ''}</span>` : '';
-                    const bs = (essay.brainstorm || '').trim();
-                    const bsChip = bs
-                        ? (/^https?:\/\//i.test(bs)
-                            ? `<a class="seg-chip" href="${esc(bs)}" target="_blank" rel="noopener">🧠 브레인스토밍</a>`
-                            : `<span class="seg-chip ghost" title="${esc(bs)}">🧠 메모</span>`)
-                        : '';
-                    const docChip = essay.googleDocLink ? `<a class="seg-chip cur" href="${esc(essay.googleDocLink)}" target="_blank" rel="noopener">📄 완성본</a>` : '';
+                    const limitChip = wl ? `<span class="seg-limit">${wl}단어</span>` : '';
                     const tags = (Array.isArray(essay.tags) && essay.tags.length)
                         ? essay.tags.map(t => `<span class="essay-tag-chip">#${esc(t)}</span>`).join('') : '';
+                    const openBtn = essay.googleDocLink
+                        ? `<a class="seg-open" href="${esc(essay.googleDocLink)}" target="_blank" rel="noopener">문서 열기 ↗</a>`
+                        : `<span class="seg-nolink">링크 없음</span>`;
                     const promptSnip = (essay.prompt || '').length > 140 ? esc(essay.prompt.slice(0, 140)) + '…' : esc(essay.prompt || '(문항 미입력)');
-                    return `<div class="seg-essay ${getEssayStatusClass(essay.status)}">
+                    return `<div class="seg-essay">
                         <div class="seg-essay-top">
-                            <div class="seg-tags">${tags || '<span class="seg-notype">유형 미지정</span>'}${wordChip}</div>
+                            <div class="seg-tags">${tags || '<span class="seg-notype">유형 미지정</span>'}${limitChip}</div>
                             <div class="seg-essay-actions">
                                 <div class="status-cell-wrapper ${getEssayStatusClass(essay.status)}">
                                     <select onchange="updateEssayField(this, '${essay.id}', 'status')" class="status-select">${essayStatusOptionsHtml(essay.status)}</select>
                                 </div>
-                                <button class="seg-edit" onclick="editEssay('${essay.id}')" title="수정">✏️</button>
-                                <button class="seg-del" onclick="deleteEssay('${essay.id}')" title="삭제">🗑️</button>
+                                <button class="seg-icon" onclick="editEssay('${essay.id}')" title="수정">✏️</button>
+                                <button class="seg-icon" onclick="deleteEssay('${essay.id}')" title="삭제">🗑️</button>
                             </div>
                         </div>
                         <div class="seg-prompt">${promptSnip}</div>
-                        ${(bsChip || docChip) ? `<div class="seg-links">${docChip}${bsChip}</div>` : ''}
+                        <div class="seg-foot">
+                            ${openBtn}
+                            <button class="seg-done" onclick="sendRevisionNotice('${essay.id}')">✅ 수정 완료 · 알림</button>
+                        </div>
                     </div>`;
                 }).join('');
                 return `<div class="seg-group">
                     <div class="seg-group-head">
                         <div class="seg-group-name">${esc(nameEn)}${nameKo ? ` <span class="seg-ko">${esc(nameKo)}</span>` : ''} ${ddayBadge}</div>
-                        <div class="seg-group-prog"><span class="seg-count">${done}/${g.list.length} 완료</span><span class="seg-bar"><i style="width:${pctAvg}%;background:${barCol}"></i></span><b style="color:${barCol}">${pctAvg}%</b></div>
+                        <div class="seg-group-prog"><span class="seg-count">${done}/${g.list.length} 완료</span><span class="seg-bar"><i style="width:${pctAvg}%"></i></span><b>${pctAvg}%</b></div>
                     </div>
                     <div class="seg-essays">${cards}</div>
                 </div>`;
@@ -5935,7 +5941,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             essayForm.reset(); // Clear all form fields
             document.getElementById('essay-id').value = ''; // Clear hidden ID field
             document.getElementById('essay-status').value = 'Brainstorming'; // Set default status
-            document.getElementById('essay-brainstorm').value = ''; // Clear brainstorming field
 
             // Populate the university selection dropdown with all available universities
             essayUniSelect.innerHTML = '<option value="">-- 대학 선택 --</option>';
@@ -5956,10 +5961,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     document.getElementById('essay-id').value = essay.id;
                     essayUniSelect.value = essay.universityId;
                     document.getElementById('essay-prompt').value = essay.prompt || '';
-                    document.getElementById('essay-brainstorm').value = essay.brainstorm || '';
                     document.getElementById('essay-google-doc-link').value = essay.googleDocLink || '';
                     document.getElementById('essay-word-limit').value = essay.wordLimit || '';
-                    document.getElementById('essay-word-count').value = essay.wordCount || '';
                     document.getElementById('essay-status').value = normalizeEssayStatus(essay.status);
                     currentEssayTags = Array.isArray(essay.tags) ? [...essay.tags] : [];
                 }
@@ -5987,10 +5990,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const newEssayData = {
                 universityId: essayUniSelect.value,
                 prompt: document.getElementById('essay-prompt').value.trim(),
-                brainstorm: document.getElementById('essay-brainstorm').value.trim(),
                 googleDocLink: document.getElementById('essay-google-doc-link').value.trim(),
                 wordLimit: document.getElementById('essay-word-limit').value.trim(),
-                wordCount: document.getElementById('essay-word-count').value.trim(),
                 status: document.getElementById('essay-status').value,
                 tags: [...currentEssayTags]
             };
@@ -8062,7 +8063,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // ===== Teacher dashboard state =====
         let teacherStudents = [];
         let teacherStudentsUnsub = null;
-        let teacherState = { studentClasses: {}, feedbackTemplates: [], statsHistory: [], admitLevels: {}, hiddenFeedback: {}, counselorNotes: {} };
+        let teacherState = { studentClasses: {}, feedbackTemplates: [], statsHistory: [], admitLevels: {}, hiddenFeedback: {}, counselorNotes: {}, dismissedReviews: {} };
         let teacherShowHidden = false;
         let teacherFilter = { q: '', sort: 'risk', risk: 'all', cls: 'all', only: '' };
         const DEFAULT_FB_TEMPLATES = [
@@ -8082,7 +8083,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     statsHistory: teacherState.statsHistory,
                     admitLevels: teacherState.admitLevels || {},
                     hiddenFeedback: teacherState.hiddenFeedback || {},
-                    counselorNotes: teacherState.counselorNotes || {}
+                    counselorNotes: teacherState.counselorNotes || {},
+                    dismissedReviews: teacherState.dismissedReviews || {}
                 }, { merge: true });
             } catch (e) { console.warn('teacher state save failed', e); }
         }
@@ -8149,9 +8151,10 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     statsHistory: td.statsHistory || [],
                     admitLevels: td.admitLevels || {},
                     hiddenFeedback: td.hiddenFeedback || {},
-                    counselorNotes: td.counselorNotes || {}
+                    counselorNotes: td.counselorNotes || {},
+                    dismissedReviews: td.dismissedReviews || {}
                 };
-            } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {}, hiddenFeedback: {}, counselorNotes: {} }; }
+            } catch (e) { teacherState = { studentClasses: {}, feedbackTemplates: DEFAULT_FB_TEMPLATES.slice(), statsHistory: [], admitLevels: {}, hiddenFeedback: {}, counselorNotes: {}, dismissedReviews: {} }; }
             stopTeacherStudentsWatch();   // manual refresh → force a fresh subscription
             startCohortWatch();
         }
@@ -8253,12 +8256,54 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         function renderTeacherDashboard() {
             const list = document.getElementById('teacher-view-list');
             if (!list) return;
-            list.innerHTML = `<div class="cockpit" id="tcockpit"></div><div id="tpqueue"></div><div id="teacher-toolbar2-wrap">${buildTeacherToolbar()}</div><div id="tstudent-grid-wrap"></div>`;
-            renderCockpit(); renderPQueue(); renderStudentGrid();
+            list.innerHTML = `<div id="treview-inbox"></div><div class="cockpit" id="tcockpit"></div><div id="tpqueue"></div><div id="teacher-toolbar2-wrap">${buildTeacherToolbar()}</div><div id="tstudent-grid-wrap"></div>`;
+            renderReviewInbox(); renderCockpit(); renderPQueue(); renderStudentGrid();
         }
         function refreshTeacherDashboard() {
             if (!document.getElementById('tcockpit')) { renderTeacherDashboard(); return; }
-            renderCockpit(); renderPQueue(); renderStudentGrid();
+            renderReviewInbox(); renderCockpit(); renderPQueue(); renderStudentGrid();
+        }
+        // ---- 학생 "수정 완료" 알림함 (확인하면 사라짐, 확인 상태는 선생님 문서에 저장) ----
+        function pendingReviews() {
+            const dismissed = teacherState.dismissedReviews || {};
+            const out = [];
+            teacherStudents.forEach(s => {
+                (Array.isArray(s.d.reviewRequests) ? s.d.reviewRequests : []).forEach(r => {
+                    if (r && r.id && !dismissed[r.id]) out.push({ ...r, uid: s.id, student: s.d.name || s.d.email });
+                });
+            });
+            return out.sort((a, b) => (b.at || 0) - (a.at || 0));
+        }
+        function reviewTimeLabel(at) {
+            if (!at) return '';
+            const diff = Date.now() - at, min = Math.floor(diff / 60000);
+            if (min < 1) return '방금';
+            if (min < 60) return `${min}분 전`;
+            const hr = Math.floor(min / 60); if (hr < 24) return `${hr}시간 전`;
+            return new Date(at).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
+        }
+        function renderReviewInbox() {
+            const el = document.getElementById('treview-inbox'); if (!el) return;
+            const items = pendingReviews();
+            if (!items.length) { el.innerHTML = ''; return; }
+            const rows = items.map(r => `<div class="rvi-item">
+                <button class="rvi-main" onclick="openStudentDetail('${r.uid}')">
+                    <span class="rvi-who">${esc(r.student)}</span>
+                    <span class="rvi-essay">${esc(r.essayLabel || '에세이')}</span>
+                    ${r.memo ? `<span class="rvi-memo">“${esc(r.memo)}”</span>` : '<span class="rvi-memo rvi-nomemo">수정을 마쳤어요</span>'}
+                    <span class="rvi-time">${reviewTimeLabel(r.at)}</span>
+                </button>
+                <button class="rvi-dismiss" onclick="dismissReview('${r.id}', event)" title="확인 완료 — 알림 지우기">확인 ✓</button>
+            </div>`).join('');
+            el.innerHTML = `<div class="rvi-card"><div class="rvi-head">✅ 수정 완료 알림 <span class="rvi-count">${items.length}</span></div><div class="rvi-list">${rows}</div></div>`;
+        }
+        async function dismissReview(id, ev) {
+            if (ev) ev.stopPropagation();
+            if (!teacherState.dismissedReviews) teacherState.dismissedReviews = {};
+            teacherState.dismissedReviews[id] = true;
+            renderReviewInbox();
+            const notice = document.getElementById('std-review-notice'); if (notice) renderStudentReviewNotice();
+            await saveTeacherState();
         }
 
         // ---- Cockpit: cohort-wide command center ----
@@ -8549,6 +8594,23 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 switchStudentTab(initialTab === 'chat' ? 'chat' : 'report');
             } catch (e) { detail.innerHTML = `<div class="teacher-error">${esc(e.message)}</div>`; }
         }
+        // 이 학생의 미확인 "수정 완료" 알림 (진행현황 탭 상단)
+        function buildStudentReviewNotice(data) {
+            const dismissed = teacherState.dismissedReviews || {};
+            const reqs = (Array.isArray(data.reviewRequests) ? data.reviewRequests : []).filter(r => r && r.id && !dismissed[r.id]).sort((a, b) => (b.at || 0) - (a.at || 0));
+            if (!reqs.length) return '<div id="std-review-notice"></div>';
+            const rows = reqs.map(r => `<div class="srn-item">
+                <div class="srn-body"><span class="srn-essay">${esc(r.essayLabel || '에세이')}</span>${r.memo ? `<span class="srn-memo">“${esc(r.memo)}”</span>` : '<span class="srn-memo rvi-nomemo">수정을 마쳤어요</span>'}<span class="srn-time">${reviewTimeLabel(r.at)}</span></div>
+                <button class="rvi-dismiss" onclick="dismissReview('${r.id}', event)">확인 ✓</button>
+            </div>`).join('');
+            return `<div id="std-review-notice"><div class="srn-card"><div class="srn-head">✅ 학생이 수정을 마쳤어요 <span class="rvi-count">${reqs.length}</span></div>${rows}</div></div>`;
+        }
+        function renderStudentReviewNotice() {
+            const el = document.getElementById('std-review-notice');
+            if (!el || !currentStudentData) return;
+            el.outerHTML = buildStudentReviewNotice(currentStudentData);
+        }
+
         // Care checklist — surfaces exactly what this student is missing (놓친 것 없이 케어)
         function buildCareChecklist(data) {
             const gaps = computeStudentGaps(data, currentStudentUid);
@@ -8588,7 +8650,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             } else if (tab === 'notes') {
                 c.innerHTML = buildCounselorNotes(currentStudentUid);
             } else {
-                c.innerHTML = buildCareChecklist(data) + buildStudentReport(data) + buildStudentCommonApp(data) + buildStudentUniTodos(data) + buildFeedbackPanel(data);
+                c.innerHTML = buildStudentReviewNotice(data) + buildCareChecklist(data) + buildStudentReport(data) + buildStudentCommonApp(data) + buildStudentUniTodos(data) + buildFeedbackPanel(data);
             }
         }
         function onAdmitChange(uniId, sel) {
