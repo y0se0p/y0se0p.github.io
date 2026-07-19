@@ -895,6 +895,36 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .admin-add-cat { font-size: 0.85rem; font-weight: 600; padding: 7px 14px; border-radius: 10px; background: #0071e3; color: #fff; border: none; cursor: pointer; }
         .admin-add-cat:hover { background: #0060c0; }
         .admin-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; margin-top: 14px; }
+        /* ===== Common App 진행 트래커 ===== */
+        .ca-overall { background: linear-gradient(135deg,#eef4ff,#f6f0ff); border: 1px solid #e3e8f5; border-radius: 16px; padding: 18px 22px; margin-bottom: 22px; }
+        .ca-overall-top { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+        .ca-overall-pct { font-size: 2.1rem; font-weight: 800; color: #0071e3; line-height: 1; }
+        .ca-overall-label { font-size: 0.95rem; font-weight: 600; color: #3a3a3c; }
+        .ca-opt-note { color: #8e8e93; font-weight: 500; }
+        .ca-overall-bar { height: 10px; background: #e5e7eb; border-radius: 9999px; overflow: hidden; }
+        .ca-overall-bar > i { display: block; height: 100%; background: linear-gradient(90deg,#0071e3,#5b8def); border-radius: 9999px; transition: width .35s ease; }
+        .ca-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; align-items: start; }
+        .ca-cat { border: 1px solid #ececef; border-radius: 14px; padding: 14px 16px; background: #fff; }
+        .ca-cat-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+        .ca-cat-name { font-weight: 700; font-size: 0.98rem; color: #1d1d1f; }
+        .ca-cat-prog { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+        .ca-cat-prog b { font-size: 0.78rem; color: #6e6e73; font-variant-numeric: tabular-nums; }
+        .ca-cat-bar { display: inline-block; width: 60px; height: 6px; background: #eee; border-radius: 9999px; overflow: hidden; }
+        .ca-cat-bar > i { display: block; height: 100%; background: #34c759; border-radius: 9999px; }
+        .ca-items { display: flex; flex-direction: column; gap: 2px; }
+        .ca-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 8px; border-radius: 9px; cursor: pointer; transition: background .12s; }
+        .ca-item:hover { background: #f7f8fa; }
+        .ca-item input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .ca-box { flex: 0 0 auto; width: 19px; height: 19px; margin-top: 1px; border: 2px solid #cfd2d8; border-radius: 6px; position: relative; transition: all .15s; }
+        .ca-item input:checked + .ca-box { background: #34c759; border-color: #34c759; }
+        .ca-item input:checked + .ca-box::after { content: '✓'; position: absolute; inset: 0; color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        .ca-text { flex: 1 1 auto; font-size: 0.9rem; color: #1d1d1f; line-height: 1.4; }
+        .ca-item.done .ca-text { color: #a1a1a6; text-decoration: line-through; }
+        .ca-tag { flex: 0 0 auto; font-size: 0.66rem; font-weight: 700; padding: 2px 7px; border-radius: 9999px; white-space: nowrap; }
+        .ca-tag.cat-set { background: #eef2ff; color: #4338ca; } .ca-tag.cat-in { background: #ecfeff; color: #0e7490; }
+        .ca-tag.cat-write { background: #fef3c7; color: #b45309; } .ca-tag.cat-req { background: #fce7f3; color: #be185d; }
+        .ca-tag.cat-sub { background: #dcfce7; color: #15803d; }
+        .ca-opt { flex: 0 0 auto; font-size: 0.62rem; font-weight: 700; color: #98989d; border: 1px solid #e0e0e2; padding: 1px 6px; border-radius: 9999px; }
         .admin-empty { color: var(--text-faint); padding: 20px; }
         .kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; }
         .kanban-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
@@ -2288,6 +2318,22 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         .cc-txt{ flex:1; font-size:0.88rem; color:var(--text); font-weight:600; line-height:1.4; }
         .cc-allgood{ display:flex; align-items:center; gap:8px; color:#15803d; font-weight:700; font-size:0.92rem; }
         /* Teacher view of student's per-university to-dos */
+        /* 선생님 뷰: 학생 Common App 진행 */
+        .scc-overall { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 6px 0 14px; }
+        .scc-overall-pct { font-size: 1.5rem; font-weight: 800; line-height: 1; }
+        .scc-overall-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+        .scc-overall-bar { flex: 1 1 160px; height: 8px; background: #e5e7eb; border-radius: 9999px; overflow: hidden; min-width: 120px; }
+        .scc-overall-bar > i { display: block; height: 100%; border-radius: 9999px; transition: width .3s; }
+        .scc-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+        .scc-cat { border: 1px solid var(--border); border-radius: 11px; padding: 10px 13px; background: var(--surface-2); }
+        .scc-cat-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+        .scc-cat-name { font-weight: 700; font-size: 0.88rem; color: var(--text); }
+        .scc-cat-prog { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+        .scc-cat-prog b { font-size: 0.74rem; font-variant-numeric: tabular-nums; }
+        .scc-bar { display: inline-block; width: 46px; height: 5px; background: #e8e8ea; border-radius: 9999px; overflow: hidden; }
+        .scc-bar > i { display: block; height: 100%; border-radius: 9999px; }
+        .scc-remain { font-size: 0.78rem; color: #c2410c; line-height: 1.45; }
+        .scc-remain.done { color: #16a34a; }
         .sut-uni { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; background: var(--surface-2); }
         .sut-uni-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .sut-uni-name { font-weight: 700; color: var(--text); font-size: 0.95rem; flex: 0 0 auto; }
@@ -2355,6 +2401,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 <label><input type="checkbox" checked onchange="toggleReportSection('universities',this.checked)"> 대학</label>
                 <label><input type="checkbox" checked onchange="toggleReportSection('finaid',this.checked)"> 재정보조</label>
                 <label><input type="checkbox" checked onchange="toggleReportSection('requirements',this.checked)"> 요구사항</label>
+                <label><input type="checkbox" checked onchange="toggleReportSection('commonapp',this.checked)"> 커먼앱</label>
                 <label><input type="checkbox" checked onchange="toggleReportSection('timeline',this.checked)"> 타임라인</label>
                 <label><input type="checkbox" checked onchange="toggleReportSection('unitodos',this.checked)"> 대학별 할 일</label>
                 <label><input type="checkbox" onchange="toggleReportSection('essays',this.checked)"> 에세이</label>
@@ -2462,6 +2509,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             <nav class="dash-nav">
                 <a href="#home" onclick="showSection('home')">홈</a>
                 <a href="#university-list" onclick="showSection('university-list')">대학 리스트</a>
+                <a href="#common-app" onclick="showSection('common-app')">커먼앱</a>
                 <a href="#my-essays" onclick="showSection('my-essays')">에세이</a>
                 <a href="#app-manager" onclick="showSection('app-manager')">프로필</a>
                 <a href="#my-notes" onclick="showSection('my-notes')">할 일</a>
@@ -2497,22 +2545,28 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     <div id="dash-dday-body"></div>
                 </a>
 
-                <!-- Row 2: action center -->
+                <!-- Row 2: Common App + timeline -->
+                <a class="bento span-2" href="#common-app" onclick="showSection('common-app')">
+                    <div class="bento-label">📋 Common App 진행 <span class="bento-arrow">→</span></div>
+                    <div id="dash-commonapp-body"></div>
+                </a>
                 <a class="bento span-2" href="#my-notes" onclick="showSection('my-notes')">
                     <div class="bento-label">🗓️ 다가오는 일정 (타임라인) <span class="bento-arrow">→</span></div>
                     <div id="dash-timeline-body"></div>
                 </a>
+
+                <!-- Row 3: uni readiness + admin checklist -->
                 <a class="bento span-2" href="#my-notes" onclick="showSection('my-notes')">
                     <div class="bento-label">🎯 대학별 준비 현황 <span class="bento-arrow">→</span></div>
                     <div id="dash-unitodo-body"></div>
                 </a>
-
-                <!-- Row 3: admin checklist + commitment -->
                 <a class="bento span-2" href="#my-notes" onclick="showSection('my-notes')">
                     <div class="bento-label">✅ 행정 체크리스트 <span class="bento-arrow">→</span></div>
                     <div id="dash-todo-body" class="todo-preview"></div>
                 </a>
-                <div class="bento span-2">
+
+                <!-- Row 4: commitment (full width) -->
+                <div class="bento span-4">
                     <div class="bento-label">🎯 나의 다짐 · Commitment</div>
                     <textarea id="my-motivation-statement" class="commit-textarea" placeholder="이곳에 목표와 다짐을 적어보세요. 자동으로 저장됩니다."></textarea>
                 </div>
@@ -2689,6 +2743,12 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
 
         <!-- To-Do List Section for deadlines, notes, and FAQs -->
+        <section id="common-app" class="bg-white p-8 rounded-xl card transition-shadow duration-300 hover:shadow-xl">
+            <h2 class="text-3xl font-bold mb-2 section-title">📋 Common App 진행 상황</h2>
+            <p class="text-lg leading-relaxed mb-6">Common App에서 <b>쓰고·내고·올려야 하는</b> 모든 단계를 한눈에 추적하세요. 완료한 항목을 체크하면 진행률이 올라가고, 선생님도 여러분의 진행 상황을 함께 확인할 수 있어요.</p>
+            <div id="commonapp-board"></div>
+        </section>
+
         <section id="my-notes" class="bg-white p-8 rounded-xl card transition-shadow duration-300 hover:shadow-xl">
             <h2 class="text-3xl font-bold mb-6 section-title">할 일 · 자주 묻는 질문</h2>
             <p class="text-lg leading-relaxed mb-6">
@@ -3730,6 +3790,120 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             renderAdminBoard();
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
             renderUpcomingDeadlines();
+        }
+
+        // ===== Common App 진행 트래커 =====
+        // 실제 Common App 구조(Profile·Family·Education·Testing·Activities·Writing·Recommenders·제출)를
+        // 반영한 체크리스트. 학생이 '쓰고/내고/올리고' 해야 하는 항목을 단계별로 추적한다.
+        // tag: 무엇을 하는 항목인지 (설정/입력/작성/요청/제출)
+        const COMMONAPP_TEMPLATE = [
+            { id: 'start', icon: '🚀', name: '시작 · 계정 (Getting Started)', items: [
+                { id: 'ca-acct', text: 'Common App 계정 만들기', tag: '설정' },
+                { id: 'ca-addcol', text: '지원할 대학을 My Colleges에 추가', tag: '설정' },
+                { id: 'ca-ferpa', text: 'FERPA 권리 포기 서명 (추천서 요청 전 필수)', tag: '설정' },
+            ] },
+            { id: 'profile', icon: '👤', name: 'Profile (프로필)', items: [
+                { id: 'ca-personal', text: '기본 인적사항 (이름·생년월일·연락처)', tag: '입력' },
+                { id: 'ca-address', text: '주소·시민권·사용 언어', tag: '입력' },
+                { id: 'ca-demo', text: '인구통계(Demographics) 정보', tag: '입력' },
+                { id: 'ca-feewaiver', text: 'Common App 지원비 면제(Fee Waiver) 해당 여부 확인', tag: '입력', optional: true },
+            ] },
+            { id: 'family', icon: '👨‍👩‍👧', name: 'Family (가족)', items: [
+                { id: 'ca-parents', text: '부모/보호자 정보', tag: '입력' },
+                { id: 'ca-house', text: '가정 배경·형제자매', tag: '입력' },
+            ] },
+            { id: 'education', icon: '🎓', name: 'Education (학력)', items: [
+                { id: 'ca-school', text: '현재 학교 정보 입력', tag: '입력' },
+                { id: 'ca-gpa', text: 'GPA·석차(class rank) 입력', tag: '입력' },
+                { id: 'ca-courses', text: '현재 수강 과목(Current Courses) 입력', tag: '입력' },
+                { id: 'ca-future', text: '졸업 후 계획·희망 전공', tag: '입력' },
+            ] },
+            { id: 'testing', icon: '📊', name: 'Testing (시험)', items: [
+                { id: 'ca-satact', text: 'SAT/ACT 점수 입력 (또는 test-optional 결정)', tag: '입력' },
+                { id: 'ca-apib', text: 'AP/IB 점수 입력', tag: '입력' },
+                { id: 'ca-toefl', text: 'TOEFL/IELTS 점수 입력 (해당 시)', tag: '입력', optional: true },
+            ] },
+            { id: 'activities', icon: '🎯', name: 'Activities (활동)', items: [
+                { id: 'ca-actlist', text: '활동 목록 작성 (최대 10개)', tag: '작성' },
+                { id: 'ca-actdesc', text: '각 활동 설명 150자 이내로 다듬기', tag: '작성' },
+            ] },
+            { id: 'writing', icon: '✍️', name: 'Writing (에세이)', items: [
+                { id: 'ca-essaydraft', text: 'Personal Essay 초안 작성 (650단어)', tag: '작성' },
+                { id: 'ca-essayfinal', text: 'Personal Essay 최종본 완성·검토', tag: '작성' },
+                { id: 'ca-addinfo', text: 'Additional Information 작성', tag: '작성', optional: true },
+                { id: 'ca-disrupt', text: 'Community Disruption / 징계 문항 답변', tag: '작성' },
+            ] },
+            { id: 'recs', icon: '👩‍🏫', name: 'Recommenders (추천서)', items: [
+                { id: 'ca-counselor', text: '카운슬러 배정·초대', tag: '요청' },
+                { id: 'ca-teacher', text: '교사 추천서 요청 (필요 수만큼)', tag: '요청' },
+                { id: 'ca-recdue', text: '추천인에게 마감일 안내', tag: '요청' },
+            ] },
+            { id: 'submit', icon: '📤', name: '대학별 제출 (My Colleges)', items: [
+                { id: 'ca-questions', text: '대학별 Questions 작성', tag: '작성' },
+                { id: 'ca-supp', text: '대학별 Writing Supplement(서플 에세이) 작성', tag: '작성' },
+                { id: 'ca-fee', text: '지원비 결제 또는 면제 신청', tag: '제출' },
+                { id: 'ca-review', text: 'Review & Submit — 최종 제출', tag: '제출' },
+            ] },
+        ];
+        const COMMONAPP_TAG_CLASS = { '설정': 'cat-set', '입력': 'cat-in', '작성': 'cat-write', '요청': 'cat-req', '제출': 'cat-sub' };
+        let commonApp = {}; // { itemId: true } — 체크된 항목만 저장
+        function loadCommonApp() {
+            try { commonApp = JSON.parse(localStorage.getItem('myCommonApp') || '{}') || {}; } catch (e) { commonApp = {}; }
+        }
+        function saveCommonApp() { localStorage.setItem('myCommonApp', JSON.stringify(commonApp)); }
+        // 필수 항목 기준 진행률 (선택 항목은 분모에서 제외)
+        function commonAppProgress(state) {
+            const st = state || commonApp;
+            let reqTotal = 0, reqDone = 0, optTotal = 0, optDone = 0;
+            COMMONAPP_TEMPLATE.forEach(cat => cat.items.forEach(it => {
+                const done = !!st[it.id];
+                if (it.optional) { optTotal++; if (done) optDone++; }
+                else { reqTotal++; if (done) reqDone++; }
+            }));
+            const pct = reqTotal ? Math.round(reqDone / reqTotal * 100) : 0;
+            return { pct, reqTotal, reqDone, optTotal, optDone };
+        }
+        function toggleCommonAppItem(itemId, on) {
+            if (on) commonApp[itemId] = true; else delete commonApp[itemId];
+            saveCommonApp();
+            renderCommonApp();
+            if (typeof renderDashboard === 'function' && document.getElementById('home') && document.getElementById('home').classList.contains('active-section')) renderDashboard();
+        }
+        function renderCommonApp() {
+            const board = document.getElementById('commonapp-board');
+            if (!board) return;
+            const prog = commonAppProgress();
+            const catHtml = COMMONAPP_TEMPLATE.map(cat => {
+                const total = cat.items.length;
+                const done = cat.items.filter(i => commonApp[i.id]).length;
+                const pct = total ? Math.round(done / total * 100) : 0;
+                const items = cat.items.map(i => {
+                    const checked = !!commonApp[i.id];
+                    return `<label class="ca-item ${checked ? 'done' : ''}">
+                        <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleCommonAppItem('${i.id}', this.checked)">
+                        <span class="ca-box"></span>
+                        <span class="ca-text">${esc(i.text)}</span>
+                        <span class="ca-tag ${COMMONAPP_TAG_CLASS[i.tag] || ''}">${esc(i.tag)}</span>
+                        ${i.optional ? '<span class="ca-opt">선택</span>' : ''}
+                    </label>`;
+                }).join('');
+                return `<div class="ca-cat">
+                    <div class="ca-cat-head">
+                        <span class="ca-cat-name">${cat.icon} ${esc(cat.name)}</span>
+                        <span class="ca-cat-prog"><span class="ca-cat-bar"><i style="width:${pct}%"></i></span><b>${done}/${total}</b></span>
+                    </div>
+                    <div class="ca-items">${items}</div>
+                </div>`;
+            }).join('');
+            board.innerHTML = `
+                <div class="ca-overall">
+                    <div class="ca-overall-top">
+                        <span class="ca-overall-pct">${prog.pct}%</span>
+                        <span class="ca-overall-label">Common App 필수 진행 · ${prog.reqDone}/${prog.reqTotal} 완료${prog.optTotal ? ` <span class="ca-opt-note">(선택 ${prog.optDone}/${prog.optTotal})</span>` : ''}</span>
+                    </div>
+                    <div class="ca-overall-bar"><i style="width:${prog.pct}%"></i></div>
+                </div>
+                <div class="ca-grid">${catHtml}</div>`;
         }
 
         // ===== Per-university To-Do tracker (drives University List "준비 %" + calendar) =====
@@ -5870,6 +6044,24 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 }
             }
 
+            // Common App 진행 요약 + 다음 할 항목
+            const caBody = document.getElementById('dash-commonapp-body');
+            if (caBody) {
+                const prog = commonAppProgress();
+                const col = prog.pct >= 80 ? '#34c759' : prog.pct >= 40 ? '#f59e0b' : '#0071e3';
+                const nextItems = [];
+                COMMONAPP_TEMPLATE.forEach(cat => cat.items.forEach(it => { if (!it.optional && !commonApp[it.id] && nextItems.length < 4) nextItems.push(it.text); }));
+                caBody.innerHTML = `
+                    <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:8px;">
+                        <span class="stat-number" style="font-size:2rem; margin:0; color:${col};">${prog.pct}<span style="font-size:1rem; font-weight:700;">%</span></span>
+                        <span class="stat-sub" style="margin:0;">필수 ${prog.reqDone}/${prog.reqTotal} 완료</span>
+                    </div>
+                    <div class="dash-utbar" style="margin-bottom:10px;"><i style="width:${prog.pct}%;background:${col}"></i></div>
+                    ${nextItems.length
+                        ? `<div style="display:flex; flex-direction:column; gap:5px;">${nextItems.map(t => `<div class="dash-row" style="padding:2px 0;"><span style="color:#c7c7cc;">○</span> ${esc(t)}</div>`).join('')}</div>`
+                        : '<div class="dash-empty">Common App 필수 항목 모두 완료! 🎉</div>'}`;
+            }
+
             // Admin checklist progress + pending items
             const todoBody = document.getElementById('dash-todo-body');
             if (todoBody) {
@@ -6293,7 +6485,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             setTimeout(() => location.reload(), 900);
         }
 
-        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors', 'myUniTodos'];
+        const BACKUP_KEYS = ['myUniversities', 'mySupplementalEssays', 'myMotivationStatement', 'myPersonalNotes', 'firstChoiceUniId', 'secondChoiceUniId', 'myAdminTasks', 'myMatchWeights', 'myRecommenders', 'myActivities', 'myRequirements', 'myAcademics', 'myHonors', 'myUniTodos', 'myCommonApp'];
 
         function triggerDownload(filename, content, mime) {
             const blob = new Blob([content], { type: mime });
@@ -7157,9 +7349,9 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Re-run every load + render after cloud data lands in localStorage
         function refreshAppFromStorage() {
             loadUniversities(); loadMatchWeights(); loadAdminTasks(); loadSupplementalEssays();
-            loadMotivationStatement(); loadFavoriteUniversities(); loadUniTodos();
+            loadMotivationStatement(); loadFavoriteUniversities(); loadUniTodos(); loadCommonApp();
             applyFiltersAndSort(); renderSupplementalEssays(); renderFavoriteUniversities();
-            renderProsConsCards(); renderAdminBoard(); renderUniTodoBoard(); renderDashboard();
+            renderProsConsCards(); renderAdminBoard(); renderUniTodoBoard(); renderCommonApp(); renderDashboard();
             renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
             renderUpcomingDeadlines();
             loadAppManager();
@@ -7864,7 +8056,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             } else if (tab === 'profile') {
                 c.innerHTML = buildStudentProfile(data);
             } else {
-                c.innerHTML = buildCareChecklist(data) + buildStudentReport(data) + buildStudentUniTodos(data) + buildFeedbackPanel(data);
+                c.innerHTML = buildCareChecklist(data) + buildStudentReport(data) + buildStudentCommonApp(data) + buildStudentUniTodos(data) + buildFeedbackPanel(data);
             }
         }
         function onAdmitChange(uniId, sel) {
@@ -7873,7 +8065,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
 
         // ===== Student Report Generator (PDF) =====
-        let reportSections = { header: true, academics: true, activities: true, honors: true, universities: true, finaid: true, requirements: true, timeline: true, unitodos: true, essays: false, recommenders: false, admin: true, motivation: false, comment: false };
+        let reportSections = { header: true, academics: true, activities: true, honors: true, universities: true, finaid: true, requirements: true, commonapp: true, timeline: true, unitodos: true, essays: false, recommenders: false, admin: true, motivation: false, comment: false };
         let reportComment = '';
         function openReport() {
             if (!currentStudentData) { toast('학생을 먼저 선택해주세요.', 'error'); return; }
@@ -7977,6 +8169,21 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 }).join('');
                 blocks.push(`<div class="rep-sec"><div class="rep-h">학교별 요구사항 체크리스트</div>
                     <table class="rep-table rep-req"><thead><tr><th>대학</th>${head}<th>완료</th></tr></thead><tbody>${rows}</tbody></table></div>`);
+            }
+            if (reportSections.commonapp) {
+                const st = safeParse(ad.myCommonApp, {}) || {};
+                const prog = commonAppProgress(st);
+                const rows = COMMONAPP_TEMPLATE.map(cat => {
+                    const total = cat.items.length;
+                    const done = cat.items.filter(i => st[i.id]).length;
+                    const remaining = cat.items.filter(i => !st[i.id] && !i.optional);
+                    const detail = remaining.length
+                        ? `<span class="rep-admin-left">남은 항목 — ${remaining.map(i => esc(i.text)).join(', ')}</span>`
+                        : `<span class="rep-admin-left done">✓ 필수 완료</span>`;
+                    return `<tr><td class="rep-u-name">${esc(cat.icon + ' ' + cat.name)}</td><td><b>${done}/${total}</b></td><td>${detail}</td></tr>`;
+                }).join('');
+                blocks.push(`<div class="rep-sec"><div class="rep-h">Common App 진행 · ${prog.pct}% (필수 ${prog.reqDone}/${prog.reqTotal})</div>
+                    <table class="rep-table rep-ca"><thead><tr><th>영역</th><th>완료</th><th>남은 항목</th></tr></thead><tbody>${rows}</tbody></table></div>`);
             }
             if (reportSections.timeline && unis.length) {
                 const year = new Date().getFullYear();
@@ -8250,6 +8457,35 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         }
 
         // Teacher's read-only view of the student's per-university to-do progress
+        // 선생님 읽기 전용: 학생의 Common App 진행 상황
+        function buildStudentCommonApp(data) {
+            const ad = data.appData || {};
+            const st = safeParse(ad.myCommonApp, {}) || {};
+            const prog = commonAppProgress(st);
+            const col = prog.pct >= 80 ? '#34c759' : prog.pct >= 40 ? '#f59e0b' : '#ff3b30';
+            const cats = COMMONAPP_TEMPLATE.map(cat => {
+                const total = cat.items.length;
+                const done = cat.items.filter(i => st[i.id]).length;
+                const pct = total ? Math.round(done / total * 100) : 0;
+                const remaining = cat.items.filter(i => !st[i.id] && !i.optional);
+                const remHtml = remaining.length
+                    ? `<div class="scc-remain">남은 항목 — ${remaining.map(i => esc(i.text)).join(', ')}</div>`
+                    : `<div class="scc-remain done">✓ 필수 항목 모두 완료</div>`;
+                const barCol = pct >= 80 ? '#34c759' : pct >= 40 ? '#f59e0b' : '#ff3b30';
+                return `<div class="scc-cat">
+                    <div class="scc-cat-head"><span class="scc-cat-name">${cat.icon} ${esc(cat.name)}</span>
+                        <span class="scc-cat-prog"><span class="scc-bar"><i style="width:${pct}%;background:${barCol}"></i></span><b style="color:${barCol}">${done}/${total}</b></span></div>
+                    ${remHtml}
+                </div>`;
+            }).join('');
+            return `<div class="report-section"><h4>📋 Common App 진행 상황 <span class="rp-dim" style="font-weight:600;font-size:0.8rem;">(학생이 관리 중)</span></h4>
+                <div class="scc-overall"><span class="scc-overall-pct" style="color:${col}">${prog.pct}%</span>
+                    <span class="scc-overall-label">필수 ${prog.reqDone}/${prog.reqTotal} 완료${prog.optTotal ? ` · 선택 ${prog.optDone}/${prog.optTotal}` : ''}</span>
+                    <span class="scc-overall-bar"><i style="width:${prog.pct}%;background:${col}"></i></span></div>
+                <div class="scc-cats">${cats}</div>
+            </div>`;
+        }
+
         function buildStudentUniTodos(data) {
             const ad = data.appData || {};
             const todos = safeParse(ad.myUniTodos, {}) || {};
@@ -8761,6 +8997,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 renderDashboard();
             } else if (sectionId === 'my-essays') {
                 renderSupplementalEssays();
+            } else if (sectionId === 'common-app') {
+                renderCommonApp();
             } else if (sectionId === 'university-list') {
                 applyFiltersAndSort(); // Render university list and apply filter/sort
                 renderFavoriteUniversities(); // Display favorite university dropdowns and info
@@ -8850,6 +9088,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             loadSupplementalEssays();
             loadMotivationStatement();
             loadFavoriteUniversities();
+            loadCommonApp();
 
             // Determine which section to show initially based on the URL hash, or default to 'home'
             if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
