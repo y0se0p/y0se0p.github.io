@@ -7560,6 +7560,17 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 firebase.initializeApp(FIREBASE_CONFIG);
                 fbAuth = firebase.auth();
                 fbDb = firebase.firestore();
+                // Durable offline persistence: every write is saved to IndexedDB immediately and
+                // synced to the cloud whenever a connection is available — so edits survive
+                // refreshes, tab-closes and offline periods and are never lost mid-sync. Must run
+                // before any other Firestore call. (synchronizeTabs lets multiple open tabs share
+                // one local cache instead of failing.)
+                try {
+                    fbDb.enablePersistence({ synchronizeTabs: true }).catch(function () {
+                        // failed-precondition (multiple tabs, older API) / unimplemented (private
+                        // browsing) — the app still works, just without the offline cache.
+                    });
+                } catch (e) {}
                 fbAuth.onAuthStateChanged(handleAuthChange);
             } catch (e) {
                 console.warn('Firebase init failed:', e);
@@ -7669,15 +7680,31 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             try {
                 const snap = await fbDb.collection('students').doc(uid).get();
                 const d = snap.exists ? snap.data() : null;
-                const hasCloudData = !!(d && d.appData && Object.keys(d.appData).length > 0);
-                // Always reset local first → a new/empty account can't show the previous user's data
-                clearLocalAppData();
-                if (hasCloudData) {
-                    Object.keys(d.appData).forEach(k => localStorage.setItem(k, d.appData[k]));
-                }
-                refreshAppFromStorage();
-                if (!hasCloudData) {
-                    await pushStudentData(); // brand-new account → seed cloud with the fresh (empty) state
+                const cloudData = (d && d.appData && Object.keys(d.appData).length > 0) ? d.appData : null;
+                const cloudStamp = Number(d && (d.updatedAt || d.lastLocalWrite)) || 0;
+                const localStamp = Number(localStorage.getItem('localDataStamp')) || 0;
+                const localHasData = BACKUP_KEYS.some(k => localStorage.getItem(k) !== null);
+
+                // NON-DESTRUCTIVE MERGE (fixes the data-loss-on-refresh bug). The old code always
+                // wiped local and adopted the cloud copy, so refreshing right after an edit — before
+                // the debounced cloud write finished — pulled the STALE cloud doc and permanently
+                // erased the just-made changes. Now local wins whenever it holds genuinely newer,
+                // not-yet-synced edits; otherwise the fresher cloud copy is adopted.
+                if (localHasData && localStamp > cloudStamp) {
+                    // Local has edits the cloud hasn't received yet → keep them, then push up.
+                    refreshAppFromStorage();
+                    pushStudentData().catch(() => {}); // durable: queues offline, syncs when online
+                } else if (cloudData) {
+                    // Cloud is the freshest source → adopt it (a different device saved more recently).
+                    clearLocalAppData();
+                    Object.keys(cloudData).forEach(k => localStorage.setItem(k, cloudData[k]));
+                    localStorage.setItem('localDataStamp', String(cloudStamp || Date.now()));
+                    refreshAppFromStorage();
+                } else {
+                    // Neither side has data → brand-new account; seed the cloud with the empty state.
+                    clearLocalAppData();
+                    refreshAppFromStorage();
+                    pushStudentData().catch(() => {});
                 }
                 if (d) { renderStudentFeedback(d); renderStudentChat(d); maybeShowFeedbackConfirm(d); }
             } catch (e) { console.warn('pull failed', e); }
@@ -8051,11 +8078,15 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             BACKUP_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) appData[k] = v; });
             const profile = safeParse(localStorage.getItem('userProfile'), {}) || {};
             const displayName = (profile.nameKo || profile.nameEn || profile.name) || currentUser.displayName || currentUser.email;
+            // Use the local edit stamp as the cloud's freshness marker so that, once synced, the
+            // cloud's updatedAt matches local exactly — a later pull then won't wrongly decide one
+            // side is newer and overwrite the other.
+            const stamp = Number(localStorage.getItem('localDataStamp')) || Date.now();
             setSyncState('syncing', '저장 중…', '저장 중');
             try {
                 await fbDb.collection('students').doc(currentUser.uid).set({
                     email: currentUser.email, name: displayName, profile,
-                    updatedAt: Date.now(), lastDevice: getDeviceId(), lastLocalWrite: Date.now()
+                    updatedAt: stamp, lastDevice: getDeviceId(), lastLocalWrite: stamp
                     , appData
                 }, { merge: true });
                 lastPushedAt = Date.now();
@@ -8074,7 +8105,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         function scheduleCloudPush() {
             setSyncState('syncing', '변경사항 저장 중…', '저장 중'); // show the blue light immediately on any edit
             clearTimeout(cloudPushTimer);
-            cloudPushTimer = setTimeout(pushStudentData, 1200);
+            cloudPushTimer = setTimeout(pushStudentData, 500);
         }
         // Flush any pending save immediately — so leaving/closing the tab never loses recent edits
         function flushCloudPush() {
@@ -8086,7 +8117,13 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             const realSet = localStorage.setItem.bind(localStorage);
             localStorage.setItem = function (k, v) {
                 realSet(k, v);
-                if (currentUser && currentRole === 'student' && BACKUP_KEYS.indexOf(k) !== -1) scheduleCloudPush();
+                if (currentUser && currentRole === 'student' && BACKUP_KEYS.indexOf(k) !== -1) {
+                    // Stamp every real edit so that after a refresh the pull step can tell genuinely
+                    // newer local edits apart from a (possibly stale) cloud copy and never clobber
+                    // work that hasn't finished syncing yet.
+                    realSet('localDataStamp', String(Date.now()));
+                    scheduleCloudPush();
+                }
             };
             // Save-before-leave safeguards (tab switch / minimize / close)
             document.addEventListener('visibilitychange', () => { if (document.hidden) flushCloudPush(); });
